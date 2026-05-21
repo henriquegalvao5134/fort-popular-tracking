@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório — Fort Popular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0c09; color: #f0ead8; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* CORES */
+  :root {
+    --gold: #C4A35A;
+    --gold-light: #d4b872;
+    --gold-dim: rgba(196,163,90,0.15);
+    --card: #161410;
+    --card2: #1e1b14;
+    --border: rgba(196,163,90,0.2);
+    --text: #f0ead8;
+    --muted: #7a7060;
+    --bg: #0d0c09;
+  }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+  .card2 { background: var(--card2); border-radius: 10px; }
+
+  /* CHIPS */
+  .chip { cursor:pointer; padding:6px 14px; border-radius:20px; font-size:13px;
+          border:1.5px solid var(--border); color:var(--muted); background:transparent;
+          transition:.15s; white-space:nowrap; }
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+  .chip.active { background: var(--gold); color: #0d0c09; border-color: var(--gold); font-weight:600; }
+
+  /* BADGES */
+  .badge-on  { background:rgba(196,163,90,0.18); color:var(--gold); padding:3px 11px; border-radius:20px; font-size:12px; border:1px solid rgba(196,163,90,0.3); }
+  .badge-off { background:rgba(255,255,255,0.05); color:var(--muted); padding:3px 11px; border-radius:20px; font-size:12px; }
+
+  /* INPUTS */
+  input[type=date], input[type=number], input[type=password] {
+    background: var(--card2); border:1.5px solid var(--border);
+    border-radius:8px; padding:8px 12px; font-size:13px;
+    color: var(--text); outline:none;
+  }
+  input[type=date]:focus, input[type=number]:focus, input[type=password]:focus {
+    border-color: var(--gold);
+  }
+  input::placeholder { color: var(--muted); }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead th { padding:12px 16px; text-align:right; font-size:11px; color:var(--muted); font-weight:500;
+             text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid var(--border); }
+  thead th:first-child { text-align:left; }
+  tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(196,163,90,0.04); }
+  tbody td { padding:12px 16px; text-align:right; color:var(--text); }
+  tbody td:first-child { text-align:left; color:#d8cfba; }
+  tfoot td { padding:12px 16px; text-align:right; border-top:1px solid var(--border);
+             color:var(--gold); font-weight:600; font-size:13px; }
+  tfoot td:first-child { text-align:left; }
+
+  /* KPI */
+  .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  .kpi-val   { font-size:26px; font-weight:700; color:var(--gold); line-height:1; }
+  .kpi-diff  { font-size:12px; margin-top:5px; color:var(--muted); }
+  .up   { color: #5fd98a; }
+  .down { color: #e05a5a; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius:3px; }
+
+  /* LOGIN */
+  #login { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:50; }
+  #login .box { width:100%; max-width:320px; text-align:center; }
+  .btn-gold { background:var(--gold); color:#0d0c09; border:none; border-radius:10px;
+              padding:12px 24px; font-size:14px; font-weight:700; cursor:pointer; width:100%; transition:.15s; }
+  .btn-gold:hover { background:var(--gold-light); }
+
+  /* DIVIDER */
+  .divider { height:1px; background:var(--border); margin: 20px 0; }
+
+  /* ROI */
+  .roi-box { background:var(--card2); border-radius:10px; padding:20px; text-align:center; border:1px solid var(--border); }
+  .roi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+  .roi-val   { font-size:22px; font-weight:700; color:var(--gold); }
+
+  /* HEADER GOLD LINE */
+  .gold-bar { height:2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin-bottom:28px; }
+
+  /* HELP MODAL */
+  #help-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; display:none; align-items:flex-start; justify-content:center; padding:24px 16px; overflow-y:auto; }
+  #help-overlay.open { display:flex; }
+  #help-box { background:#161410; border:1px solid var(--border); border-radius:16px; width:100%; max-width:680px; padding:32px 28px; position:relative; margin:auto; }
+  #help-box h2 { font-family:'Playfair Display',Georgia,serif; color:var(--gold); font-size:22px; font-weight:400; letter-spacing:4px; margin-bottom:4px; }
+  #help-box .help-sub { font-size:12px; color:var(--muted); margin-bottom:24px; }
+  .help-section { margin-bottom:22px; }
+  .help-section h3 { font-size:12px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:6px; }
+  .help-item { margin-bottom:10px; }
+  .help-item strong { color:var(--text); font-size:13px; display:block; margin-bottom:2px; }
+  .help-item span { color:var(--muted); font-size:12px; line-height:1.6; }
+  .help-close { position:absolute; top:16px; right:20px; background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; line-height:1; padding:4px 8px; border-radius:6px; }
+  .help-close:hover { color:var(--gold); }
+  .btn-help { background:none; border:1.5px solid var(--border); color:var(--muted); border-radius:50%; width:28px; height:28px; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.15s; flex-shrink:0; }
+  .btn-help:hover { border-color:var(--gold); color:var(--gold); }
+
+  /* GRIDS */
+  .kpi-grid    { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .roi-inputs  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px; }
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+  /* STICKY FIRST COLUMN */
+  .col-name { position:sticky; left:0; z-index:1; background:var(--card); }
+  thead .col-name { background:var(--card); }
+  tfoot .col-name { background:var(--card); }
+
+  /* RESPONSIVE */
+  @media (max-width:620px) {
+    #app { padding:16px 12px 60px; }
+    .kpi-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
+    .kpi-val  { font-size:20px; }
+    .roi-inputs { grid-template-columns:1fr 1fr; }
+    #roi-out  { grid-template-columns:repeat(2,1fr) !important; }
+    #auction-insight { text-align:left !important; max-width:100% !important; margin-top:6px; }
+    #help-box { padding:24px 16px; }
+    .col-imp { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HELP MODAL -->
+<div id="help-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div id="help-box">
+    <button class="help-close" onclick="document.getElementById('help-overlay').classList.remove('open')">✕</button>
+    <h2>FORT POPULAR</h2>
+    <div class="help-sub">Guia do Relatório de Performance</div>
+
+    <div class="help-section">
+      <h3>Filtros de Data</h3>
+      <div class="help-item"><strong>Esta semana</strong><span>Mostra os dados de segunda-feira até hoje.</span></div>
+      <div class="help-item"><strong>Semana passada</strong><span>Mostra a semana anterior completa, de segunda a domingo.</span></div>
+      <div class="help-item"><strong>Últimos 7 / 30 dias</strong><span>Mostra os últimos 7 ou 30 dias contando a partir de hoje.</span></div>
+      <div class="help-item"><strong>Mês atual</strong><span>Do primeiro dia do mês corrente até hoje.</span></div>
+      <div class="help-item"><strong>Máximo</strong><span>Todo o histórico disponível desde o início das campanhas.</span></div>
+      <div class="help-item"><strong>Personalizado</strong><span>Escolha qualquer data de início e fim nos campos à direita e clique em Aplicar.</span></div>
+      <div class="help-item"><strong>Para ver apenas hoje</strong><span>Use o filtro personalizado colocando a data de hoje nos dois campos (início e fim) e clique Aplicar.</span></div>
+    </div>
+
+    <div class="help-section">
+      <h3>Números do Topo — KPIs</h3>
+      <div class="help-item"><strong>Investimento</strong><span>Total gasto em anúncios no período selecionado.</span></div>
+      <div class="help-item"><strong>Conversas</strong><span>Quantas pessoas clicaram no anúncio e iniciaram uma conversa no WhatsApp. É a métrica principal de resultado para esse tipo de campanha.</span></div>
+      <div class="help-item"><strong>Custo / Conversa</strong><span>Quanto custou cada conversa gerada. Divide o investimento pelo número de conversas. Quanto menor, melhor.</span></div>
+      <div class="help-item"><strong>Alcance</strong><span>Quantas pessoas únicas viram os anúncios no período. Uma mesma pessoa é contada apenas uma vez, independente de quantas vezes viu.</span></div>
+      <div class="help-item"><strong>Setas ↑ ↓ e percentual</strong><span>Comparam o período selecionado com o período anterior de mesmo tamanho. Exemplo: se você selecionou os últimos 7 dias, a comparação é com os 7 dias antes disso. Verde significa melhora, vermelho significa queda.</span></div>
+    </div>
+
+    <div class="help-section">
+      <h3>Instagram Orgânico</h3>
+      <div class="help-item"><strong>Seguidores</strong><span>Total atual de seguidores da conta. O número embaixo (+X no período) mostra quantos seguidores foram conquistados no período selecionado.</span></div>
+      <div class="help-item"><strong>Gráfico de crescimento</strong><span>Linha que mostra como o número de seguidores evoluiu dia a dia. Uma linha subindo significa que a conta está crescendo. Esse crescimento reflete o resultado combinado dos anúncios e do conteúdo orgânico.</span></div>
+    </div>
+
+    <div class="help-section">
+      <h3>Investimento Diário</h3>
+      <div class="help-item"><strong>Gráfico de barras</strong><span>Mostra quanto foi gasto em anúncios em cada dia do período. Dias sem barra indicam que não houve gasto (campanhas pausadas ou sem orçamento).</span></div>
+    </div>
+
+    <div class="help-section">
+      <h3>Análise de Leilão — CPM</h3>
+      <div class="help-item"><strong>O que é o CPM?</strong><span>CPM significa "custo por mil visualizações". Ele mostra o quanto está sendo cobrado para o anúncio aparecer para 1.000 pessoas. Quando o CPM sobe, significa que há mais anunciantes competindo pelo mesmo público — o leilão está mais disputado.</span></div>
+      <div class="help-item"><strong>Pontos coloridos</strong><span>Verde = CPM abaixo da média do período (leilão tranquilo). Amarelo = CPM um pouco acima da média. Vermelho = leilão aquecido, muitos concorrentes disputando o mesmo público naquele dia.</span></div>
+      <div class="help-item"><strong>Linha tracejada</strong><span>É a média de CPM do período. Serve de referência para saber se um dia está caro ou barato em relação ao próprio histórico da conta.</span></div>
+      <div class="help-item"><strong>Texto de contexto (canto direito)</strong><span>Explicação automática do que está acontecendo no dia mais recente do período: se o leilão está aquecido, por qual motivo (dia da semana, data comemorativa do nicho de beleza) e se é um bom momento para escalar o investimento.</span></div>
+      <div class="help-item"><strong>Por que o CPM varia?</strong><span>No nicho de beleza, quartas e quintas costumam ter CPM mais alto porque muitos salões anunciam para preencher a agenda do fim de semana. Datas como Dia das Mães, Dia dos Namorados e fim de ano também encarecem o leilão significativamente.</span></div>
+    </div>
+
+    <div class="help-section">
+      <h3>Calculadora de ROI</h3>
+      <div class="help-item"><strong>Leads reais</strong><span>Quantas pessoas entraram em contato (via WhatsApp ou qualquer canal) e eram realmente clientes potenciais no período. Você preenche manualmente com base no seu controle — não depende de nenhum sistema automático.</span></div>
+      <div class="help-item"><strong>Clientes fechados</strong><span>Quantos desses leads efetivamente agendaram e pagaram pelo serviço. Também preenchido manualmente por você.</span></div>
+      <div class="help-item"><strong>Ticket médio</strong><span>Valor médio de cada atendimento ou serviço vendido.</span></div>
+      <div class="help-item"><strong>Receita gerada</strong><span>Clientes fechados × ticket médio. É o retorno financeiro estimado da campanha.</span></div>
+      <div class="help-item"><strong>Custo por cliente</strong><span>Quanto foi gasto em anúncios para cada cliente que fechou serviço.</span></div>
+      <div class="help-item"><strong>ROI</strong><span>Retorno sobre investimento. Um ROI de 300% significa que para cada R$1 investido em anúncios, R$3 voltaram em receita. Quanto maior, melhor.</span></div>
+      <div class="help-item"><strong>Taxa de conversão</strong><span>Aparece quando você preenche "Leads reais". Mostra quantos % dos contatos viraram clientes. Verde (≥30%) é excelente, amarelo (15–29%) é aceitável, vermelho (abaixo de 15%) indica que os leads não estão sendo bem aproveitados no atendimento.</span></div>
+    </div>
+
+    <div class="help-section">
+      <h3>Tabela de Campanhas</h3>
+      <div class="help-item"><strong>Todas / Ativas / Pausadas</strong><span>Filtros para mostrar só as campanhas ativas, só as pausadas, ou todas juntas. Campanhas ativas aparecem sempre no topo da lista.</span></div>
+      <div class="help-item"><strong>Gasto</strong><span>Quanto cada campanha gastou no período.</span></div>
+      <div class="help-item"><strong>Conversas</strong><span>Quantas conversas no WhatsApp cada campanha gerou.</span></div>
+      <div class="help-item"><strong>Alcance / Impressões</strong><span>Alcance = pessoas únicas que viram. Impressões = total de vezes que o anúncio foi exibido (a mesma pessoa pode ver mais de uma vez).</span></div>
+      <div class="help-item"><strong>CTR</strong><span>Porcentagem das pessoas que viram o anúncio e clicaram nele. Um CTR alto indica que o criativo (imagem/vídeo) está chamando atenção do público certo.</span></div>
+      <div class="help-item"><strong>Linha de Totais</strong><span>Última linha da tabela com a soma de todas as campanhas visíveis.</span></div>
+    </div>
+
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);text-align:center;">
+      Os dados têm atraso de até 3 horas em relação ao Meta Ads. Atualizar a página traz os dados mais recentes.
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="box">
+    <div style="background:#0d0b09;padding:18px 32px;border-radius:8px;display:inline-block;margin:0 auto 20px;">
+      <span style="font-family:'Playfair Display',Georgia,'Palatino Linotype',serif;font-size:52px;color:#C4983A;letter-spacing:10px;font-weight:400;display:block;line-height:1;">FORT POPULAR</span>
+    </div>
+    <div class="card" style="padding:32px 28px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Relatório de Performance</div>
+      <input id="keyInput" type="password" placeholder="Senha de acesso"
+        style="width:100%;margin-bottom:12px;"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn-gold" onclick="doLogin()">Entrar</button>
+      <div id="loginErr" style="color:#e05a5a;font-size:12px;margin-top:10px;display:none;">Senha incorreta</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;max-width:960px;margin:0 auto;padding:28px 16px 60px;">
+
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+    <div style="background:#0d0b09;padding:8px 20px;border-radius:6px;display:inline-block;">
+      <span style="font-family:'Playfair Display',Georgia,'Palatino Linotype',serif;font-size:28px;color:#C4983A;letter-spacing:6px;font-weight:400;line-height:1;">FORT POPULAR</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="text-align:right;">
+        <div style="font-size:13px;color:var(--muted);" id="periodLabel">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">Atualizado às <span id="updatedAt">—</span></div>
+      </div>
+      <button class="btn-help" onclick="document.getElementById('help-overlay').classList.add('open')" title="Como usar o relatório">?</button>
+    </div>
+  </div>
+  <div class="gold-bar"></div>
+
+  <!-- FILTRO DE DATAS -->
+  <div class="card" style="padding:14px 16px;margin-bottom:16px;">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+      <button class="chip active" onclick="setPreset('week',this)">Esta semana</button>
+      <button class="chip" onclick="setPreset('lastweek',this)">Semana passada</button>
+      <button class="chip" onclick="setPreset('7',this)">Últimos 7 dias</button>
+      <button class="chip" onclick="setPreset('30',this)">Últimos 30 dias</button>
+      <button class="chip" onclick="setPreset('month',this)">Mês atual</button>
+      <button class="chip" onclick="setPreset('max',this)">Máximo</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <input type="date" id="dateFrom" style="flex:1;min-width:120px;">
+      <span style="color:var(--muted);font-size:13px;">até</span>
+      <input type="date" id="dateTo" style="flex:1;min-width:120px;">
+      <button onclick="applyCustom()" class="chip active" style="flex-shrink:0;">Aplicar</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="card" style="padding:18px;">
+      <div class="kpi-label">Investimento</div>
+      <div class="kpi-val" id="k-spend">—</div>
+      <div class="kpi-diff" id="d-spend">—</div>
+    </div>
+    <div class="card" style="padding:18px;">
+      <div class="kpi-label">Conversas</div>
+      <div class="kpi-val" id="k-conv">—</div>
+      <div class="kpi-diff" id="d-conv">—</div>
+    </div>
+    <div class="card" style="padding:18px;">
+      <div class="kpi-label">Custo / Conversa</div>
+      <div class="kpi-val" id="k-cpl">—</div>
+      <div class="kpi-diff" id="d-cpl">—</div>
+    </div>
+    <div class="card" style="padding:18px;">
+      <div class="kpi-label">Alcance</div>
+      <div class="kpi-val" id="k-reach">—</div>
+      <div class="kpi-diff" id="d-reach">—</div>
+    </div>
+  </div>
+
+  <!-- INSTAGRAM ORGÂNICO -->
+  <div class="card" style="padding:20px;margin-bottom:16px;display:none;" id="ig-section">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="url(#ig)"/>
+        <defs><radialGradient id="ig" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#fdf497"/><stop offset="5%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285AEB"/></radialGradient></defs>
+        <circle cx="12" cy="12" r="4" stroke="white" stroke-width="1.8" fill="none"/>
+        <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
+        <rect x="3" y="3" width="18" height="18" rx="5" stroke="white" stroke-width="1.8" fill="none"/>
+      </svg>
+      <span style="font-size:13px;font-weight:600;color:var(--gold);">Instagram Orgânico</span>
+      <span id="ig-username" style="font-size:12px;color:var(--muted);"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:start;">
+      <div class="card2" style="padding:16px;text-align:center;">
+        <div class="kpi-label">Seguidores</div>
+        <div class="kpi-val" id="ig-followers" style="font-size:22px;">—</div>
+        <div id="ig-gain" style="font-size:12px;margin-top:6px;color:var(--muted);">—</div>
+      </div>
+      <div id="ig-chart-wrap" style="display:none;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Crescimento de seguidores no período</div>
+        <canvas id="chartFollowers" height="85"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO -->
+  <div class="card" style="padding:20px;margin-bottom:16px;">
+    <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px;">Investimento diário (R$)</div>
+    <canvas id="chartSpend" height="65"></canvas>
+  </div>
+
+  <!-- ANÁLISE DE LEILÃO -->
+  <div class="card" style="padding:20px;margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);">Análise de Leilão — CPM diário (R$)</div>
+      <div id="auction-insight" style="font-size:12px;color:var(--muted);max-width:420px;text-align:right;line-height:1.5;"></div>
+    </div>
+    <div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:10px;">
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#5fd98a;margin-right:4px;"></span>Abaixo da média</span>
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d4b872;margin-right:4px;"></span>Acima da média</span>
+      <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#e05a5a;margin-right:4px;"></span>Leilão aquecido</span>
+    </div>
+    <canvas id="chartCPM" height="70"></canvas>
+  </div>
+
+  <!-- ROI -->
+  <div class="card" style="padding:20px;margin-bottom:16px;">
+    <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px;">Calculadora de ROI</div>
+    <div class="roi-inputs">
+      <div>
+        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Leads reais</label>
+        <input id="roi-leads" type="number" min="0" placeholder="Ex: 20" style="width:100%;" oninput="calcROI()">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Clientes fechados</label>
+        <input id="roi-clients" type="number" min="0" placeholder="Ex: 8" style="width:100%;" oninput="calcROI()">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Ticket médio (R$)</label>
+        <input id="roi-ticket" type="number" min="0" placeholder="Ex: 150" style="width:100%;" oninput="calcROI()">
+      </div>
+    </div>
+    <div id="roi-out" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div class="roi-box">
+        <div class="roi-label">Receita gerada</div>
+        <div class="roi-val" id="roi-rev" style="color:#5fd98a;">—</div>
+      </div>
+      <div class="roi-box">
+        <div class="roi-label">Custo por cliente</div>
+        <div class="roi-val" id="roi-cpc">—</div>
+      </div>
+      <div class="roi-box">
+        <div class="roi-label">ROI</div>
+        <div class="roi-val" id="roi-pct">—</div>
+      </div>
+      <div class="roi-box" id="roi-conv-box" style="display:none;">
+        <div class="roi-label">Taxa de conversão</div>
+        <div class="roi-val" id="roi-conv">—</div>
+      </div>
+    </div>
+    <div id="roi-hint" style="font-size:12px;color:var(--muted);text-align:center;margin-top:4px;">Preencha os campos para calcular</div>
+  </div>
+
+  <!-- CAMPANHAS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">Campanhas</div>
+    <div style="display:flex;gap:8px;">
+      <button class="chip active" id="f-all" onclick="filterCamp('all',this)">Todas</button>
+      <button class="chip" id="f-active" onclick="filterCamp('active',this)">Ativas</button>
+      <button class="chip" id="f-paused" onclick="filterCamp('paused',this)">Pausadas</button>
+    </div>
+  </div>
+  <div class="card" style="overflow:hidden;margin-bottom:32px;">
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-name" style="text-align:left;">Campanha</th>
+          <th>Gasto</th>
+          <th>Conversas</th>
+          <th>Alcance</th>
+          <th class="col-imp">Impressões</th>
+          <th>CTR</th>
+          <th style="text-align:center;">Status</th>
+        </tr>
+      </thead>
+      <tbody id="camp-body"></tbody>
+      <tfoot id="camp-foot"></tfoot>
+    </table>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:20px;">
+    Dados via Meta Ads API · Delay de até 3h
+  </div>
+</div>
+
+<script>
+let CLIENT_KEY = '';
+let allCampaigns = [];
+let currentSpend = 0;
+let chartInstance = null;
+let igChartInstance = null;
+let cpmChartInstance = null;
+let campFilter = 'all';
+let since = '', until = '';
+
+// ---------- AUTH ----------
+function doLogin() {
+  CLIENT_KEY = document.getElementById('keyInput').value.trim();
+  sessionStorage.setItem('rkey', CLIENT_KEY);
+  loadData();
+}
+
+(function init() {
+  const k = new URLSearchParams(location.search).get('key') || sessionStorage.getItem('rkey');
+  if (k) { CLIENT_KEY = k; loadData(); }
+})();
+
+// ---------- DATES ----------
+function ymd(d) {
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+
+function setPreset(preset, btn) {
+  document.querySelectorAll('.chip').forEach(c => {
+    if(['Esta semana','Semana passada','Últimos 7 dias','Últimos 30 dias','Mês atual','Máximo'].includes(c.textContent))
+      c.classList.remove('active');
+  });
+  btn.classList.add('active');
+  const today = new Date();
+  let s, u = ymd(today);
+  if (preset === 'week') {
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - ((today.getDay()+6)%7));
+    s = ymd(mon);
+  } else if (preset === 'lastweek') {
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - ((today.getDay()+6)%7) - 7);
+    const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    s = ymd(mon); u = ymd(sun);
+  } else if (preset === '7') {
+    const d = new Date(today); d.setDate(d.getDate()-6); s = ymd(d);
+  } else if (preset === '30') {
+    const d = new Date(today); d.setDate(d.getDate()-29); s = ymd(d);
+  } else if (preset === 'month') {
+    s = ymd(new Date(today.getFullYear(), today.getMonth(), 1));
+  } else if (preset === 'max') {
+    s = '2020-01-01';
+  }
+  document.getElementById('dateFrom').value = s;
+  document.getElementById('dateTo').value = u;
+  since = s; until = u;
+  loadData();
+}
+
+function applyCustom() {
+  since = document.getElementById('dateFrom').value;
+  until = document.getElementById('dateTo').value;
+  if (since && until) loadData();
+}
+
+// ---------- FETCH ----------
+async function loadData() {
+  if (!CLIENT_KEY) return;
+  if (!since) {
+    const today = new Date();
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - ((today.getDay()+6)%7));
+    since = ymd(mon); until = ymd(today);
+    document.getElementById('dateFrom').value = since;
+    document.getElementById('dateTo').value = until;
+  }
+
+  const [curr, prev] = await Promise.all([
+    fetchData(since, until),
+    fetchPrev(),
+  ]);
+
+  if (!curr) return;
+
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('updatedAt').textContent = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('periodLabel').textContent =
+    since.split('-').reverse().join('/') + ' — ' + until.split('-').reverse().join('/');
+
+  allCampaigns = curr.campaigns;
+  renderCampaigns();
+  renderKPIs(curr, prev);
+  renderChart(curr.daily || []);
+  renderAuctionChart(curr.daily || []);
+
+  // Instagram carrega em paralelo sem bloquear a exibição dos dados de anúncio
+  fetchInstagram(since, until).then(ig => { if (ig) renderInstagram(ig); });
+}
+
+async function fetchData(s, u) {
+  const r = await fetch(`/api/client-report?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+  if (r.status === 401 || r.status === 403) {
+    document.getElementById('loginErr').style.display = 'block';
+    return null;
+  }
+  const d = await r.json();
+  return d.ok ? d : null;
+}
+
+async function fetchInstagram(s, u) {
+  try {
+    const r = await fetch(`/api/instagram-insights?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+    const d = await r.json();
+    return d.ok ? d : null;
+  } catch { return null; }
+}
+
+function renderInstagram(ig) {
+  document.getElementById('ig-section').style.display = 'block';
+  document.getElementById('ig-username').textContent = ig.instagram?.username ? '@' + ig.instagram.username : '';
+
+  const followers = ig.instagram?.followers || 0;
+  const gain = ig.follower_growth?.net_gain || 0;
+  document.getElementById('ig-followers').textContent = fmtN(followers);
+
+  const gainEl = document.getElementById('ig-gain');
+  if (gain !== 0) {
+    gainEl.innerHTML = `<span class="${gain > 0 ? 'up' : 'down'}">${gain > 0 ? '+' : ''}${fmtN(gain)} no período</span>`;
+  } else {
+    gainEl.textContent = '—';
+  }
+
+  const daily = ig.follower_growth?.daily || [];
+  if (daily.length > 1) {
+    const startCount = followers - gain;
+    let cumulative = startCount;
+    const labels = [], values = [];
+    for (const d of daily) {
+      cumulative += d.change;
+      labels.push(d.date.substring(5).replace('-', '/'));
+      values.push(cumulative);
+    }
+    if (igChartInstance) igChartInstance.destroy();
+    igChartInstance = new Chart(document.getElementById('chartFollowers'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ data: values, borderColor: '#C4A35A', backgroundColor: 'rgba(196,163,90,0.08)',
+          borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, fill: true, tension: 0.3, label: 'Seguidores' }]
+      },
+      options: {
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: '#1e1b14', titleColor: '#C4A35A', bodyColor: '#f0ead8',
+          borderColor: 'rgba(196,163,90,0.3)', borderWidth: 1,
+          callbacks: { label: ctx => fmtN(ctx.parsed.y) + ' seguidores' }
+        }},
+        scales: {
+          y: { grid: { color: 'rgba(196,163,90,0.08)' }, ticks: { color: '#7a7060', callback: v => fmtN(v) } },
+          x: { grid: { display: false }, ticks: { color: '#7a7060', maxTicksLimit: 12 } }
+        }
+      }
+    });
+    document.getElementById('ig-chart-wrap').style.display = 'block';
+  }
+}
+
+// ---------- AUCTION CHART ----------
+const DAY_CONTEXT = [
+  'Domingo — volume menor de leilões.',
+  'Segunda — CPM historicamente baixo no nicho de beleza.',
+  'Terça — competição moderada.',
+  'Quarta — salões disputam agenda do fim de semana. CPM tende a subir.',
+  'Quinta — pressão por agenda cresce. Leilão aquecido.',
+  'Sexta — último dia útil para agendar. Alta competição.',
+  'Sábado — bom volume de intenção de agendamento.',
+];
+const SEASONAL = [
+  { m:3,  d1:6,  d2:9,  label:'Semana do Dia da Mulher (8/mar)' },
+  { m:5,  d1:4,  d2:12, label:'Semana do Dia das Mães' },
+  { m:6,  d1:8,  d2:14, label:'Semana do Dia dos Namorados (12/jun)' },
+  { m:10, d1:13, d2:17, label:'Semana do Dia das Crianças (12/out)' },
+  { m:12, d1:18, d2:31, label:'Festas de fim de ano — leilão muito aquecido' },
+  { m:2,  d1:1,  d2:28, label:'Período de Carnaval' },
+];
+
+function seasonalNote(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const m = d.getMonth() + 1, day = d.getDate();
+  const match = SEASONAL.find(s => s.m === m && day >= s.d1 && day <= s.d2);
+  return match ? match.label : '';
+}
+
+function renderAuctionChart(daily) {
+  if (!daily || daily.length === 0) return;
+
+  const labels = daily.map(d => {
+    const dt = new Date(d.date_start + 'T12:00:00');
+    const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    return d.date_start.substring(5).replace('-','/') + ' ' + days[dt.getDay()];
+  });
+
+  const cpms = daily.map(d => parseFloat(d.cpm || 0));
+  const avg = cpms.length ? cpms.reduce((s,v) => s+v, 0) / cpms.length : 0;
+
+  const pointColors = cpms.map(v =>
+    v > avg * 1.25 ? '#e05a5a' :
+    v > avg * 1.05 ? '#d4b872' : '#5fd98a'
+  );
+
+  if (cpmChartInstance) cpmChartInstance.destroy();
+  cpmChartInstance = new Chart(document.getElementById('chartCPM'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { data: cpms, borderColor: '#C4A35A', backgroundColor: 'rgba(196,163,90,0.07)',
+          borderWidth: 2, pointRadius: 5, pointHoverRadius: 7,
+          pointBackgroundColor: pointColors, pointBorderColor: pointColors,
+          fill: true, tension: 0.3, label: 'CPM' },
+        { data: cpms.map(() => avg), borderColor: 'rgba(196,163,90,0.35)',
+          borderWidth: 1, borderDash: [6,4], pointRadius: 0, fill: false, label: 'Média' },
+      ]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#1e1b14', titleColor: '#C4A35A', bodyColor: '#f0ead8',
+        borderColor: 'rgba(196,163,90,0.3)', borderWidth: 1,
+        callbacks: { label: ctx => ctx.dataset.label === 'Média'
+          ? 'Média: R$ ' + ctx.parsed.y.toFixed(2)
+          : 'CPM: R$ ' + ctx.parsed.y.toFixed(2) }
+      }},
+      scales: {
+        y: { grid: { color: 'rgba(196,163,90,0.08)' },
+             ticks: { color: '#7a7060', callback: v => 'R$'+v.toFixed(0) } },
+        x: { grid: { display: false }, ticks: { color: '#7a7060' } }
+      }
+    }
+  });
+
+  // Insight automático baseado no último dia e sazonalidade
+  const last = daily[daily.length - 1];
+  const lastCPM = parseFloat(last.cpm || 0);
+  const lastDt  = new Date(last.date_start + 'T12:00:00');
+  const pct = avg > 0 ? ((lastCPM - avg) / avg * 100) : 0;
+  const seasonal = seasonalNote(last.date_start);
+
+  let level = pct > 25  ? `🔴 CPM ${pct.toFixed(0)}% acima da média — leilão aquecido.` :
+              pct > 8   ? `🟡 CPM ${pct.toFixed(0)}% acima da média.` :
+              pct < -8  ? `🟢 CPM ${Math.abs(pct).toFixed(0)}% abaixo da média — bom momento.` :
+                          `🟢 CPM dentro da média do período.`;
+  const dayNote = DAY_CONTEXT[lastDt.getDay()] || '';
+  document.getElementById('auction-insight').innerHTML =
+    `${level}<br><span style="color:var(--muted)">${dayNote}${seasonal ? ' · ' + seasonal : ''}</span>`;
+}
+
+async function fetchPrev() {
+  const s = new Date(since), u = new Date(until);
+  const diff = Math.round((u-s)/(1000*86400)) + 1;
+  const ps = new Date(s); ps.setDate(ps.getDate()-diff);
+  const pu = new Date(s); pu.setDate(pu.getDate()-1);
+  return fetchData(ymd(ps), ymd(pu));
+}
+
+// ---------- ACTION HELPERS ----------
+function getConv(campaign) {
+  const a = (campaign.actions||[]);
+  const started = a.find(x => x.action_type === 'onsite_conversion.messaging_conversation_started_7d');
+  const total   = a.find(x => x.action_type === 'onsite_conversion.total_messaging_connection');
+  return parseInt((started || total || {value:'0'}).value);
+}
+
+// ---------- KPIs ----------
+function fmt(n)  { return 'R$ ' + parseFloat(n).toFixed(2).replace('.',','); }
+function fmtN(n) { return parseInt(n).toLocaleString('pt-BR'); }
+
+function renderKPIs(curr, prev) {
+  const cSpend = curr.campaigns.reduce((s,c) => s+parseFloat(c.spend||0), 0);
+  const pSpend = prev ? prev.campaigns.reduce((s,c) => s+parseFloat(c.spend||0), 0) : 0;
+  currentSpend = cSpend;
+
+  const cConv  = curr.campaigns.reduce((s,c) => s+getConv(c), 0);
+  const pConv  = prev ? prev.campaigns.reduce((s,c) => s+getConv(c), 0) : 0;
+
+  const cCPL   = cConv > 0 ? cSpend/cConv : 0;
+  const pCPL   = pConv > 0 ? pSpend/pConv : 0;
+
+  const cReach = curr.campaigns.reduce((s,c) => s+parseInt(c.reach||0), 0);
+  const pReach = prev ? prev.campaigns.reduce((s,c) => s+parseInt(c.reach||0), 0) : 0;
+
+  setKPI('k-spend','d-spend', cSpend, pSpend, fmt, false);
+  setKPI('k-conv','d-conv',   cConv,  pConv,  fmtN, false);
+  setKPI('k-cpl','d-cpl',     cCPL,   pCPL,   fmt,  true);
+  setKPI('k-reach','d-reach', cReach, pReach, fmtN, false);
+}
+
+function setKPI(kid, did, val, prev, fmtFn, lowerBetter) {
+  document.getElementById(kid).textContent = fmtFn(val);
+  const el = document.getElementById(did);
+  if (!prev || prev === 0) { el.textContent = '—'; return; }
+  const pct = ((val - prev) / prev * 100);
+  const up = pct >= 0;
+  const good = lowerBetter ? !up : up;
+  const cls = good ? 'up' : 'down';
+  const arrow = up ? '↑' : '↓';
+  el.innerHTML = `<span class="${cls}">${arrow} ${Math.abs(pct).toFixed(1)}%</span> vs período anterior`;
+}
+
+// ---------- CHART ----------
+function renderChart(daily) {
+  const labels = daily.map(d => d.date_start.substring(5).replace('-','/'));
+  const values = daily.map(d => parseFloat(d.spend||0));
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(document.getElementById('chartSpend'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: '#C4A35A', borderRadius: 5, label: 'R$' }]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#1e1b14',
+        titleColor: '#C4A35A',
+        bodyColor: '#f0ead8',
+        borderColor: 'rgba(196,163,90,0.3)',
+        borderWidth: 1,
+        callbacks: { label: ctx => 'R$ ' + ctx.parsed.y.toFixed(2) }
+      }},
+      scales: {
+        y: {
+          grid: { color: 'rgba(196,163,90,0.08)' },
+          ticks: { color: '#7a7060', callback: v => 'R$'+v }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#7a7060' }
+        }
+      }
+    }
+  });
+}
+
+// ---------- CAMPAIGNS TABLE ----------
+function filterCamp(f, btn) {
+  campFilter = f;
+  document.querySelectorAll('#f-all,#f-active,#f-paused').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCampaigns();
+}
+
+function renderCampaigns() {
+  const filtered = allCampaigns
+    .filter(c => {
+      if (campFilter === 'active') return c.status === 'ACTIVE';
+      if (campFilter === 'paused') return c.status !== 'ACTIVE';
+      return true;
+    })
+    .sort((a, b) => {
+      const aActive = a.status === 'ACTIVE' ? 0 : 1;
+      const bActive = b.status === 'ACTIVE' ? 0 : 1;
+      return aActive - bActive;
+    });
+
+  const tbody = document.getElementById('camp-body');
+  const tfoot = document.getElementById('camp-foot');
+  tbody.innerHTML = '';
+
+  let totSpend = 0, totConv = 0, totReach = 0, totImp = 0;
+
+  filtered.forEach(c => {
+    const conv  = getConv(c);
+    const spend = parseFloat(c.spend||0);
+    const reach = parseInt(c.reach||0);
+    const imp   = parseInt(c.impressions||0);
+    totSpend += spend; totConv += conv; totReach += reach; totImp += imp;
+    const name  = c.campaign_name.length > 40 ? c.campaign_name.substring(0,40)+'…' : c.campaign_name;
+    const badge = c.status === 'ACTIVE'
+      ? '<span class="badge-on">Ativa</span>'
+      : '<span class="badge-off">Pausada</span>';
+    tbody.innerHTML += `<tr>
+      <td class="col-name">${name}</td>
+      <td>${fmt(spend)}</td>
+      <td>${fmtN(conv)}</td>
+      <td>${fmtN(reach)}</td>
+      <td class="col-imp">${fmtN(imp)}</td>
+      <td>${parseFloat(c.ctr||0).toFixed(2)}%</td>
+      <td style="text-align:center;">${badge}</td>
+    </tr>`;
+  });
+
+  tfoot.innerHTML = `<tr>
+    <td class="col-name">Total · ${filtered.length} campanha${filtered.length!==1?'s':''}</td>
+    <td>${fmt(totSpend)}</td>
+    <td>${fmtN(totConv)}</td>
+    <td>${fmtN(totReach)}</td>
+    <td class="col-imp">${fmtN(totImp)}</td>
+    <td>—</td>
+    <td></td>
+  </tr>`;
+}
+
+// ---------- ROI ----------
+function calcROI() {
+  const leads   = parseFloat(document.getElementById('roi-leads').value)||0;
+  const clients = parseFloat(document.getElementById('roi-clients').value)||0;
+  const ticket  = parseFloat(document.getElementById('roi-ticket').value)||0;
+  const out  = document.getElementById('roi-out');
+  const hint = document.getElementById('roi-hint');
+  if (clients > 0 && ticket > 0) {
+    const rev = clients * ticket;
+    const cpc = currentSpend / clients;
+    const roi = ((rev - currentSpend) / currentSpend * 100);
+    document.getElementById('roi-rev').textContent = fmt(rev);
+    document.getElementById('roi-cpc').textContent = fmt(cpc);
+    const el = document.getElementById('roi-pct');
+    el.textContent = roi.toFixed(0) + '%';
+    el.style.color = roi >= 0 ? '#5fd98a' : '#e05a5a';
+    // Taxa de conversão: só mostra se leads foi preenchido
+    const convBox = document.getElementById('roi-conv-box');
+    if (leads > 0) {
+      const conv = (clients / leads * 100);
+      const convEl = document.getElementById('roi-conv');
+      convEl.textContent = conv.toFixed(0) + '%';
+      convEl.style.color = conv >= 30 ? '#5fd98a' : conv >= 15 ? '#d4b872' : '#e05a5a';
+      convBox.style.display = 'block';
+    } else {
+      convBox.style.display = 'none';
+    }
+    out.style.display = 'grid'; hint.style.display = 'none';
+  } else {
+    out.style.display = 'none'; hint.style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>

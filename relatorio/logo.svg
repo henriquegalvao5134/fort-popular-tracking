@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 180">
+  <rect width="360" height="180" fill="#0d0b09"/>
+  <text
+    x="180" y="118"
+    text-anchor="middle"
+    fill="#C4983A"
+    font-family="Georgia, 'Palatino Linotype', Palatino, serif"
+    font-size="76"
+    letter-spacing="8"
+    font-weight="400">OÁSIS</text>
+</svg>
