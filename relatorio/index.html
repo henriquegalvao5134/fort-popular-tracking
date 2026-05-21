@@ -185,8 +185,8 @@
       <h3>Calculadora de ROI</h3>
       <div class="help-item"><strong>Leads reais</strong><span>Quantas pessoas entraram em contato (via WhatsApp ou qualquer canal) e eram realmente clientes potenciais no período. Você preenche manualmente com base no seu controle — não depende de nenhum sistema automático.</span></div>
       <div class="help-item"><strong>Clientes fechados</strong><span>Quantos desses leads efetivamente agendaram e pagaram pelo serviço. Também preenchido manualmente por você.</span></div>
-      <div class="help-item"><strong>Ticket médio</strong><span>Valor médio de cada atendimento ou serviço vendido.</span></div>
-      <div class="help-item"><strong>Receita gerada</strong><span>Clientes fechados × ticket médio. É o retorno financeiro estimado da campanha.</span></div>
+      <div class="help-item"><strong>Faturamento total (R$)</strong><span>Quanto o negócio faturou no período considerando os clientes que vieram dos anúncios. Informe o valor total — sem precisar calcular por cliente.</span></div>
+      <div class="help-item"><strong>Faturamento</strong><span>O valor que você informou como faturamento total. É o retorno financeiro gerado pelos anúncios no período.</span></div>
       <div class="help-item"><strong>Custo por cliente</strong><span>Quanto foi gasto em anúncios para cada cliente que fechou serviço.</span></div>
       <div class="help-item"><strong>ROI</strong><span>Retorno sobre investimento. Um ROI de 300% significa que para cada R$1 investido em anúncios, R$3 voltaram em receita. Quanto maior, melhor.</span></div>
       <div class="help-item"><strong>Taxa de conversão</strong><span>Aparece quando você preenche "Leads reais". Mostra quantos % dos contatos viraram clientes. Verde (≥30%) é excelente, amarelo (15–29%) é aceitável, vermelho (abaixo de 15%) indica que os leads não estão sendo bem aproveitados no atendimento.</span></div>
@@ -347,16 +347,16 @@
         <input id="roi-clients" type="number" min="0" placeholder="Ex: 8" style="width:100%;" oninput="calcROI()">
       </div>
       <div>
-        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Ticket médio (R$)</label>
-        <input id="roi-ticket" type="number" min="0" placeholder="Ex: 150" style="width:100%;" oninput="calcROI()">
+        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Faturamento total (R$)</label>
+        <input id="roi-ticket" type="number" min="0" placeholder="Ex: 3.200" style="width:100%;" oninput="calcROI()">
       </div>
     </div>
     <div id="roi-out" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;">
       <div class="roi-box">
-        <div class="roi-label">Receita gerada</div>
+        <div class="roi-label">Faturamento</div>
         <div class="roi-val" id="roi-rev" style="color:#5fd98a;">—</div>
       </div>
-      <div class="roi-box">
+      <div class="roi-box" id="roi-cpc-box">
         <div class="roi-label">Custo por cliente</div>
         <div class="roi-val" id="roi-cpc">—</div>
       </div>
@@ -815,12 +815,18 @@ function calcROI() {
   const ticket  = parseFloat(document.getElementById('roi-ticket').value)||0;
   const out  = document.getElementById('roi-out');
   const hint = document.getElementById('roi-hint');
-  if (clients > 0 && ticket > 0) {
-    const rev = clients * ticket;
-    const cpc = currentSpend / clients;
+  if (ticket > 0) {
+    const rev = ticket;
+    const cpc = clients > 0 ? currentSpend / clients : 0;
     const roi = ((rev - currentSpend) / currentSpend * 100);
     document.getElementById('roi-rev').textContent = fmt(rev);
-    document.getElementById('roi-cpc').textContent = fmt(cpc);
+    const cpcBox = document.getElementById('roi-cpc-box');
+    if (clients > 0) {
+      document.getElementById('roi-cpc').textContent = fmt(cpc);
+      cpcBox.style.display = 'block';
+    } else {
+      cpcBox.style.display = 'none';
+    }
     const el = document.getElementById('roi-pct');
     el.textContent = roi.toFixed(0) + '%';
     el.style.color = roi >= 0 ? '#5fd98a' : '#e05a5a';
