@@ -35,7 +35,7 @@ export async function onRequestGet(context) {
   const timeRange = encodeURIComponent(JSON.stringify({ since, until }));
 
   try {
-    const [insightsData, campaignsData, accountData, dailyData, adsData, adInsightsData] = await Promise.all([
+    const [insightsData, campaignsData, accountData, dailyData, adsData, adInsightsData, dailyCampaignData] = await Promise.all([
       fetchAll(
         `https://graph.facebook.com/v20.0/act_${accountId}/insights` +
         `?level=campaign&fields=campaign_name,campaign_id,spend,impressions,clicks,reach,frequency,ctr,cpm,actions` +
@@ -62,6 +62,11 @@ export async function onRequestGet(context) {
         `https://graph.facebook.com/v20.0/act_${accountId}/insights` +
         `?level=ad&fields=ad_id,ad_name,campaign_id,spend,impressions,clicks,reach,ctr,cpm,actions` +
         `&time_range=${timeRange}&limit=200&access_token=${token}`
+      ),
+      fetchAll(
+        `https://graph.facebook.com/v20.0/act_${accountId}/insights` +
+        `?level=campaign&fields=campaign_name,campaign_id,spend,cpm,impressions` +
+        `&time_range=${timeRange}&time_increment=1&limit=500&access_token=${token}`
       ),
     ]);
 
@@ -126,6 +131,7 @@ export async function onRequestGet(context) {
       campaigns,
       ads,
       daily: dailyData.sort((a, b) => a.date_start > b.date_start ? 1 : -1),
+      daily_campaign: dailyCampaignData.sort((a, b) => a.date_start > b.date_start ? 1 : -1),
     });
   } catch (err) {
     return json({ error: err.message || String(err) }, 500);
