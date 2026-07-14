@@ -218,7 +218,7 @@
       padding: 10px 12px;
       font-size: 0.85rem;
     }
-    .hist-filters .phone-input { max-width: 120px; }
+    .hist-filters .search-input { min-width: 160px; }
     .btn-filter {
       padding: 10px 18px;
       background: var(--red);
@@ -234,9 +234,12 @@
     /* Stats */
     .hist-summary {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 14px;
+    }
+    @media (min-width: 480px) {
+      .hist-summary { grid-template-columns: repeat(4, 1fr); }
     }
     .hist-stat {
       background: var(--card);
@@ -416,7 +419,8 @@
   <div class="hist-filters">
     <input type="date" id="h-from" placeholder="De">
     <input type="date" id="h-to"   placeholder="Até">
-    <input type="tel"  id="h-phone" class="phone-input" placeholder="****0000" inputmode="numeric" maxlength="4">
+    <input type="search" id="h-q" class="search-input" placeholder="Nome ou telefone…"
+           onkeydown="if(event.key==='Enter')loadHist()">
     <button class="btn-filter" onclick="loadHist()">Filtrar</button>
   </div>
 
@@ -433,6 +437,10 @@
       <div class="hs-label">Receita</div>
       <div class="hs-val" id="hs-revenue">—</div>
     </div>
+    <div class="hist-stat">
+      <div class="hs-label">Investido <span class="plat-ico plat-meta" style="width:12px;height:12px;font-size:8px;vertical-align:0;">f</span></div>
+      <div class="hs-val" id="hs-spend">—</div>
+    </div>
   </div>
 
   <div class="card" style="padding:0;overflow:hidden;">
@@ -444,12 +452,13 @@
             <th>Cliente</th>
             <th>Tipo</th>
             <th>Valor</th>
-            <th><span class="plat-ico plat-meta">f</span> CAPI</th>
+            <th>LTV</th>
+            <th><span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span></th>
             <th></th>
           </tr>
         </thead>
         <tbody id="hist-body">
-          <tr><td colspan="6" class="hist-empty">Carregando...</td></tr>
+          <tr><td colspan="7" class="hist-empty">Carregando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -578,22 +587,22 @@ function showFeedback(msg, ok) {
 // ── Histórico ─────────────────────────────────────────
 async function loadHist() {
   const body = document.getElementById('hist-body');
-  body.innerHTML = '<tr><td colspan="6" class="hist-empty">Carregando...</td></tr>';
-  ['hs-total','hs-purchases','hs-revenue'].forEach(id => document.getElementById(id).textContent = '—');
+  body.innerHTML = '<tr><td colspan="7" class="hist-empty">Carregando...</td></tr>';
+  ['hs-total','hs-purchases','hs-revenue','hs-spend'].forEach(id => document.getElementById(id).textContent = '—');
 
-  const from  = document.getElementById('h-from').value;
-  const to    = document.getElementById('h-to').value;
-  const phone = document.getElementById('h-phone').value.replace(/\D/g,'').slice(-4);
+  const from = document.getElementById('h-from').value;
+  const to   = document.getElementById('h-to').value;
+  const q    = (document.getElementById('h-q').value || '').trim();
 
   const params = new URLSearchParams({ key: KEY, limit: '200' });
-  if (from)  params.set('from',  from);
-  if (to)    params.set('to',    to);
-  if (phone) params.set('phone', phone);
+  if (from) params.set('from', from);
+  if (to)   params.set('to',   to);
+  if (q)    params.set('q',    q);
 
   try {
     const resp = await fetch('/api/conversions-history?' + params);
     if (resp.status === 401) {
-      body.innerHTML = '<tr><td colspan="6" class="hist-empty">Chave inválida.</td></tr>';
+      body.innerHTML = '<tr><td colspan="7" class="hist-empty">Chave inválida.</td></tr>';
       return;
     }
     const data = await resp.json();
@@ -601,13 +610,17 @@ async function loadHist() {
 
     const purchases = rows.filter(r => r.event_name === 'Purchase');
     const revCents  = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
+    const spendCents = data.spend_cents || 0;
     document.getElementById('hs-total').textContent     = rows.length;
     document.getElementById('hs-purchases').textContent = purchases.length;
     document.getElementById('hs-revenue').textContent   =
       'R$\u00a0' + (revCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    document.getElementById('hs-spend').textContent     = spendCents
+      ? 'R$\u00a0' + (spendCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+      : '—';
 
     if (!rows.length) {
-      body.innerHTML = '<tr><td colspan="6" class="hist-empty">Nenhum registro no período.</td></tr>';
+      body.innerHTML = '<tr><td colspan="7" class="hist-empty">Nenhum registro no período.</td></tr>';
       return;
     }
 
@@ -617,19 +630,28 @@ async function loadHist() {
       organic:  '<span class="plat-ico plat-organic" title="Orgânico">🚶</span>',
       referral: '<span class="plat-ico plat-referral" title="Indicação">🤝</span>',
     };
-    const metaIcon = '<span class="plat-ico plat-meta" style="width:15px;height:15px;font-size:10px;">f</span>';
+    const metaIcon = '<span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span>';
+
     body.innerHTML = rows.map(r => {
       const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
       const nome  = esc(r.display_name || '—');
-      const cli   = ph ? `${nome} <span style="color:var(--muted);font-size:.8em;">${ph}</span>` : nome;
+      // Cliente: nome na primeira linha, telefone + origem na segunda
+      const cli = `<span style="font-weight:600;">${nome}</span>`
+        + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem] || ''}</span>` : '');
       const ic    = r.event_name === 'Contact';
       const badge = ic
         ? '<span class="badge-contact">Contato</span>'
         : '<span class="badge-purchase">Venda</span>';
-      const ico   = origemIco[r.origem] || '';
       const val   = r.value_cents
         ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         : '—';
+      // LTV: total all-time do cliente (só mostra se > 0 e tem phone)
+      const ltv = (r.client_ltv_cents && r.phone_normalized)
+        ? '<span style="color:var(--green);font-weight:700;">R$\u00a0'
+          + (r.client_ltv_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+          + '</span>'
+          + (r.client_purchases > 1 ? `<br><span style="color:var(--muted);font-size:.75em;">${r.client_purchases}x compras</span>` : '')
+        : '<span style="color:var(--muted);">—</span>';
       const meta  = r.meta_ok
         ? `${metaIcon} <span class="meta-ok">✓</span>`
         : `<span class="meta-no">—</span>`;
@@ -639,14 +661,15 @@ async function loadHist() {
       return `<tr>
         <td>${r.event_date || '—'}</td>
         <td>${cli}</td>
-        <td style="white-space:nowrap;">${badge} ${ico}</td>
+        <td>${badge}</td>
         <td>${val}</td>
+        <td>${ltv}</td>
         <td style="white-space:nowrap;">${meta}</td>
         <td>${upBtn}</td>
       </tr>`;
     }).join('');
   } catch (e) {
-    body.innerHTML = `<tr><td colspan="6" class="hist-empty">Erro: ${esc(e.message)}</td></tr>`;
+    body.innerHTML = `<tr><td colspan="7" class="hist-empty">Erro: ${esc(e.message)}</td></tr>`;
   }
 }
 
