@@ -1,8 +1,39 @@
-# Tracking Stack Template
+# Tracking Stack — Cliente: FORT POPULAR
 
 > This file is Claude Code's anchor. It is loaded into the context of every
 > conversation in this repo. Keep it under ~200 lines. Put detailed reference
 > in `docs/` and procedural walkthroughs in `.claude/skills/`.
+
+## Relatorio de campanhas — LEIA ISSO PRIMEIRO
+
+Quando o usuario pedir "relatorio do Fort Popular" ou "campanhas do Fort Popular", execute
+estes passos AUTOMATICAMENTE sem fazer perguntas:
+
+**Dados do projeto:**
+- Pages project: `fort-popular-tracking`
+- URL: `https://fort-popular-tracking.pages.dev`
+- Banco D1: `fort-popular-tracking-db`
+- SYNC_SECRET: `relatorio-2026`
+
+**Passo 1 — Sincronizar dados do Meta Ads (ultimos 30 dias):**
+```bash
+curl -s -X POST "https://fort-popular-tracking.pages.dev/api/sync/meta-ads" \
+  -H "x-sync-secret: relatorio-2026" \
+  -H "Content-Type: application/json" \
+  -d "{\"date_from\":\"$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)\",\"date_to\":\"$(date +%Y-%m-%d)\"}"
+```
+
+**Passo 2 — Consultar campanhas ativas (com gasto hoje):**
+```bash
+npx wrangler d1 execute fort-popular-tracking-db --remote --command \
+  'SELECT campaign_name, date, spend_cents/100.0 as gasto_brl, impressions as impressoes, clicks as cliques FROM ad_spend WHERE date = (SELECT MAX(date) FROM ad_spend) ORDER BY gasto_brl DESC'
+```
+
+**Passo 3 — Relatorio completo do periodo:**
+```bash
+npx wrangler d1 execute fort-popular-tracking-db --remote --command \
+  'SELECT campaign_name, MIN(date) as inicio, MAX(date) as fim, COUNT(*) as dias, SUM(spend_cents)/100.0 as gasto_brl, SUM(impressions) as impressoes, SUM(clicks) as cliques FROM ad_spend GROUP BY campaign_name ORDER BY gasto_brl DESC'
+```
 
 ## What this repo is
 

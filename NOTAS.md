@@ -33,16 +33,31 @@ _(Configuradas em: Pages → fort-popular-tracking → Settings → Environment 
 | `DASH_KEY`               | ✅ Configurada | Chave do dashboard interno |
 | `SYNC_SECRET`            | ✅ Configurada | Chave do cron de sincronização |
 | `TIMEZONE_OFFSET`        | ✅ Configurada | `-03:00` |
-| `META_ADS_ACCESS_TOKEN`  | ⏳ Pendente   | Token de acesso da conta Meta Ads do cliente |
-| `META_ADS_ACCOUNT_ID`    | ⏳ Pendente   | ID da conta de anúncios (act_XXXXXXX) |
+| `META_ADS_ACCESS_TOKEN`  | ✅ Configurada | Token de acesso da conta Meta Ads do cliente |
+| `META_ADS_ACCOUNT_ID`    | ✅ Configurada | ID da conta de anúncios (act_XXXXXXX) |
 | `META_PIXEL_ID`          | ⏳ Pendente   | Pixel do Meta (opcional para relatório) |
 | `META_ACCESS_TOKEN`      | ⏳ Pendente   | Token do Pixel/CAPI (opcional) |
 
 ---
 
+## Tintim — Dados de Integração
+- **Código do Cliente:** `72387556-f1d2-4511-9f34-e28ed4d056ce`
+- **Token de Segurança:** `llLetSouyRwYo_wddcf8dAxCuxAyG74h4l0RXQwUsRM`
+
+---
+
+## Pixels Instalados no Site
+| Pixel | ID | Status |
+|---|---|---|
+| Google Ads | `AW-18144522784` | ✅ Instalado |
+| Meta Pixel | `1673965483607621` | ✅ Instalado |
+| Tintim | `72387556-f1d2-4511-9f34-e28ed4d056ce` | ✅ Instalado |
+
+---
+
 ## Pendente / Próximos Passos
-- [ ] Adicionar META_ADS_ACCESS_TOKEN do cliente no Cloudflare
-- [ ] Adicionar META_ADS_ACCOUNT_ID do cliente no Cloudflare
+- [x] Adicionar META_ADS_ACCESS_TOKEN do cliente no Cloudflare
+- [x] Adicionar META_ADS_ACCOUNT_ID do cliente no Cloudflare
 - [ ] Testar relatório: https://fort-popular-tracking.pages.dev/relatorio/?key=fortpopular2026
 
 ---
