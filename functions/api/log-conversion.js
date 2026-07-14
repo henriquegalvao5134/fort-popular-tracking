@@ -55,10 +55,12 @@ export async function onRequestPost(context) {
     return json({ error: 'phone é obrigatório' }, 400);
   }
 
-  // Origem — 'ad' e 'google' disparam para Meta CAPI; outros não
+  // Origem — 'ad' (Meta) e 'google' enviam para Meta CAPI para audience building
+  // O Meta não vai atribuir conversão de Google Ads para si mesmo pois verifica
+  // se houve clique em anúncio Meta antes. Orgânico e indicação não enviam.
   const ORIGENS = ['ad', 'google', 'organic', 'referral'];
   const eventOrigem = ORIGENS.includes(origem) ? origem : 'ad';
-  const sendToMeta = eventOrigem === 'ad';
+  const sendToMeta = eventOrigem === 'ad' || eventOrigem === 'google';
 
   // Resolver data
   const nowTs = Math.floor(Date.now() / 1000);
