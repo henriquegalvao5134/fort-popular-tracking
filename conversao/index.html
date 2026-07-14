@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Registrar Conversão — Fort Popular</title>
+  <style>
+    :root {
+      --green:  #16a34a;
+      --green2: #15803d;
+      --bg:     #f0fdf4;
+      --card:   #ffffff;
+      --border: #bbf7d0;
+      --text:   #14532d;
+      --muted:  #6b7280;
+      --ok:     #16a34a;
+      --err:    #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+    }
+    header { text-align: center; margin-bottom: 24px; }
+    header h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    header p { color: var(--muted); font-size: 0.85rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 420px;
+      margin: 0 auto;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+
+    /* Tipo de evento */
+    .tipo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .tipo-btn {
+      padding: 16px 10px;
+      border: 2px solid var(--border);
+      background: #f0fdf4;
+      color: var(--muted);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .tipo-btn .ico { font-size: 1.6rem; }
+    .tipo-btn.active {
+      border-color: var(--green);
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    /* Origem */
+    .origem-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .origem-btn {
+      flex: 1;
+      padding: 9px 6px;
+      border: 1px solid var(--border);
+      background: #f0fdf4;
+      color: var(--muted);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: center;
+    }
+    .origem-btn.active {
+      border-color: var(--green);
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    /* Campos */
+    .field { margin-bottom: 16px; }
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      background: #f9fafb;
+      border: 1.5px solid #d1fae5;
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    input:focus { border-color: var(--green); background: #fff; }
+    input::placeholder { color: #9ca3af; }
+
+    .value-row { display: none; }
+    .value-row.show { display: block; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 11px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      letter-spacing: 0.02em;
+      transition: opacity 0.18s, transform 0.1s;
+    }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Feedback */
+    #feedback {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    #feedback.ok  { background: #dcfce7; color: var(--ok);  border: 1px solid #86efac; }
+    #feedback.err { background: #fee2e2; color: var(--err); border: 1px solid #fca5a5; }
+
+    /* Histórico */
+    .hist-header {
+      max-width: 420px;
+      margin: 28px auto 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    #hist-list { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+    .hist-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .hist-left { display: flex; flex-direction: column; gap: 2px; }
+    .hist-name { font-weight: 700; font-size: 0.92rem; color: var(--text); }
+    .hist-meta { font-size: 0.77rem; color: var(--muted); }
+    .hist-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .hist-type {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .hist-type.Contact  { background: #dbeafe; color: #1d4ed8; }
+    .hist-type.Purchase { background: #dcfce7; color: #15803d; }
+    .hist-value { font-size: 0.82rem; font-weight: 700; color: var(--green); }
+    .hist-capi  { font-size: 0.7rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Farmácias Fort Popular</h1>
+  <p>Registrar conversão do WhatsApp</p>
+</header>
+
+<!-- Formulário -->
+<div class="card">
+
+  <!-- Tipo de evento -->
+  <div class="tipo-grid">
+    <button class="tipo-btn active" data-tipo="Contact" onclick="setTipo('Contact')">
+      <span class="ico">💬</span>
+      Contato
+    </button>
+    <button class="tipo-btn" data-tipo="Purchase" onclick="setTipo('Purchase')">
+      <span class="ico">🛒</span>
+      Venda
+    </button>
+  </div>
+
+  <!-- Origem -->
+  <div class="origem-row">
+    <button class="origem-btn active" data-origem="ad" onclick="setOrigem('ad')">Anúncio</button>
+    <button class="origem-btn" data-origem="organic" onclick="setOrigem('organic')">Orgânico</button>
+    <button class="origem-btn" data-origem="referral" onclick="setOrigem('referral')">Indicação</button>
+  </div>
+
+  <!-- Campos -->
+  <div class="field">
+    <label>Telefone / WhatsApp *</label>
+    <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
+  </div>
+
+  <div class="field">
+    <label>Nome do cliente</label>
+    <input id="name" type="text" placeholder="Maria Silva">
+  </div>
+
+  <div class="field value-row" id="value-row">
+    <label>Valor da venda (R$) *</label>
+    <input id="value" type="text" placeholder="0,00" inputmode="decimal">
+  </div>
+
+  <div class="field">
+    <label>Data (deixe em branco para hoje)</label>
+    <input id="date" type="date">
+  </div>
+
+  <button class="btn-submit" id="btn-submit" onclick="submit()">Registrar conversão</button>
+
+  <div id="feedback"></div>
+</div>
+
+<!-- Histórico do dia -->
+<div class="hist-header">Registros de hoje</div>
+<div id="hist-list"></div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────
+  const API = '/api/log-conversion';
+  const KEY_PARAM = new URLSearchParams(location.search).get('key') || '';
+
+  // ── Estado ──────────────────────────────────────────────────────────────
+  let tipoAtual   = 'Contact';
+  let origemAtual = 'ad';
+  const historico = [];
+
+  // ── Tipo de evento ───────────────────────────────────────────────────────
+  function setTipo(t) {
+    tipoAtual = t;
+    document.querySelectorAll('.tipo-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === t));
+    document.getElementById('value-row').classList.toggle('show', t === 'Purchase');
+  }
+
+  // ── Origem ───────────────────────────────────────────────────────────────
+  function setOrigem(o) {
+    origemAtual = o;
+    document.querySelectorAll('.origem-btn').forEach(b => b.classList.toggle('active', b.dataset.origem === o));
+  }
+
+  // ── Submit ───────────────────────────────────────────────────────────────
+  async function submit() {
+    const phone = document.getElementById('phone').value.trim();
+    const name  = document.getElementById('name').value.trim();
+    const value = document.getElementById('value').value.trim();
+    const date  = document.getElementById('date').value;
+
+    if (!phone) { showFeedback('Informe o telefone do cliente.', false); return; }
+    if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+
+    const body = { event_name: tipoAtual, phone, origem: origemAtual };
+    if (name)  body.name  = name;
+    if (value) body.value = value;
+    if (date)  body.date  = date;
+
+    try {
+      const resp = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY_PARAM },
+        body: JSON.stringify(body),
+      });
+      const data = await resp.json();
+
+      if (resp.ok && data.saved) {
+        const capiInfo = data.meta_skipped
+          ? '(CAPI não enviado — ' + (data.meta_skip_reason || 'sem credenciais') + ')'
+          : data.ok ? '✓ CAPI enviado' : '⚠ CAPI falhou';
+
+        showFeedback('Conversão registrada! ' + capiInfo, true);
+        addHist({ tipo: tipoAtual, name, phone, value, origem: origemAtual, capiOk: data.ok && !data.meta_skipped });
+        clearForm();
+      } else {
+        showFeedback('Erro: ' + (data.error || 'resposta inesperada'), false);
+      }
+    } catch (err) {
+      showFeedback('Erro de conexão. Tente novamente.', false);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Registrar conversão';
+    }
+  }
+
+  function clearForm() {
+    document.getElementById('phone').value = '';
+    document.getElementById('name').value  = '';
+    document.getElementById('value').value = '';
+    document.getElementById('date').value  = '';
+  }
+
+  function showFeedback(msg, ok) {
+    const el = document.getElementById('feedback');
+    el.textContent = msg;
+    el.className = ok ? 'ok' : 'err';
+    el.style.display = 'block';
+    if (ok) setTimeout(() => { el.style.display = 'none'; }, 4000);
+  }
+
+  // ── Histórico local ──────────────────────────────────────────────────────
+  function addHist({ tipo, name, phone, value, origem, capiOk }) {
+    const last4 = (phone || '').replace(/\D/g, '').slice(-4);
+    const hora  = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    historico.unshift({ tipo, name, last4, value, origem, capiOk, hora });
+    renderHist();
+  }
+
+  function renderHist() {
+    const list = document.getElementById('hist-list');
+    if (!historico.length) { list.innerHTML = ''; return; }
+    list.innerHTML = historico.map(h => `
+      <div class="hist-item">
+        <div class="hist-left">
+          <span class="hist-name">${h.name || 'Sem nome'}</span>
+          <span class="hist-meta">****${h.last4} · ${h.hora} · ${h.origem}</span>
+        </div>
+        <div class="hist-right">
+          <span class="hist-type ${h.tipo}">${h.tipo === 'Contact' ? 'Contato' : 'Venda'}</span>
+          ${h.tipo === 'Purchase' ? `<span class="hist-value">R$ ${h.value}</span>` : ''}
+          <span class="hist-capi">${h.capiOk ? '✓ CAPI' : '– CAPI'}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+</script>
+
+</body>
+</html>
