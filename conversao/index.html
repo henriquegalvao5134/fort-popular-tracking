@@ -156,49 +156,42 @@
     .value-row { display: none; }
     .value-row.show { display: block; }
 
-    /* Dados adicionais (collapsible) */
-    .extra-details {
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .extra-details summary {
-      padding: 12px 15px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--muted);
-      list-style: none;
+    .section-divider {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      user-select: none;
-      transition: color 0.2s;
+      gap: 10px;
+      margin: 4px 0 16px;
     }
-    .extra-details summary::-webkit-details-marker { display: none; }
-    .extra-details summary::after { content: '▾'; font-size: 0.75rem; }
-    .extra-details[open] summary::after { content: '▴'; }
-    .extra-details[open] summary { color: var(--text); border-bottom: 1px solid var(--border); }
-    .extra-details summary .match-badge {
+    .section-divider span {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .match-badge {
       font-size: 0.65rem;
       background: rgba(74,222,128,0.12);
       color: var(--green);
       border: 1px solid rgba(74,222,128,0.25);
       border-radius: 20px;
-      padding: 2px 7px;
+      padding: 2px 8px;
       font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    .extra-fields {
-      padding: 16px 15px 4px;
+      white-space: nowrap;
     }
     .grid2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-    .grid2 .field { margin-bottom: 12px; }
 
     .btn-submit {
       width: 100%;
@@ -451,46 +444,42 @@
     </div>
 
     <!-- Dados adicionais: melhora match quality no Meta -->
-    <details class="extra-details" id="extra-details">
-      <summary>
-        Dados adicionais
-        <span class="match-badge">melhora match Meta</span>
-      </summary>
-      <div class="extra-fields">
-        <div class="field">
-          <label>Email</label>
-          <input id="email" type="email" placeholder="email@cliente.com" inputmode="email" autocomplete="off">
-        </div>
-        <div class="field">
-          <label>CPF</label>
-          <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"
-                 oninput="fmtCpf(this)">
-        </div>
-        <div class="field">
-          <label>Bairro</label>
-          <input id="neighborhood" type="text" placeholder="Ex: Centro">
-        </div>
-        <div class="field">
-          <label>Endereço (rua, nº)</label>
-          <input id="address" type="text" placeholder="Ex: Rua das Flores, 123">
-        </div>
-        <div class="grid2">
-          <div class="field">
-            <label>Cidade</label>
-            <input id="city" type="text" placeholder="Ex: Itaipuaçu">
-          </div>
-          <div class="field">
-            <label>Estado</label>
-            <input id="state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;">
-          </div>
-        </div>
-        <div class="field">
-          <label>CEP</label>
-          <input id="zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9"
-                 oninput="fmtCep(this)">
-        </div>
+    <div class="section-divider">
+      <span>Dados adicionais</span>
+      <span class="match-badge">melhora match Meta</span>
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input id="email" type="email" placeholder="email@cliente.com" inputmode="email" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>CPF</label>
+      <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"
+             oninput="fmtCpf(this)">
+    </div>
+    <div class="field">
+      <label>Bairro</label>
+      <input id="neighborhood" type="text" placeholder="Ex: Centro">
+    </div>
+    <div class="field">
+      <label>Endereço (rua, nº)</label>
+      <input id="address" type="text" placeholder="Ex: Rua das Flores, 123">
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label>Cidade</label>
+        <input id="city" type="text" placeholder="Ex: Itaipuaçu">
       </div>
-    </details>
+      <div class="field">
+        <label>Estado</label>
+        <input id="state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;">
+      </div>
+    </div>
+    <div class="field">
+      <label>CEP</label>
+      <input id="zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9"
+             oninput="fmtCep(this)">
+    </div>
 
     <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
     <div class="feedback" id="feedback"></div>
@@ -676,7 +665,6 @@ async function submitForm() {
       // Limpa dados adicionais
       ['email','cpf','neighborhood','address','city','state','zip']
         .forEach(id => document.getElementById(id).value = '');
-      document.getElementById('extra-details').removeAttribute('open');
       document.getElementById('phone').focus();
     } else {
       showFeedback('Erro: ' + (data.error || 'inesperado'), false);
