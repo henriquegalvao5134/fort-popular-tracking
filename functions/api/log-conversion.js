@@ -112,12 +112,13 @@ export async function onRequestPost(context) {
   let metaBody = '';
   let metaStatus = 0;
   const sevenDaysAgo = nowTs - 7 * 24 * 60 * 60;
-  const metaSkipped = !sendToMeta || eventTime < sevenDaysAgo || !env.META_PIXEL_ID || !env.META_ACCESS_TOKEN;
+  const metaToken = env.META_ACCESS_TOKEN || env.META_ADS_ACCESS_TOKEN;
+  const metaSkipped = !sendToMeta || eventTime < sevenDaysAgo || !env.META_PIXEL_ID || !metaToken;
 
   if (!metaSkipped) {
     try {
       const resp = await fetch(
-        `https://graph.facebook.com/v25.0/${env.META_PIXEL_ID}/events?access_token=${env.META_ACCESS_TOKEN}`,
+        `https://graph.facebook.com/v25.0/${env.META_PIXEL_ID}/events?access_token=${metaToken}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
       );
       metaStatus = resp.status;
@@ -127,8 +128,8 @@ export async function onRequestPost(context) {
       metaBody = err.message || 'fetch error';
     }
   } else {
-    if (!env.META_PIXEL_ID || !env.META_ACCESS_TOKEN) {
-      metaBody = 'skipped: META_PIXEL_ID ou META_ACCESS_TOKEN não configurados';
+    if (!env.META_PIXEL_ID || !metaToken) {
+      metaBody = 'skipped: META_PIXEL_ID não configurado';
     } else if (!sendToMeta) {
       metaBody = 'skipped: origem não é anúncio';
     } else {
