@@ -270,6 +270,11 @@
     .badge-contact  { background: rgba(96,165,250,0.12); color: var(--blue);  padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
     .meta-ok  { color: var(--green); font-size: 0.85rem; }
     .meta-no  { color: var(--muted); font-size: 0.85rem; }
+    .plat-ico { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; font-size:11px; font-weight:900; vertical-align:middle; flex-shrink:0; }
+    .plat-meta   { background:#1877F2; color:#fff; font-style:italic; }
+    .plat-google { background:#fff; color:#4285F4; }
+    .plat-organic  { font-size:14px; }
+    .plat-referral { font-size:14px; }
 
     .btn-upgrade {
       padding: 3px 10px;
@@ -374,8 +379,8 @@
 
     <!-- Origem -->
     <div class="origem-grid">
-      <button class="origem-btn active" data-o="ad"       onclick="setOrigem('ad', this)">📣 Meta Ads</button>
-      <button class="origem-btn"        data-o="google"   onclick="setOrigem('google', this)">🔍 Google Ads</button>
+      <button class="origem-btn active" data-o="ad"       onclick="setOrigem('ad', this)"><span class="plat-ico plat-meta" style="margin-right:5px;">f</span>Meta Ads</button>
+      <button class="origem-btn"        data-o="google"   onclick="setOrigem('google', this)"><span class="plat-ico plat-google" style="margin-right:5px;">G</span>Google Ads</button>
       <button class="origem-btn"        data-o="organic"  onclick="setOrigem('organic', this)">🚶 Orgânico</button>
       <button class="origem-btn"        data-o="referral" onclick="setOrigem('referral', this)">🤝 Indicação</button>
     </div>
@@ -439,7 +444,7 @@
             <th>Cliente</th>
             <th>Tipo</th>
             <th>Valor</th>
-            <th>Meta</th>
+            <th><span class="plat-ico plat-meta">f</span> CAPI</th>
             <th></th>
           </tr>
         </thead>
@@ -606,7 +611,13 @@ async function loadHist() {
       return;
     }
 
-    const origemIco = { ad: '📣', google: '🔍', organic: '🚶', referral: '🤝' };
+    const origemIco = {
+      ad:       '<span class="plat-ico plat-meta" title="Meta Ads">f</span>',
+      google:   '<span class="plat-ico plat-google" title="Google Ads">G</span>',
+      organic:  '<span class="plat-ico plat-organic" title="Orgânico">🚶</span>',
+      referral: '<span class="plat-ico plat-referral" title="Indicação">🤝</span>',
+    };
+    const metaIcon = '<span class="plat-ico plat-meta" style="width:15px;height:15px;font-size:10px;">f</span>';
     body.innerHTML = rows.map(r => {
       const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
       const nome  = esc(r.display_name || '—');
@@ -619,16 +630,18 @@ async function loadHist() {
       const val   = r.value_cents
         ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         : '—';
-      const meta  = r.meta_ok ? '<span class="meta-ok">✓</span>' : '<span class="meta-no">—</span>';
+      const meta  = r.meta_ok
+        ? `${metaIcon} <span class="meta-ok">✓</span>`
+        : `<span class="meta-no">—</span>`;
       const upBtn = ic
         ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>`
         : '';
       return `<tr>
         <td>${r.event_date || '—'}</td>
         <td>${cli}</td>
-        <td>${badge} ${ico}</td>
+        <td style="white-space:nowrap;">${badge} ${ico}</td>
         <td>${val}</td>
-        <td>${meta}</td>
+        <td style="white-space:nowrap;">${meta}</td>
         <td>${upBtn}</td>
       </tr>`;
     }).join('');
