@@ -156,6 +156,50 @@
     .value-row { display: none; }
     .value-row.show { display: block; }
 
+    /* Dados adicionais (collapsible) */
+    .extra-details {
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .extra-details summary {
+      padding: 12px 15px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .extra-details summary::-webkit-details-marker { display: none; }
+    .extra-details summary::after { content: '▾'; font-size: 0.75rem; }
+    .extra-details[open] summary::after { content: '▴'; }
+    .extra-details[open] summary { color: var(--text); border-bottom: 1px solid var(--border); }
+    .extra-details summary .match-badge {
+      font-size: 0.65rem;
+      background: rgba(74,222,128,0.12);
+      color: var(--green);
+      border: 1px solid rgba(74,222,128,0.25);
+      border-radius: 20px;
+      padding: 2px 7px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .extra-fields {
+      padding: 16px 15px 4px;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .grid2 .field { margin-bottom: 12px; }
+
     .btn-submit {
       width: 100%;
       padding: 15px;
@@ -406,6 +450,48 @@
       <input id="date" type="date">
     </div>
 
+    <!-- Dados adicionais: melhora match quality no Meta -->
+    <details class="extra-details" id="extra-details">
+      <summary>
+        Dados adicionais
+        <span class="match-badge">melhora match Meta</span>
+      </summary>
+      <div class="extra-fields">
+        <div class="field">
+          <label>Email</label>
+          <input id="email" type="email" placeholder="email@cliente.com" inputmode="email" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>CPF</label>
+          <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"
+                 oninput="fmtCpf(this)">
+        </div>
+        <div class="field">
+          <label>Bairro</label>
+          <input id="neighborhood" type="text" placeholder="Ex: Centro">
+        </div>
+        <div class="field">
+          <label>Endereço (rua, nº)</label>
+          <input id="address" type="text" placeholder="Ex: Rua das Flores, 123">
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Cidade</label>
+            <input id="city" type="text" placeholder="Ex: Itaipuaçu">
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <input id="state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;">
+          </div>
+        </div>
+        <div class="field">
+          <label>CEP</label>
+          <input id="zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9"
+                 oninput="fmtCep(this)">
+        </div>
+      </div>
+    </details>
+
     <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
     <div class="feedback" id="feedback"></div>
 
@@ -534,10 +620,17 @@ function setOrigem(o, btn) {
 
 // ── Novo registro ─────────────────────────────────────
 async function submitForm() {
-  const phone = document.getElementById('phone').value.trim();
-  const name  = document.getElementById('name').value.trim();
-  const value = document.getElementById('value').value.trim();
-  const date  = document.getElementById('date').value;
+  const phone        = document.getElementById('phone').value.trim();
+  const name         = document.getElementById('name').value.trim();
+  const value        = document.getElementById('value').value.trim();
+  const date         = document.getElementById('date').value;
+  const email        = document.getElementById('email').value.trim();
+  const cpf          = document.getElementById('cpf').value.trim();
+  const neighborhood = document.getElementById('neighborhood').value.trim();
+  const address      = document.getElementById('address').value.trim();
+  const city         = document.getElementById('city').value.trim();
+  const state        = document.getElementById('state').value.trim().toUpperCase();
+  const zip          = document.getElementById('zip').value.trim();
 
   if (!phone) { showFeedback('Informe o telefone do cliente.', false); return; }
   if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
@@ -548,9 +641,16 @@ async function submitForm() {
   document.getElementById('feedback').className = 'feedback';
 
   const body = { event_name: tipoAtual, phone, origem: origemAtual };
-  if (name)  body.name  = name;
-  if (value) body.value = value;
-  if (date)  body.date  = date;
+  if (name)         body.name         = name;
+  if (value)        body.value        = value;
+  if (date)         body.date         = date;
+  if (email)        body.email        = email;
+  if (cpf)          body.cpf          = cpf;
+  if (neighborhood) body.neighborhood = neighborhood;
+  if (address)      body.address      = address;
+  if (city)         body.city         = city;
+  if (state)        body.state        = state;
+  if (zip)          body.zip          = zip;
 
   try {
     const resp = await fetch('/api/log-conversion', {
@@ -560,12 +660,23 @@ async function submitForm() {
     });
     const data = await resp.json();
     if (resp.ok && data.saved) {
-      const capiMsg = data.meta_skipped ? ' — sem CAPI' : data.ok ? ' · ✓ Meta' : ' · ⚠ Meta falhou';
-      showFeedback(`✓ Registrado${capiMsg}`, true);
-      document.getElementById('phone').value = '';
-      document.getElementById('name').value  = '';
-      document.getElementById('value').value = '';
-      document.getElementById('date').value  = '';
+      let msg;
+      if (data.meta_skipped) {
+        msg = '✓ Registrado — sem CAPI (orgânico/data antiga)';
+      } else if (data.ok) {
+        const sig = data.match_signals || 0;
+        const qual = sig >= 5 ? 'Excelente' : sig >= 3 ? 'Bom' : 'Básico';
+        msg = `✓ Registrado · Meta CAPI ✓ · Match ${qual} (${sig} sinais)`;
+      } else {
+        msg = '✓ Registrado · ⚠ CAPI falhou';
+      }
+      showFeedback(msg, true);
+      // Limpa campos principais
+      ['phone','name','value','date'].forEach(id => document.getElementById(id).value = '');
+      // Limpa dados adicionais
+      ['email','cpf','neighborhood','address','city','state','zip']
+        .forEach(id => document.getElementById(id).value = '');
+      document.getElementById('extra-details').removeAttribute('open');
       document.getElementById('phone').focus();
     } else {
       showFeedback('Erro: ' + (data.error || 'inesperado'), false);
@@ -676,6 +787,22 @@ async function loadHist() {
 function esc(s) {
   return (s || '').replace(/[&<>"']/g,
     c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Formatação automática de CPF: 000.000.000-00
+function fmtCpf(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,        '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/,                '$1.$2');
+  el.value = v;
+}
+
+// Formatação automática de CEP: 00000-000
+function fmtCep(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 8);
+  if (v.length > 5) v = v.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+  el.value = v;
 }
 
 // ── Modal ─────────────────────────────────────────────
