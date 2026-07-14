@@ -4,34 +4,48 @@
 // Auth: query param ?key=<CLIENT_KEY> ou <DASH_KEY>
 // Query params:
 //   key    obrigatório
-//   date   YYYY-MM-DD — filtra por dia específico (padrão: últimos 30 dias)
+//   from   YYYY-MM-DD — início do período (padrão: 1º do mês atual)
+//   to     YYYY-MM-DD — fim do período    (padrão: hoje)
+//   date   YYYY-MM-DD — dia único (sobrepõe from/to, compat. anterior)
 //   phone  últimos 4 dígitos — busca por cliente
-//   limit  máximo de registros (padrão: 100)
+//   limit  máximo de registros (padrão: 200)
 
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const key    = url.searchParams.get('key') || '';
-  const date   = url.searchParams.get('date') || '';
-  const phone  = url.searchParams.get('phone') || '';
-  const limit  = Math.min(parseInt(url.searchParams.get('limit') || '100', 10), 500);
+  const key   = url.searchParams.get('key')   || '';
+  const date  = url.searchParams.get('date')  || '';
+  const from  = url.searchParams.get('from')  || '';
+  const to    = url.searchParams.get('to')    || '';
+  const phone = url.searchParams.get('phone') || '';
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '200', 10), 500);
 
   const validKey = (env.DASH_KEY && key === env.DASH_KEY) || (env.CLIENT_KEY && key === env.CLIENT_KEY);
   if (!validKey) return json({ error: 'Unauthorized' }, 401);
 
   if (!env.DB) return json({ error: 'DB não configurado' }, 500);
 
-  let query = `SELECT id, event_id, event_name, display_name, phone_last4,
-                      value_cents, event_date, origem, meta_ok, registered_at
-               FROM manual_conversions`;
   const binds = [];
   const conditions = [];
 
   if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    // Dia único (compatibilidade anterior)
     conditions.push('event_date = ?');
     binds.push(date);
   } else {
-    conditions.push("event_date >= date('now', '-30 days')");
+    // Intervalo from/to
+    if (from && /^\d{4}-\d{2}-\d{2}$/.test(from)) {
+      conditions.push('event_date >= ?');
+      binds.push(from);
+    } else {
+      conditions.push("event_date >= date('now', 'start of month')");
+    }
+    if (to && /^\d{4}-\d{2}-\d{2}$/.test(to)) {
+      conditions.push('event_date <= ?');
+      binds.push(to);
+    } else {
+      conditions.push("event_date <= date('now')");
+    }
   }
 
   if (phone && /^\d+$/.test(phone)) {
@@ -39,8 +53,11 @@ export async function onRequestGet(context) {
     binds.push(phone.slice(-4));
   }
 
+  let query = `SELECT id, event_id, event_name, display_name, phone_last4,
+                      value_cents, event_date, origem, meta_ok, registered_at
+               FROM manual_conversions`;
   if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
-  query += ' ORDER BY registered_at DESC LIMIT ?';
+  query += ' ORDER BY event_date DESC, registered_at DESC LIMIT ?';
   binds.push(limit);
 
   const { results } = await env.DB.prepare(query).bind(...binds).all();

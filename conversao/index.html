@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Conversões — Farmácia Fort Popular</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --red:    #dc2626;
       --red2:   #b91c1c;
-      --redbg:  #fef2f2;
-      --redbd:  #fecaca;
-      --bg:     #f9fafb;
-      --card:   #ffffff;
-      --border: #e5e7eb;
-      --text:   #111827;
-      --muted:  #6b7280;
-      --green:  #16a34a;
-      --blue:   #2563eb;
+      --bg:     #0f0c0c;
+      --card:   #160f0f;
+      --border: rgba(220,38,38,0.22);
+      --text:   #f0e8e8;
+      --muted:  #7a6060;
+      --green:  #4ade80;
+      --blue:   #60a5fa;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -24,562 +24,657 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      padding: 28px 16px 52px;
     }
 
     /* ── HEADER ── */
-    .top-bar {
-      background: var(--red);
-      color: #fff;
-      padding: 16px 20px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    header { text-align: center; margin-bottom: 24px; }
+    header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      color: var(--red);
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
     }
-    .top-bar .logo {
-      width: 36px; height: 36px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem;
-    }
-    .top-bar h1 { font-size: 1rem; font-weight: 800; line-height: 1.2; }
-    .top-bar p  { font-size: 0.72rem; opacity: 0.8; }
+    header p { color: var(--muted); font-size: 0.85rem; }
 
-    /* ── TABS ── */
-    .tabs {
+    /* ── NAV TABS ── */
+    .nav-tabs {
       display: flex;
+      max-width: 460px;
+      margin: 0 auto 20px;
       background: var(--card);
-      border-bottom: 1px solid var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
     }
-    .tab {
+    .nav-tab {
       flex: 1;
-      padding: 13px;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: 700;
+      padding: 10px;
+      border: none;
+      background: transparent;
       color: var(--muted);
+      border-radius: 9px;
+      font-size: 0.88rem;
       cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.18s;
+      transition: all 0.2s;
+      font-family: inherit;
     }
-    .tab.active { color: var(--red); border-bottom-color: var(--red); }
+    .nav-tab.active { background: var(--red); color: #fff; font-weight: 700; }
 
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* ── FORM PANEL ── */
-    .form-wrap { padding: 16px; max-width: 480px; margin: 0 auto; }
-
+    /* ── CARD ── */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      padding: 24px;
+      max-width: 460px;
+      margin: 0 auto;
     }
 
-    /* Tipo */
+    /* ── TIPO ── */
     .tipo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
     .tipo-btn {
-      padding: 14px 8px;
-      border: 2px solid var(--border);
-      background: var(--bg);
+      padding: 14px 10px;
+      border: 1px solid var(--border);
+      background: transparent;
       color: var(--muted);
-      border-radius: 11px;
-      font-size: 0.88rem;
-      font-weight: 700;
+      border-radius: 10px;
+      font-size: 0.93rem;
       cursor: pointer;
-      transition: all 0.18s;
-      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
     }
-    .tipo-btn .ico { font-size: 1.5rem; }
-    .tipo-btn.active { border-color: var(--red); background: var(--redbg); color: var(--red); }
+    .tipo-btn .ico { font-size: 1.4rem; }
+    .tipo-btn.active {
+      border-color: var(--red);
+      color: var(--red);
+      background: rgba(220,38,38,0.08);
+    }
 
-    /* Origem */
+    /* ── ORIGEM ── */
     .origem-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 7px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
     .origem-btn {
-      padding: 9px 6px;
-      border: 1.5px solid var(--border);
-      background: var(--bg);
+      padding: 10px 8px;
+      border: 1px solid var(--border);
+      background: transparent;
       color: var(--muted);
-      border-radius: 8px;
-      font-size: 0.76rem;
-      font-weight: 700;
+      border-radius: 9px;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.18s;
+      transition: all 0.2s;
       text-align: center;
+      font-family: inherit;
     }
-    .origem-btn.active { border-color: var(--red); background: var(--redbg); color: var(--red); }
+    .origem-btn.active {
+      border-color: var(--red);
+      color: var(--red);
+      background: rgba(220,38,38,0.08);
+    }
 
-    /* Campos */
-    .field { margin-bottom: 14px; }
+    /* ── CAMPOS ── */
+    .field { margin-bottom: 16px; }
     label {
       display: block;
       color: var(--muted);
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 5px;
-      font-weight: 700;
+      margin-bottom: 7px;
     }
     input {
       width: 100%;
-      padding: 12px 14px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
+      padding: 13px 15px;
+      background: rgba(220,38,38,0.04);
+      border: 1px solid var(--border);
       border-radius: 9px;
       color: var(--text);
       font-size: 0.97rem;
       outline: none;
-      transition: border-color 0.18s;
+      transition: border-color 0.2s;
+      font-family: inherit;
     }
-    input:focus { border-color: var(--red); background: #fff; }
-    input::placeholder { color: #9ca3af; }
+    input:focus { border-color: var(--red); }
+    input::placeholder { color: var(--muted); }
 
     .value-row { display: none; }
     .value-row.show { display: block; }
 
-    .btn-primary {
+    .btn-submit {
       width: 100%;
-      padding: 14px;
+      padding: 15px;
       background: var(--red);
       color: #fff;
       border: none;
       border-radius: 10px;
       font-size: 0.97rem;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
       margin-top: 4px;
-      letter-spacing: 0.02em;
-      transition: opacity 0.18s, transform 0.1s;
+      letter-spacing: 0.03em;
+      transition: opacity 0.2s, transform 0.1s;
+      font-family: inherit;
     }
-    .btn-primary:active { transform: scale(0.98); }
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    #feedback {
+    .feedback {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
       display: none;
-      margin-top: 14px;
-      padding: 13px 15px;
-      border-radius: 9px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      text-align: center;
     }
-    #feedback.ok  { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-    #feedback.err { background: var(--redbg); color: var(--red); border: 1px solid var(--redbd); }
+    .feedback.ok {
+      background: rgba(74,222,128,0.1);
+      border: 1px solid rgba(74,222,128,0.3);
+      color: var(--green);
+      display: block;
+    }
+    .feedback.err {
+      background: rgba(220,38,38,0.1);
+      border: 1px solid rgba(220,38,38,0.3);
+      color: #ef4444;
+      display: block;
+    }
 
-    /* ── HISTÓRICO PANEL ── */
-    .hist-wrap { padding: 16px; max-width: 480px; margin: 0 auto; }
+    /* ── HISTÓRICO ── */
+    #hist-section { display: none; max-width: 460px; margin: 0 auto; }
 
-    .search-bar {
+    .hist-col-title {
+      display: none;
+      font-family: 'Playfair Display', Georgia, serif;
+      color: var(--red);
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+    }
+
+    .hist-filters {
       display: flex;
       gap: 8px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
     }
-    .search-bar input {
+    .hist-filters input {
       flex: 1;
-      padding: 11px 14px;
-      border-radius: 9px;
-    }
-    .search-bar select {
-      padding: 11px 10px;
-      border: 1.5px solid var(--border);
-      border-radius: 9px;
-      background: var(--bg);
-      color: var(--text);
+      min-width: 110px;
+      padding: 10px 12px;
       font-size: 0.85rem;
-      outline: none;
     }
-    .btn-search {
-      padding: 11px 16px;
+    .hist-filters .phone-input { max-width: 120px; }
+    .btn-filter {
+      padding: 10px 18px;
       background: var(--red);
       color: #fff;
       border: none;
       border-radius: 9px;
-      font-weight: 700;
       font-size: 0.85rem;
+      font-weight: 700;
       cursor: pointer;
+      font-family: inherit;
     }
 
-    /* Day separator */
-    .day-sep {
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--muted);
-      padding: 10px 4px 6px;
+    /* Stats */
+    .hist-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
     }
-
-    /* Hist card */
-    .hcard {
+    .hist-stat {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 13px 15px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
+      border-radius: 10px;
+      padding: 14px 12px;
+      text-align: center;
     }
-    .hcard-left { flex: 1; min-width: 0; }
-    .hcard-name { font-weight: 700; font-size: 0.93rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .hcard-meta { font-size: 0.75rem; color: var(--muted); }
-    .hcard-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+    .hs-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .hs-val   { font-size: 1.15rem; font-weight: 700; color: var(--red); }
 
-    .badge {
-      font-size: 0.7rem;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
+    /* Table */
+    .hist-table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      color: var(--muted);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
-    .badge-contact  { background: #dbeafe; color: #1d4ed8; }
-    .badge-purchase { background: #dcfce7; color: #15803d; }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(220,38,38,0.04); }
+    tbody td { padding: 10px 12px; color: var(--text); white-space: nowrap; }
 
-    .hcard-value { font-size: 0.85rem; font-weight: 800; color: var(--green); }
-    .hcard-capi  { font-size: 0.68rem; color: var(--muted); }
+    .badge-purchase { background: rgba(74,222,128,0.12); color: var(--green); padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
+    .badge-contact  { background: rgba(96,165,250,0.12); color: var(--blue);  padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
+    .meta-ok  { color: var(--green); font-size: 0.85rem; }
+    .meta-no  { color: var(--muted); font-size: 0.85rem; }
 
     .btn-upgrade {
-      font-size: 0.7rem;
-      padding: 4px 9px;
-      border: 1.5px solid var(--red);
-      border-radius: 6px;
+      padding: 3px 10px;
+      background: rgba(220,38,38,0.12);
+      border: 1px solid rgba(220,38,38,0.35);
       color: var(--red);
-      background: transparent;
-      cursor: pointer;
+      border-radius: 20px;
+      font-size: 0.71rem;
       font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
       transition: all 0.15s;
+      font-family: inherit;
     }
-    .btn-upgrade:hover { background: var(--redbg); }
+    .btn-upgrade:hover { background: var(--red); color: #fff; }
 
-    /* Modal */
+    .hist-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
+
+    /* ── MODAL ── */
     .modal-overlay {
       display: none;
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
+      background: rgba(0,0,0,0.7);
       z-index: 100;
       align-items: center; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
     .modal {
       background: var(--card);
-      border-radius: 14px;
-      padding: 24px;
-      width: 90%; max-width: 360px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      width: 92%; max-width: 360px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
     }
-    .modal h3 { font-size: 1rem; font-weight: 800; margin-bottom: 16px; color: var(--text); }
-    .modal .field { margin-bottom: 14px; }
+    .modal h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.1rem;
+      color: var(--red);
+      margin-bottom: 5px;
+    }
+    .modal p { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
+    .modal .field { margin-bottom: 0; }
     .modal-btns { display: flex; gap: 8px; margin-top: 18px; }
-    .modal-btns button { flex: 1; padding: 12px; border-radius: 9px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; }
-    .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
+    .modal-btns button {
+      flex: 1; padding: 13px; border-radius: 9px;
+      font-weight: 700; font-size: 0.9rem; cursor: pointer;
+      border: none; font-family: inherit;
+    }
+    .btn-cancel  { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border) !important; }
     .btn-confirm { background: var(--red); color: #fff; }
 
-    #hist-empty { text-align: center; color: var(--muted); font-size: 0.88rem; padding: 32px 0; }
+    /* ── DESKTOP 2-COLUNAS ── */
+    @media (min-width: 820px) {
+      body { padding: 28px 40px 48px; }
+      header { margin-bottom: 18px; }
+      .nav-tabs { display: none; }
+      #main-cols {
+        display: grid;
+        grid-template-columns: 460px 1fr;
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+        align-items: start;
+      }
+      #form-section, #hist-section {
+        display: block !important;
+        max-width: none;
+      }
+      .card { max-width: none; }
+      .hist-col-title { display: block; }
+    }
   </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="top-bar">
-  <div class="logo">💊</div>
-  <div>
-    <h1>Farmácia Fort Popular</h1>
-    <p>Registro de conversões WhatsApp</p>
+<header>
+  <h1>Fort Popular</h1>
+  <p>Farmácia · Conversões WhatsApp</p>
+</header>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="showSection('form', this)">Registrar</button>
+  <button class="nav-tab" onclick="showSection('hist', this)">Histórico</button>
+</div>
+
+<div id="main-cols">
+
+<!-- ── FORMULÁRIO ── -->
+<div id="form-section">
+  <div class="card">
+
+    <!-- Tipo -->
+    <div class="tipo-grid">
+      <button class="tipo-btn active" onclick="setTipo('Contact', this)">
+        <span class="ico">💬</span>Contato
+      </button>
+      <button class="tipo-btn" onclick="setTipo('Purchase', this)">
+        <span class="ico">💰</span>Venda
+      </button>
+    </div>
+
+    <!-- Origem -->
+    <div class="origem-grid">
+      <button class="origem-btn active" data-o="ad"       onclick="setOrigem('ad', this)">📣 Meta Ads</button>
+      <button class="origem-btn"        data-o="google"   onclick="setOrigem('google', this)">🔍 Google Ads</button>
+      <button class="origem-btn"        data-o="organic"  onclick="setOrigem('organic', this)">🚶 Orgânico</button>
+      <button class="origem-btn"        data-o="referral" onclick="setOrigem('referral', this)">🤝 Indicação</button>
+    </div>
+
+    <!-- Campos -->
+    <div class="field">
+      <label>Telefone / WhatsApp *</label>
+      <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
+    </div>
+    <div class="field">
+      <label>Nome do cliente</label>
+      <input id="name" type="text" placeholder="Maria Silva">
+    </div>
+    <div class="field value-row" id="value-row">
+      <label>Valor da venda (R$) *</label>
+      <input id="value" type="text" placeholder="0,00" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Data (padrão: hoje)</label>
+      <input id="date" type="date">
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
+    <div class="feedback" id="feedback"></div>
+
   </div>
 </div>
 
-<!-- Tabs -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('form')">Novo Registro</div>
-  <div class="tab" onclick="switchTab('hist')">Histórico</div>
+<!-- ── HISTÓRICO ── -->
+<div id="hist-section">
+  <span class="hist-col-title">Histórico de conversões</span>
+
+  <div class="hist-filters">
+    <input type="date" id="h-from" placeholder="De">
+    <input type="date" id="h-to"   placeholder="Até">
+    <input type="tel"  id="h-phone" class="phone-input" placeholder="****0000" inputmode="numeric" maxlength="4">
+    <button class="btn-filter" onclick="loadHist()">Filtrar</button>
+  </div>
+
+  <div class="hist-summary">
+    <div class="hist-stat">
+      <div class="hs-label">Registros</div>
+      <div class="hs-val" id="hs-total">—</div>
+    </div>
+    <div class="hist-stat">
+      <div class="hs-label">Vendas</div>
+      <div class="hs-val" id="hs-purchases">—</div>
+    </div>
+    <div class="hist-stat">
+      <div class="hs-label">Receita</div>
+      <div class="hs-val" id="hs-revenue">—</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="hist-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Meta</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="hist-body">
+          <tr><td colspan="6" class="hist-empty">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<!-- ── PANEL: FORM ── -->
-<div class="tab-panel active" id="panel-form">
-<div class="form-wrap">
-<div class="card">
+</div><!-- /main-cols -->
 
-  <!-- Tipo -->
-  <div class="tipo-grid">
-    <button class="tipo-btn active" data-tipo="Contact" onclick="setTipo('Contact')">
-      <span class="ico">💬</span>Contato
-    </button>
-    <button class="tipo-btn" data-tipo="Purchase" onclick="setTipo('Purchase')">
-      <span class="ico">🛒</span>Venda
-    </button>
-  </div>
-
-  <!-- Origem -->
-  <div class="origem-grid">
-    <button class="origem-btn active" data-origem="ad" onclick="setOrigem('ad')">Meta Ads</button>
-    <button class="origem-btn" data-origem="google" onclick="setOrigem('google')">Google Ads</button>
-    <button class="origem-btn" data-origem="organic" onclick="setOrigem('organic')">Orgânico</button>
-    <button class="origem-btn" data-origem="referral" onclick="setOrigem('referral')">Indicação</button>
-  </div>
-
-  <!-- Campos -->
-  <div class="field">
-    <label>Telefone / WhatsApp *</label>
-    <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
-  </div>
-  <div class="field">
-    <label>Nome do cliente</label>
-    <input id="name" type="text" placeholder="Maria Silva">
-  </div>
-  <div class="field value-row" id="value-row">
-    <label>Valor da venda (R$) *</label>
-    <input id="value" type="text" placeholder="0,00" inputmode="decimal">
-  </div>
-  <div class="field">
-    <label>Data (padrão: hoje)</label>
-    <input id="date" type="date">
-  </div>
-
-  <button class="btn-primary" id="btn-submit" onclick="submitForm()">Registrar</button>
-  <div id="feedback"></div>
-
-</div>
-</div>
-</div>
-
-<!-- ── PANEL: HISTÓRICO ── -->
-<div class="tab-panel" id="panel-hist">
-<div class="hist-wrap">
-
-  <div class="search-bar">
-    <input id="search-phone" type="tel" placeholder="Buscar por telefone..." inputmode="tel" onkeydown="if(event.key==='Enter')loadHist()">
-    <select id="search-date">
-      <option value="">Últimos 30d</option>
-      <option value="today">Hoje</option>
-      <option value="yesterday">Ontem</option>
-    </select>
-    <button class="btn-search" onclick="loadHist()">Buscar</button>
-  </div>
-
-  <div id="hist-list"><div id="hist-empty">Carregando...</div></div>
-
-</div>
-</div>
-
-<!-- Modal: promover contato → venda -->
+<!-- ── MODAL: Contact → Purchase ── -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3>Atualizar para Venda</h3>
-    <div class="field">
-      <label>Cliente</label>
-      <input id="modal-name" type="text" readonly style="background:#f3f4f6;color:#6b7280;">
-    </div>
+    <h3>Promover para Venda</h3>
+    <p id="modal-sub">Informe o valor da compra.</p>
     <div class="field">
       <label>Valor da venda (R$) *</label>
       <input id="modal-value" type="text" placeholder="0,00" inputmode="decimal">
     </div>
     <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-confirm" onclick="confirmUpdate()">Confirmar Venda</button>
+      <button class="btn-cancel"  onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmUpdate()">Confirmar</button>
     </div>
   </div>
 </div>
 
 <script>
-  const KEY = new URLSearchParams(location.search).get('key') || '';
-  let tipoAtual   = 'Contact';
-  let origemAtual = 'ad';
-  let editingId   = null;
+const KEY = new URLSearchParams(location.search).get('key') || '';
+let tipoAtual   = 'Contact';
+let origemAtual = 'ad';
+let editingId   = null;
 
-  // ── Tabs ────────────────────────────────────────────────────────────────
-  function switchTab(t) {
-    document.querySelectorAll('.tab').forEach((el, i) =>
-      el.classList.toggle('active', (i === 0 && t === 'form') || (i === 1 && t === 'hist')));
-    document.getElementById('panel-form').classList.toggle('active', t === 'form');
-    document.getElementById('panel-hist').classList.toggle('active', t === 'hist');
-    if (t === 'hist') loadHist();
+// ── Init ──────────────────────────────────────────────
+(function init() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  document.getElementById('h-from').value = `${y}-${m}-01`;
+  document.getElementById('h-to').value   = today();
+  if (window.innerWidth >= 820) loadHist();
+})();
+
+function today() { return new Date().toISOString().slice(0, 10); }
+
+// ── Navegação (mobile) ────────────────────────────────
+function showSection(section, btn) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('form-section').style.display = section === 'form' ? 'block' : 'none';
+  document.getElementById('hist-section').style.display = section === 'hist' ? 'block' : 'none';
+  if (section === 'hist') {
+    if (!document.getElementById('h-from').value) {
+      const d = new Date();
+      document.getElementById('h-from').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+      document.getElementById('h-to').value   = today();
+    }
+    loadHist();
   }
+}
 
-  // ── Tipo / Origem ────────────────────────────────────────────────────────
-  function setTipo(t) {
-    tipoAtual = t;
-    document.querySelectorAll('.tipo-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === t));
-    document.getElementById('value-row').classList.toggle('show', t === 'Purchase');
+// ── Tipo / Origem ─────────────────────────────────────
+function setTipo(t, btn) {
+  tipoAtual = t;
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('value-row').classList.toggle('show', t === 'Purchase');
+  document.getElementById('btn-submit').textContent = t === 'Purchase' ? 'Registrar venda' : 'Registrar contato';
+}
+
+function setOrigem(o, btn) {
+  origemAtual = o;
+  document.querySelectorAll('.origem-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Novo registro ─────────────────────────────────────
+async function submitForm() {
+  const phone = document.getElementById('phone').value.trim();
+  const name  = document.getElementById('name').value.trim();
+  const value = document.getElementById('value').value.trim();
+  const date  = document.getElementById('date').value;
+
+  if (!phone) { showFeedback('Informe o telefone do cliente.', false); return; }
+  if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+  document.getElementById('feedback').className = 'feedback';
+
+  const body = { event_name: tipoAtual, phone, origem: origemAtual };
+  if (name)  body.name  = name;
+  if (value) body.value = value;
+  if (date)  body.date  = date;
+
+  try {
+    const resp = await fetch('/api/log-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (resp.ok && data.saved) {
+      const capiMsg = data.meta_skipped ? ' — sem CAPI' : data.ok ? ' · ✓ Meta' : ' · ⚠ Meta falhou';
+      showFeedback(`✓ Registrado${capiMsg}`, true);
+      document.getElementById('phone').value = '';
+      document.getElementById('name').value  = '';
+      document.getElementById('value').value = '';
+      document.getElementById('date').value  = '';
+      document.getElementById('phone').focus();
+    } else {
+      showFeedback('Erro: ' + (data.error || 'inesperado'), false);
+    }
+  } catch { showFeedback('Erro de conexão.', false); }
+  finally {
+    btn.disabled = false;
+    btn.textContent = tipoAtual === 'Purchase' ? 'Registrar venda' : 'Registrar contato';
   }
-  function setOrigem(o) {
-    origemAtual = o;
-    document.querySelectorAll('.origem-btn').forEach(b => b.classList.toggle('active', b.dataset.origem === o));
-  }
+}
 
-  // ── Novo registro ────────────────────────────────────────────────────────
-  async function submitForm() {
-    const phone = document.getElementById('phone').value.trim();
-    const name  = document.getElementById('name').value.trim();
-    const value = document.getElementById('value').value.trim();
-    const date  = document.getElementById('date').value;
+function showFeedback(msg, ok) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  el.className = 'feedback ' + (ok ? 'ok' : 'err');
+  if (ok) setTimeout(() => { el.className = 'feedback'; }, 5000);
+}
 
-    if (!phone) { showFeedback('Informe o telefone do cliente.', false); return; }
-    if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
+// ── Histórico ─────────────────────────────────────────
+async function loadHist() {
+  const body = document.getElementById('hist-body');
+  body.innerHTML = '<tr><td colspan="6" class="hist-empty">Carregando...</td></tr>';
+  ['hs-total','hs-purchases','hs-revenue'].forEach(id => document.getElementById(id).textContent = '—');
 
-    const btn = document.getElementById('btn-submit');
-    btn.disabled = true; btn.textContent = 'Enviando…';
+  const from  = document.getElementById('h-from').value;
+  const to    = document.getElementById('h-to').value;
+  const phone = document.getElementById('h-phone').value.replace(/\D/g,'').slice(-4);
 
-    const body = { event_name: tipoAtual, phone, origem: origemAtual };
-    if (name)  body.name  = name;
-    if (value) body.value = value;
-    if (date)  body.date  = date;
+  const params = new URLSearchParams({ key: KEY, limit: '200' });
+  if (from)  params.set('from',  from);
+  if (to)    params.set('to',    to);
+  if (phone) params.set('phone', phone);
 
-    try {
-      const resp = await fetch('/api/log-conversion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
-        body: JSON.stringify(body),
-      });
-      const data = await resp.json();
-      if (resp.ok && data.saved) {
-        const capiMsg = data.meta_skipped ? '(sem CAPI)' : data.ok ? '· ✓ CAPI' : '· ⚠ CAPI falhou';
-        showFeedback(`Registrado! ${capiMsg}`, true);
-        clearForm();
-      } else {
-        showFeedback('Erro: ' + (data.error || 'inesperado'), false);
-      }
-    } catch { showFeedback('Erro de conexão.', false); }
-    finally { btn.disabled = false; btn.textContent = 'Registrar'; }
-  }
+  try {
+    const resp = await fetch('/api/conversions-history?' + params);
+    if (resp.status === 401) {
+      body.innerHTML = '<tr><td colspan="6" class="hist-empty">Chave inválida.</td></tr>';
+      return;
+    }
+    const data = await resp.json();
+    const rows = data.conversions || [];
 
-  function clearForm() {
-    ['phone','name','value','date'].forEach(id => document.getElementById(id).value = '');
-  }
+    const purchases = rows.filter(r => r.event_name === 'Purchase');
+    const revCents  = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
+    document.getElementById('hs-total').textContent     = rows.length;
+    document.getElementById('hs-purchases').textContent = purchases.length;
+    document.getElementById('hs-revenue').textContent   =
+      'R$\u00a0' + (revCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-  function showFeedback(msg, ok) {
-    const el = document.getElementById('feedback');
-    el.textContent = msg;
-    el.className = ok ? 'ok' : 'err';
-    el.style.display = 'block';
-    if (ok) setTimeout(() => el.style.display = 'none', 4000);
-  }
-
-  // ── Histórico ────────────────────────────────────────────────────────────
-  async function loadHist() {
-    const list = document.getElementById('hist-list');
-    list.innerHTML = '<div id="hist-empty">Buscando...</div>';
-
-    const phoneVal = document.getElementById('search-phone').value.replace(/\D/g,'').slice(-4);
-    const dateVal  = document.getElementById('search-date').value;
-
-    const params = new URLSearchParams({ key: KEY });
-    if (phoneVal) params.set('phone', phoneVal);
-    if (dateVal === 'today') {
-      params.set('date', todayStr());
-    } else if (dateVal === 'yesterday') {
-      params.set('date', yesterdayStr());
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="6" class="hist-empty">Nenhum registro no período.</td></tr>';
+      return;
     }
 
-    try {
-      const resp = await fetch('/api/conversions-history?' + params);
-      const data = await resp.json();
-      if (!resp.ok) { list.innerHTML = '<div id="hist-empty">Erro ao carregar.</div>'; return; }
-      renderHist(data.conversions || []);
-    } catch { list.innerHTML = '<div id="hist-empty">Erro de conexão.</div>'; }
-  }
-
-  function renderHist(items) {
-    const list = document.getElementById('hist-list');
-    if (!items.length) { list.innerHTML = '<div id="hist-empty">Nenhum registro encontrado.</div>'; return; }
-
-    let html = '';
-    let lastDate = '';
-
-    items.forEach(c => {
-      if (c.event_date !== lastDate) {
-        html += `<div class="day-sep">${formatDate(c.event_date)}</div>`;
-        lastDate = c.event_date;
-      }
-      const hora = new Date(c.registered_at * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      const isContact = c.event_name === 'Contact';
-      const valueFmt = c.value_cents ? 'R$ ' + (c.value_cents / 100).toFixed(2).replace('.', ',') : '';
-      const origemLabel = { ad: 'Meta', google: 'Google', organic: 'Orgânico', referral: 'Indicação' }[c.origem] || c.origem;
-      const upgradeBtn = isContact
-        ? `<button class="btn-upgrade" onclick="openModal(${c.id},'${escHtml(c.display_name)}')">→ Venda</button>`
+    const origemIco = { ad: '📣', google: '🔍', organic: '🚶', referral: '🤝' };
+    body.innerHTML = rows.map(r => {
+      const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
+      const nome  = esc(r.display_name || '—');
+      const cli   = ph ? `${nome} <span style="color:var(--muted);font-size:.8em;">${ph}</span>` : nome;
+      const ic    = r.event_name === 'Contact';
+      const badge = ic
+        ? '<span class="badge-contact">Contato</span>'
+        : '<span class="badge-purchase">Venda</span>';
+      const ico   = origemIco[r.origem] || '';
+      const val   = r.value_cents
+        ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        : '—';
+      const meta  = r.meta_ok ? '<span class="meta-ok">✓</span>' : '<span class="meta-no">—</span>';
+      const upBtn = ic
+        ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>`
         : '';
+      return `<tr>
+        <td>${r.event_date || '—'}</td>
+        <td>${cli}</td>
+        <td>${badge} ${ico}</td>
+        <td>${val}</td>
+        <td>${meta}</td>
+        <td>${upBtn}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    body.innerHTML = `<tr><td colspan="6" class="hist-empty">Erro: ${esc(e.message)}</td></tr>`;
+  }
+}
 
-      html += `
-        <div class="hcard">
-          <div class="hcard-left">
-            <div class="hcard-name">${escHtml(c.display_name) || 'Sem nome'}</div>
-            <div class="hcard-meta">****${c.phone_last4} · ${hora} · ${origemLabel}</div>
-          </div>
-          <div class="hcard-right">
-            <span class="badge ${isContact ? 'badge-contact' : 'badge-purchase'}">${isContact ? 'Contato' : 'Venda'}</span>
-            ${valueFmt ? `<span class="hcard-value">${valueFmt}</span>` : ''}
-            <span class="hcard-capi">${c.meta_ok ? '✓ CAPI' : '– CAPI'}</span>
-            ${upgradeBtn}
-          </div>
-        </div>`;
+function esc(s) {
+  return (s || '').replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Modal ─────────────────────────────────────────────
+function openModal(id, name) {
+  editingId = id;
+  document.getElementById('modal-sub').textContent = name ? `Cliente: ${name}` : 'Informe o valor da compra.';
+  document.getElementById('modal-value').value = '';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('modal-value').focus(), 80);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+async function confirmUpdate() {
+  const value = document.getElementById('modal-value').value.trim();
+  if (!value) { alert('Informe o valor.'); return; }
+  if (!editingId) return;
+  try {
+    const resp = await fetch('/api/update-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      body: JSON.stringify({ id: editingId, event_name: 'Purchase', value }),
     });
+    const data = await resp.json();
+    if (resp.ok && data.ok) { closeModal(); loadHist(); }
+    else alert('Erro: ' + (data.error || 'inesperado'));
+  } catch { alert('Erro de conexão.'); }
+}
 
-    list.innerHTML = html;
-  }
-
-  function formatDate(d) {
-    const today = todayStr();
-    const yest  = yesterdayStr();
-    if (d === today) return 'Hoje';
-    if (d === yest)  return 'Ontem';
-    const [y, m, day] = d.split('-');
-    return `${day}/${m}/${y}`;
-  }
-
-  function todayStr()     { return new Date().toISOString().slice(0, 10); }
-  function yesterdayStr() { const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
-  function escHtml(s)     { return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  // ── Modal: promover → Venda ──────────────────────────────────────────────
-  function openModal(id, name) {
-    editingId = id;
-    document.getElementById('modal-name').value  = name || 'Sem nome';
-    document.getElementById('modal-value').value = '';
-    document.getElementById('modal-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('modal-value').focus(), 100);
-  }
-
-  function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('open');
-    editingId = null;
-  }
-
-  async function confirmUpdate() {
-    const value = document.getElementById('modal-value').value.trim();
-    if (!value) { alert('Informe o valor da venda.'); return; }
-    if (!editingId) return;
-
-    try {
-      const resp = await fetch('/api/update-conversion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
-        body: JSON.stringify({ id: editingId, event_name: 'Purchase', value }),
-      });
-      const data = await resp.json();
-      if (resp.ok && data.ok) {
-        closeModal();
-        loadHist();
-      } else {
-        alert('Erro: ' + (data.error || 'inesperado'));
-      }
-    } catch { alert('Erro de conexão.'); }
-  }
-
-  // Fechar modal ao clicar fora
-  document.getElementById('modal-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 </script>
 </body>
 </html>
