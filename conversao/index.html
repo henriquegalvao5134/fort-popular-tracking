@@ -75,12 +75,12 @@
 
     /* Origem */
     .origem-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-bottom: 20px;
     }
     .origem-btn {
-      flex: 1;
       padding: 9px 6px;
       border: 1px solid var(--border);
       background: #f0fdf4;
@@ -217,7 +217,8 @@
 
   <!-- Origem -->
   <div class="origem-row">
-    <button class="origem-btn active" data-origem="ad" onclick="setOrigem('ad')">Anúncio</button>
+    <button class="origem-btn active" data-origem="ad" onclick="setOrigem('ad')">Meta Ads</button>
+    <button class="origem-btn" data-origem="google" onclick="setOrigem('google')">Google Ads</button>
     <button class="origem-btn" data-origem="organic" onclick="setOrigem('organic')">Orgânico</button>
     <button class="origem-btn" data-origem="referral" onclick="setOrigem('referral')">Indicação</button>
   </div>

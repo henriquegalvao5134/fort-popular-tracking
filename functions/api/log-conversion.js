@@ -4,14 +4,14 @@
 // no WhatsApp resulta em contato ou venda. Dispara evento para Meta CAPI
 // com action_source 'chat'.
 //
-// Auth:  header x-dash-key: <DASH_KEY>
+// Auth:  header x-dash-key: <DASH_KEY> ou <CLIENT_KEY>
 // Body:  {
 //          event_name: 'Contact' | 'Purchase',
 //          phone:      número WhatsApp do cliente (ex: "21987654321")
 //          name?:      nome do cliente
 //          value?:     valor da compra em R$ (obrigatório para Purchase)
 //          date?:      data em YYYY-MM-DD (padrão: hoje)
-//          origem?:    'ad' | 'organic' | 'referral' (padrão: 'ad')
+//          origem?:    'ad' | 'google' | 'organic' | 'referral' (padrão: 'ad')
 //        }
 //
 // Required env para CAPI:
@@ -35,9 +35,10 @@ export async function onRequestOptions() {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  // Auth
+  // Auth — aceita DASH_KEY ou CLIENT_KEY (para URL curta)
   const key = request.headers.get('x-dash-key') || '';
-  if (!env.DASH_KEY || key !== env.DASH_KEY) {
+  const validKey = (env.DASH_KEY && key === env.DASH_KEY) || (env.CLIENT_KEY && key === env.CLIENT_KEY);
+  if (!validKey) {
     return json({ error: 'Unauthorized' }, 401);
   }
 
@@ -54,8 +55,8 @@ export async function onRequestPost(context) {
     return json({ error: 'phone é obrigatório' }, 400);
   }
 
-  // Origem
-  const ORIGENS = ['ad', 'organic', 'referral'];
+  // Origem — 'ad' e 'google' disparam para Meta CAPI; outros não
+  const ORIGENS = ['ad', 'google', 'organic', 'referral'];
   const eventOrigem = ORIGENS.includes(origem) ? origem : 'ad';
   const sendToMeta = eventOrigem === 'ad';
 
