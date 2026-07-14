@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Registrar Conversão — Farmácia Fort Popular</title>
+  <title>Conversões — Farmácia Fort Popular</title>
   <style>
     :root {
-      --green:  #16a34a;
-      --green2: #15803d;
-      --bg:     #f0fdf4;
+      --red:    #dc2626;
+      --red2:   #b91c1c;
+      --redbg:  #fef2f2;
+      --redbd:  #fecaca;
+      --bg:     #f9fafb;
       --card:   #ffffff;
-      --border: #bbf7d0;
-      --text:   #14532d;
+      --border: #e5e7eb;
+      --text:   #111827;
       --muted:  #6b7280;
-      --ok:     #16a34a;
-      --err:    #dc2626;
+      --green:  #16a34a;
+      --blue:   #2563eb;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -22,201 +24,305 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 28px 16px 48px;
     }
-    header { text-align: center; margin-bottom: 24px; }
-    header h1 {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--green);
-      letter-spacing: -0.02em;
-      margin-bottom: 4px;
+
+    /* ── HEADER ── */
+    .top-bar {
+      background: var(--red);
+      color: #fff;
+      padding: 16px 20px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    header p { color: var(--muted); font-size: 0.85rem; }
+    .top-bar .logo {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .top-bar h1 { font-size: 1rem; font-weight: 800; line-height: 1.2; }
+    .top-bar p  { font-size: 0.72rem; opacity: 0.8; }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: 13px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.18s;
+    }
+    .tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── FORM PANEL ── */
+    .form-wrap { padding: 16px; max-width: 480px; margin: 0 auto; }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 420px;
-      margin: 0 auto;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
-    /* Tipo de evento */
+    /* Tipo */
     .tipo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
     .tipo-btn {
-      padding: 16px 10px;
+      padding: 14px 8px;
       border: 2px solid var(--border);
-      background: #f0fdf4;
+      background: var(--bg);
       color: var(--muted);
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      border-radius: 11px;
+      font-size: 0.88rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.18s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
     }
-    .tipo-btn .ico { font-size: 1.6rem; }
-    .tipo-btn.active {
-      border-color: var(--green);
-      background: #dcfce7;
-      color: var(--green);
-    }
+    .tipo-btn .ico { font-size: 1.5rem; }
+    .tipo-btn.active { border-color: var(--red); background: var(--redbg); color: var(--red); }
 
     /* Origem */
-    .origem-row {
+    .origem-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 20px;
+      gap: 7px;
+      margin-bottom: 18px;
     }
     .origem-btn {
       padding: 9px 6px;
-      border: 1px solid var(--border);
-      background: #f0fdf4;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
       color: var(--muted);
       border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-size: 0.76rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.18s;
       text-align: center;
     }
-    .origem-btn.active {
-      border-color: var(--green);
-      background: #dcfce7;
-      color: var(--green);
-    }
+    .origem-btn.active { border-color: var(--red); background: var(--redbg); color: var(--red); }
 
     /* Campos */
-    .field { margin-bottom: 16px; }
+    .field { margin-bottom: 14px; }
     label {
       display: block;
       color: var(--muted);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 6px;
-      font-weight: 600;
+      margin-bottom: 5px;
+      font-weight: 700;
     }
     input {
       width: 100%;
-      padding: 13px 14px;
-      background: #f9fafb;
-      border: 1.5px solid #d1fae5;
-      border-radius: 10px;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
       color: var(--text);
-      font-size: 1rem;
+      font-size: 0.97rem;
       outline: none;
       transition: border-color 0.18s;
     }
-    input:focus { border-color: var(--green); background: #fff; }
+    input:focus { border-color: var(--red); background: #fff; }
     input::placeholder { color: #9ca3af; }
 
     .value-row { display: none; }
     .value-row.show { display: block; }
 
-    .btn-submit {
+    .btn-primary {
       width: 100%;
-      padding: 15px;
-      background: var(--green);
+      padding: 14px;
+      background: var(--red);
       color: #fff;
       border: none;
-      border-radius: 11px;
-      font-size: 1rem;
-      font-weight: 700;
+      border-radius: 10px;
+      font-size: 0.97rem;
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 4px;
       letter-spacing: 0.02em;
       transition: opacity 0.18s, transform 0.1s;
     }
-    .btn-submit:active { transform: scale(0.98); }
-    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Feedback */
     #feedback {
       display: none;
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      font-size: 0.9rem;
+      margin-top: 14px;
+      padding: 13px 15px;
+      border-radius: 9px;
+      font-size: 0.88rem;
       font-weight: 600;
       text-align: center;
     }
-    #feedback.ok  { background: #dcfce7; color: var(--ok);  border: 1px solid #86efac; }
-    #feedback.err { background: #fee2e2; color: var(--err); border: 1px solid #fca5a5; }
+    #feedback.ok  { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    #feedback.err { background: var(--redbg); color: var(--red); border: 1px solid var(--redbd); }
 
-    /* Histórico */
-    .hist-header {
-      max-width: 420px;
-      margin: 28px auto 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+    /* ── HISTÓRICO PANEL ── */
+    .hist-wrap { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+    .search-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
     }
-    #hist-list { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-    .hist-item {
+    .search-bar input {
+      flex: 1;
+      padding: 11px 14px;
+      border-radius: 9px;
+    }
+    .search-bar select {
+      padding: 11px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .btn-search {
+      padding: 11px 16px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Day separator */
+    .day-sep {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      padding: 10px 4px 6px;
+    }
+
+    /* Hist card */
+    .hcard {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 11px;
-      padding: 12px 16px;
+      padding: 13px 15px;
+      margin-bottom: 8px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
     }
-    .hist-left { display: flex; flex-direction: column; gap: 2px; }
-    .hist-name { font-weight: 700; font-size: 0.92rem; color: var(--text); }
-    .hist-meta { font-size: 0.77rem; color: var(--muted); }
-    .hist-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-    .hist-type {
-      font-size: 0.72rem;
-      font-weight: 700;
+    .hcard-left { flex: 1; min-width: 0; }
+    .hcard-name { font-weight: 700; font-size: 0.93rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hcard-meta { font-size: 0.75rem; color: var(--muted); }
+    .hcard-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 800;
       padding: 3px 8px;
       border-radius: 6px;
     }
-    .hist-type.Contact  { background: #dbeafe; color: #1d4ed8; }
-    .hist-type.Purchase { background: #dcfce7; color: #15803d; }
-    .hist-value { font-size: 0.82rem; font-weight: 700; color: var(--green); }
-    .hist-capi  { font-size: 0.7rem; color: var(--muted); }
+    .badge-contact  { background: #dbeafe; color: #1d4ed8; }
+    .badge-purchase { background: #dcfce7; color: #15803d; }
+
+    .hcard-value { font-size: 0.85rem; font-weight: 800; color: var(--green); }
+    .hcard-capi  { font-size: 0.68rem; color: var(--muted); }
+
+    .btn-upgrade {
+      font-size: 0.7rem;
+      padding: 4px 9px;
+      border: 1.5px solid var(--red);
+      border-radius: 6px;
+      color: var(--red);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+    .btn-upgrade:hover { background: var(--redbg); }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 24px;
+      width: 90%; max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .modal h3 { font-size: 1rem; font-weight: 800; margin-bottom: 16px; color: var(--text); }
+    .modal .field { margin-bottom: 14px; }
+    .modal-btns { display: flex; gap: 8px; margin-top: 18px; }
+    .modal-btns button { flex: 1; padding: 12px; border-radius: 9px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; }
+    .btn-cancel { background: var(--bg); color: var(--muted); border: 1.5px solid var(--border) !important; }
+    .btn-confirm { background: var(--red); color: #fff; }
+
+    #hist-empty { text-align: center; color: var(--muted); font-size: 0.88rem; padding: 32px 0; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Farmácia Fort Popular</h1>
-  <p>Registrar conversão do WhatsApp</p>
-</header>
+<!-- Header -->
+<div class="top-bar">
+  <div class="logo">💊</div>
+  <div>
+    <h1>Farmácia Fort Popular</h1>
+    <p>Registro de conversões WhatsApp</p>
+  </div>
+</div>
 
-<!-- Formulário -->
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('form')">Novo Registro</div>
+  <div class="tab" onclick="switchTab('hist')">Histórico</div>
+</div>
+
+<!-- ── PANEL: FORM ── -->
+<div class="tab-panel active" id="panel-form">
+<div class="form-wrap">
 <div class="card">
 
-  <!-- Tipo de evento -->
+  <!-- Tipo -->
   <div class="tipo-grid">
     <button class="tipo-btn active" data-tipo="Contact" onclick="setTipo('Contact')">
-      <span class="ico">💬</span>
-      Contato
+      <span class="ico">💬</span>Contato
     </button>
     <button class="tipo-btn" data-tipo="Purchase" onclick="setTipo('Purchase')">
-      <span class="ico">🛒</span>
-      Venda
+      <span class="ico">🛒</span>Venda
     </button>
   </div>
 
   <!-- Origem -->
-  <div class="origem-row">
+  <div class="origem-grid">
     <button class="origem-btn active" data-origem="ad" onclick="setOrigem('ad')">Meta Ads</button>
     <button class="origem-btn" data-origem="google" onclick="setOrigem('google')">Google Ads</button>
     <button class="origem-btn" data-origem="organic" onclick="setOrigem('organic')">Orgânico</button>
@@ -228,56 +334,92 @@
     <label>Telefone / WhatsApp *</label>
     <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
   </div>
-
   <div class="field">
     <label>Nome do cliente</label>
     <input id="name" type="text" placeholder="Maria Silva">
   </div>
-
   <div class="field value-row" id="value-row">
     <label>Valor da venda (R$) *</label>
     <input id="value" type="text" placeholder="0,00" inputmode="decimal">
   </div>
-
   <div class="field">
-    <label>Data (deixe em branco para hoje)</label>
+    <label>Data (padrão: hoje)</label>
     <input id="date" type="date">
   </div>
 
-  <button class="btn-submit" id="btn-submit" onclick="submit()">Registrar conversão</button>
-
+  <button class="btn-primary" id="btn-submit" onclick="submitForm()">Registrar</button>
   <div id="feedback"></div>
+
+</div>
+</div>
 </div>
 
-<!-- Histórico do dia -->
-<div class="hist-header">Registros de hoje</div>
-<div id="hist-list"></div>
+<!-- ── PANEL: HISTÓRICO ── -->
+<div class="tab-panel" id="panel-hist">
+<div class="hist-wrap">
+
+  <div class="search-bar">
+    <input id="search-phone" type="tel" placeholder="Buscar por telefone..." inputmode="tel" onkeydown="if(event.key==='Enter')loadHist()">
+    <select id="search-date">
+      <option value="">Últimos 30d</option>
+      <option value="today">Hoje</option>
+      <option value="yesterday">Ontem</option>
+    </select>
+    <button class="btn-search" onclick="loadHist()">Buscar</button>
+  </div>
+
+  <div id="hist-list"><div id="hist-empty">Carregando...</div></div>
+
+</div>
+</div>
+
+<!-- Modal: promover contato → venda -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>Atualizar para Venda</h3>
+    <div class="field">
+      <label>Cliente</label>
+      <input id="modal-name" type="text" readonly style="background:#f3f4f6;color:#6b7280;">
+    </div>
+    <div class="field">
+      <label>Valor da venda (R$) *</label>
+      <input id="modal-value" type="text" placeholder="0,00" inputmode="decimal">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmUpdate()">Confirmar Venda</button>
+    </div>
+  </div>
+</div>
 
 <script>
-  // ── Config ──────────────────────────────────────────────────────────────
-  const API = '/api/log-conversion';
-  const KEY_PARAM = new URLSearchParams(location.search).get('key') || '';
-
-  // ── Estado ──────────────────────────────────────────────────────────────
+  const KEY = new URLSearchParams(location.search).get('key') || '';
   let tipoAtual   = 'Contact';
   let origemAtual = 'ad';
-  const historico = [];
+  let editingId   = null;
 
-  // ── Tipo de evento ───────────────────────────────────────────────────────
+  // ── Tabs ────────────────────────────────────────────────────────────────
+  function switchTab(t) {
+    document.querySelectorAll('.tab').forEach((el, i) =>
+      el.classList.toggle('active', (i === 0 && t === 'form') || (i === 1 && t === 'hist')));
+    document.getElementById('panel-form').classList.toggle('active', t === 'form');
+    document.getElementById('panel-hist').classList.toggle('active', t === 'hist');
+    if (t === 'hist') loadHist();
+  }
+
+  // ── Tipo / Origem ────────────────────────────────────────────────────────
   function setTipo(t) {
     tipoAtual = t;
     document.querySelectorAll('.tipo-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === t));
     document.getElementById('value-row').classList.toggle('show', t === 'Purchase');
   }
-
-  // ── Origem ───────────────────────────────────────────────────────────────
   function setOrigem(o) {
     origemAtual = o;
     document.querySelectorAll('.origem-btn').forEach(b => b.classList.toggle('active', b.dataset.origem === o));
   }
 
-  // ── Submit ───────────────────────────────────────────────────────────────
-  async function submit() {
+  // ── Novo registro ────────────────────────────────────────────────────────
+  async function submitForm() {
     const phone = document.getElementById('phone').value.trim();
     const name  = document.getElementById('name').value.trim();
     const value = document.getElementById('value').value.trim();
@@ -287,8 +429,7 @@
     if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
 
     const btn = document.getElementById('btn-submit');
-    btn.disabled = true;
-    btn.textContent = 'Enviando…';
+    btn.disabled = true; btn.textContent = 'Enviando…';
 
     const body = { event_name: tipoAtual, phone, origem: origemAtual };
     if (name)  body.name  = name;
@@ -296,37 +437,25 @@
     if (date)  body.date  = date;
 
     try {
-      const resp = await fetch(API, {
+      const resp = await fetch('/api/log-conversion', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY_PARAM },
+        headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
         body: JSON.stringify(body),
       });
       const data = await resp.json();
-
       if (resp.ok && data.saved) {
-        const capiInfo = data.meta_skipped
-          ? '(CAPI não enviado — ' + (data.meta_skip_reason || 'sem credenciais') + ')'
-          : data.ok ? '✓ CAPI enviado' : '⚠ CAPI falhou';
-
-        showFeedback('Conversão registrada! ' + capiInfo, true);
-        addHist({ tipo: tipoAtual, name, phone, value, origem: origemAtual, capiOk: data.ok && !data.meta_skipped });
+        const capiMsg = data.meta_skipped ? '(sem CAPI)' : data.ok ? '· ✓ CAPI' : '· ⚠ CAPI falhou';
+        showFeedback(`Registrado! ${capiMsg}`, true);
         clearForm();
       } else {
-        showFeedback('Erro: ' + (data.error || 'resposta inesperada'), false);
+        showFeedback('Erro: ' + (data.error || 'inesperado'), false);
       }
-    } catch (err) {
-      showFeedback('Erro de conexão. Tente novamente.', false);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Registrar conversão';
-    }
+    } catch { showFeedback('Erro de conexão.', false); }
+    finally { btn.disabled = false; btn.textContent = 'Registrar'; }
   }
 
   function clearForm() {
-    document.getElementById('phone').value = '';
-    document.getElementById('name').value  = '';
-    document.getElementById('value').value = '';
-    document.getElementById('date').value  = '';
+    ['phone','name','value','date'].forEach(id => document.getElementById(id).value = '');
   }
 
   function showFeedback(msg, ok) {
@@ -334,35 +463,123 @@
     el.textContent = msg;
     el.className = ok ? 'ok' : 'err';
     el.style.display = 'block';
-    if (ok) setTimeout(() => { el.style.display = 'none'; }, 4000);
+    if (ok) setTimeout(() => el.style.display = 'none', 4000);
   }
 
-  // ── Histórico local ──────────────────────────────────────────────────────
-  function addHist({ tipo, name, phone, value, origem, capiOk }) {
-    const last4 = (phone || '').replace(/\D/g, '').slice(-4);
-    const hora  = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    historico.unshift({ tipo, name, last4, value, origem, capiOk, hora });
-    renderHist();
-  }
-
-  function renderHist() {
+  // ── Histórico ────────────────────────────────────────────────────────────
+  async function loadHist() {
     const list = document.getElementById('hist-list');
-    if (!historico.length) { list.innerHTML = ''; return; }
-    list.innerHTML = historico.map(h => `
-      <div class="hist-item">
-        <div class="hist-left">
-          <span class="hist-name">${h.name || 'Sem nome'}</span>
-          <span class="hist-meta">****${h.last4} · ${h.hora} · ${h.origem}</span>
-        </div>
-        <div class="hist-right">
-          <span class="hist-type ${h.tipo}">${h.tipo === 'Contact' ? 'Contato' : 'Venda'}</span>
-          ${h.tipo === 'Purchase' ? `<span class="hist-value">R$ ${h.value}</span>` : ''}
-          <span class="hist-capi">${h.capiOk ? '✓ CAPI' : '– CAPI'}</span>
-        </div>
-      </div>
-    `).join('');
-  }
-</script>
+    list.innerHTML = '<div id="hist-empty">Buscando...</div>';
 
+    const phoneVal = document.getElementById('search-phone').value.replace(/\D/g,'').slice(-4);
+    const dateVal  = document.getElementById('search-date').value;
+
+    const params = new URLSearchParams({ key: KEY });
+    if (phoneVal) params.set('phone', phoneVal);
+    if (dateVal === 'today') {
+      params.set('date', todayStr());
+    } else if (dateVal === 'yesterday') {
+      params.set('date', yesterdayStr());
+    }
+
+    try {
+      const resp = await fetch('/api/conversions-history?' + params);
+      const data = await resp.json();
+      if (!resp.ok) { list.innerHTML = '<div id="hist-empty">Erro ao carregar.</div>'; return; }
+      renderHist(data.conversions || []);
+    } catch { list.innerHTML = '<div id="hist-empty">Erro de conexão.</div>'; }
+  }
+
+  function renderHist(items) {
+    const list = document.getElementById('hist-list');
+    if (!items.length) { list.innerHTML = '<div id="hist-empty">Nenhum registro encontrado.</div>'; return; }
+
+    let html = '';
+    let lastDate = '';
+
+    items.forEach(c => {
+      if (c.event_date !== lastDate) {
+        html += `<div class="day-sep">${formatDate(c.event_date)}</div>`;
+        lastDate = c.event_date;
+      }
+      const hora = new Date(c.registered_at * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const isContact = c.event_name === 'Contact';
+      const valueFmt = c.value_cents ? 'R$ ' + (c.value_cents / 100).toFixed(2).replace('.', ',') : '';
+      const origemLabel = { ad: 'Meta', google: 'Google', organic: 'Orgânico', referral: 'Indicação' }[c.origem] || c.origem;
+      const upgradeBtn = isContact
+        ? `<button class="btn-upgrade" onclick="openModal(${c.id},'${escHtml(c.display_name)}')">→ Venda</button>`
+        : '';
+
+      html += `
+        <div class="hcard">
+          <div class="hcard-left">
+            <div class="hcard-name">${escHtml(c.display_name) || 'Sem nome'}</div>
+            <div class="hcard-meta">****${c.phone_last4} · ${hora} · ${origemLabel}</div>
+          </div>
+          <div class="hcard-right">
+            <span class="badge ${isContact ? 'badge-contact' : 'badge-purchase'}">${isContact ? 'Contato' : 'Venda'}</span>
+            ${valueFmt ? `<span class="hcard-value">${valueFmt}</span>` : ''}
+            <span class="hcard-capi">${c.meta_ok ? '✓ CAPI' : '– CAPI'}</span>
+            ${upgradeBtn}
+          </div>
+        </div>`;
+    });
+
+    list.innerHTML = html;
+  }
+
+  function formatDate(d) {
+    const today = todayStr();
+    const yest  = yesterdayStr();
+    if (d === today) return 'Hoje';
+    if (d === yest)  return 'Ontem';
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
+
+  function todayStr()     { return new Date().toISOString().slice(0, 10); }
+  function yesterdayStr() { const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+  function escHtml(s)     { return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // ── Modal: promover → Venda ──────────────────────────────────────────────
+  function openModal(id, name) {
+    editingId = id;
+    document.getElementById('modal-name').value  = name || 'Sem nome';
+    document.getElementById('modal-value').value = '';
+    document.getElementById('modal-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('modal-value').focus(), 100);
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    editingId = null;
+  }
+
+  async function confirmUpdate() {
+    const value = document.getElementById('modal-value').value.trim();
+    if (!value) { alert('Informe o valor da venda.'); return; }
+    if (!editingId) return;
+
+    try {
+      const resp = await fetch('/api/update-conversion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+        body: JSON.stringify({ id: editingId, event_name: 'Purchase', value }),
+      });
+      const data = await resp.json();
+      if (resp.ok && data.ok) {
+        closeModal();
+        loadHist();
+      } else {
+        alert('Erro: ' + (data.error || 'inesperado'));
+      }
+    } catch { alert('Erro de conexão.'); }
+  }
+
+  // Fechar modal ao clicar fora
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
 </body>
 </html>
