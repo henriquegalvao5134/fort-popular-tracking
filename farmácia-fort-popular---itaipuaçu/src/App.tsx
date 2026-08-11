@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phone, MapPin, Clock, CheckCircle2, ShoppingCart, MessageCircle, Truck, ExternalLink, Instagram, X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -34,7 +34,25 @@ export default function App() {
       }),
     }).catch(function () {});
   };
-  const mapsLink = "https://www.google.com/maps/place/Drogaria+FortPopular+Itaipua%C3%A7u/@-22.9621992,-42.9616469,17z/data=!3m1!4b1!4m6!3m5!1s0x998df432e9a709:0xede8f5152429cba7!8m2!3d-22.9621992!4d-42.9616469!16s%2Fg%2F11wtlpz2zg";
+  useEffect(() => {
+    const pvEventId = crypto.randomUUID();
+    if (typeof (window as any).fbq === 'function') {
+      (window as any).fbq('track', 'PageView', {}, { eventID: pvEventId });
+    }
+    fetch('/tracker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        event_name: 'PageView',
+        event_id: pvEventId,
+        event_time: Math.floor(Date.now() / 1000),
+        event_source_url: window.location.href,
+        user_data: {},
+      }),
+    }).catch(function () {});
+  }, []);
+  const mapsLink ="https://www.google.com/maps/place/Drogaria+FortPopular+Itaipua%C3%A7u/@-22.9621992,-42.9616469,17z/data=!3m1!4b1!4m6!3m5!1s0x998df432e9a709:0xede8f5152429cba7!8m2!3d-22.9621992!4d-42.9616469!16s%2Fg%2F11wtlpz2zg";
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 overflow-x-hidden">
