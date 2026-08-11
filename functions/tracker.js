@@ -173,11 +173,7 @@ export async function onRequestPost(context) {
     const rawEmail = userData.em || '';
 
     // --- Log to D1 (background) ---
-    // Skip PageView: conversions fire regardless of this log, and the health
-    // dashboard only reports Lead/Purchase. Dropping PageView cuts ~70% of
-    // event_log writes so per-instance D1 stays healthy long-term.
-    const loggedEventName = (body.event_name || '').toLowerCase();
-    const shouldLogEvent = loggedEventName !== 'pageview' && loggedEventName !== 'page_view';
+    const shouldLogEvent = true;
     const browserInfo = parseBrowser(userAgent);
     context.waitUntil(
       (async () => {
