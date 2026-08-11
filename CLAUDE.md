@@ -99,11 +99,22 @@ looked up to enrich the Meta/GA4/Google Ads conversion.
 
 Hop-by-hop debugging bible: `docs/data-flow.md`
 
+## Customizações Fort Popular (não reverter)
+
+- **Meta pixel browser-side bloqueado.** O Meta classificou o site como
+  "Prestador de serviços de saúde" e bloqueou todos os eventos `fbq()`.
+  Solução: todos os eventos (`PageView` e `Contact`) são disparados via
+  CAPI server-side (`/tracker`). O `fbq()` ainda é chamado com o mesmo
+  `event_id` para deduplicação caso o bloqueio seja removido no futuro.
+- **PageView disparado no `App.tsx`.** Um `useEffect` na montagem do
+  componente envia `POST /tracker` com `event_name: 'PageView'`.
+  Arquivo: `farmácia-fort-popular---itaipuaçu/src/App.tsx`.
+- **PageView gravado no D1.** O filtro que bloqueava PageView no
+  `event_log` foi removido (`functions/tracker.js`, `shouldLogEvent = true`).
+  Para consultar visitas: `SELECT event_name, COUNT(*) FROM event_log GROUP BY event_name`.
+
 ## Hard rules (do not violate)
 
-- **Never log PageView events to `event_log`.** PageView still fires to
-  Meta/GA4 — it just doesn't write to D1. This keeps per-instance D1 write
-  volume sustainable forever. Enforced at `functions/tracker.js:118`.
 - **Never commit secrets.** `wrangler.toml`, `.dev.vars`, `.env*` are all
   gitignored. Only `wrangler.toml.example` is tracked. Product configuration
   (`config/products.js`) IS tracked — product IDs and tag IDs are not secrets.
@@ -140,7 +151,7 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
 | Path | Purpose |
 |---|---|
 | `_middleware.js` | Runs on every page request. Generates `_krob_sid`, captures `fbclid`/`gclid`/UTMs, computes `SUB_DOMAIN_INDEX` from the Host header, sets 400-day cookies, upserts `sessions`. Skips `/tracker`, `/webhook/*`, `/api/*`, `/dash`. |
-| `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP, logs to `event_log` (PageView skipped). |
+| `tracker.js` | `POST /tracker` — client events. Hashes PII, fires Meta CAPI + GA4 MP, logs todos os eventos (incluindo PageView) a `event_log`. |
 | `checkout-session.js` | `POST /checkout-session` — persists `trk` + attribution when a sales-page loads or a checkout button fires. |
 | `scripts/[[path]].js` | First-party proxy for `gtag.js`. Example pages load GA4 via `/scripts/gtag.js?id=...`. |
 | `webhook/_core.js` | Platform-agnostic brain: lookup `trk` → enrich → fan out to Meta/GA4/Google Ads/Encharge/ManyChat → persist `purchase_log` + `purchase_items`. |
