@@ -330,6 +330,17 @@
       font-family: inherit;
     }
     .btn-upgrade:hover { background: var(--red); color: #fff; }
+    .btn-edit {
+      padding: 3px 7px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-edit:hover { background: rgba(255,255,255,0.12); }
 
     .hist-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
 
@@ -645,6 +656,57 @@
 
 </div><!-- /main-cols -->
 
+<!-- ── MODAL: Editar Registro ── -->
+<div class="modal-overlay" id="edit-overlay">
+  <div class="modal" style="max-width:420px;">
+    <h3>Editar Registro</h3>
+    <p id="edit-sub" style="margin-bottom:16px;font-size:.82rem;color:var(--muted);"></p>
+
+    <div class="field">
+      <label>Nome do cliente</label>
+      <input id="edit-name" type="text" placeholder="Maria Silva">
+    </div>
+    <div class="field">
+      <label>Data</label>
+      <input id="edit-date" type="date">
+    </div>
+    <div class="field">
+      <label>Tipo</label>
+      <select id="edit-type" onchange="toggleEditValue()" style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;font-family:inherit;">
+        <option value="Contact">Contato</option>
+        <option value="Purchase">Venda</option>
+      </select>
+    </div>
+    <div class="field" id="edit-value-row">
+      <label>Valor da venda (R$)</label>
+      <input id="edit-value" type="text" placeholder="0,00" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Origem</label>
+      <select id="edit-origem" style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;font-family:inherit;">
+        <option value="ad">Meta Ads</option>
+        <option value="google">Google Ads</option>
+        <option value="organic">Orgânico</option>
+        <option value="referral">Indicação</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Produto / Medicamento</label>
+      <input id="edit-produto" type="text" placeholder="Ex: Rivotril 2mg">
+    </div>
+    <div class="field">
+      <label>Observação</label>
+      <textarea id="edit-observacao" placeholder="Ex: Cliente não respondeu…"
+        style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;resize:vertical;min-height:60px;font-family:inherit;transition:border-color .2s;"></textarea>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel"  onclick="closeEditModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmEdit()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── MODAL: Contact → Purchase ── -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
@@ -871,6 +933,7 @@ async function loadHist() {
       const upBtn = ic
         ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>`
         : '';
+      const editBtn = `<button class="btn-edit" onclick='openEditModal(${JSON.stringify(r)})' title="Editar">✏️</button>`;
       return `<tr>
         <td class="td-date">${r.event_date || '—'}</td>
         <td class="td-cli">${cli}</td>
@@ -878,7 +941,7 @@ async function loadHist() {
         <td class="td-val">${val}</td>
         <td class="td-ltv">${ltv}</td>
         <td class="td-meta">${meta}</td>
-        <td class="td-act">${upBtn}</td>
+        <td class="td-act" style="white-space:nowrap;">${upBtn} ${editBtn}</td>
       </tr>`;
     }).join('');
   } catch (e) {
@@ -906,6 +969,71 @@ function fmtCep(el) {
   if (v.length > 5) v = v.replace(/(\d{5})(\d{0,3})/, '$1-$2');
   el.value = v;
 }
+
+// ── Modal Editar ──────────────────────────────────────
+let editingRow = null;
+
+function openEditModal(r) {
+  editingRow = r;
+  document.getElementById('edit-sub').textContent = `ID #${r.id}`;
+  document.getElementById('edit-name').value      = r.display_name || '';
+  document.getElementById('edit-date').value      = r.event_date   || '';
+  document.getElementById('edit-type').value      = r.event_name   || 'Contact';
+  document.getElementById('edit-origem').value    = r.origem        || 'ad';
+  document.getElementById('edit-produto').value   = r.produto       || '';
+  document.getElementById('edit-observacao').value = r.observacao   || '';
+  const vc = r.value_cents || 0;
+  document.getElementById('edit-value').value = vc > 0
+    ? (vc / 100).toFixed(2).replace('.', ',') : '';
+  toggleEditValue();
+  document.getElementById('edit-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('edit-name').focus(), 80);
+}
+
+function toggleEditValue() {
+  const isPurchase = document.getElementById('edit-type').value === 'Purchase';
+  document.getElementById('edit-value-row').style.display = isPurchase ? '' : 'none';
+}
+
+function closeEditModal() {
+  document.getElementById('edit-overlay').classList.remove('open');
+  editingRow = null;
+}
+
+async function confirmEdit() {
+  if (!editingRow) return;
+  const body = { id: editingRow.id };
+  const name    = document.getElementById('edit-name').value.trim();
+  const date    = document.getElementById('edit-date').value;
+  const type    = document.getElementById('edit-type').value;
+  const origem  = document.getElementById('edit-origem').value;
+  const produto = document.getElementById('edit-produto').value.trim();
+  const obs     = document.getElementById('edit-observacao').value.trim();
+  const val     = document.getElementById('edit-value').value.trim();
+
+  body.display_name = name;
+  body.event_date   = date;
+  body.event_name   = type;
+  body.origem       = origem;
+  body.produto      = produto;
+  body.observacao   = obs;
+  if (type === 'Purchase') body.value = val;
+
+  try {
+    const resp = await fetch('/api/update-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (resp.ok && data.ok) { closeEditModal(); loadHist(); }
+    else alert('Erro: ' + (data.error || 'inesperado'));
+  } catch { alert('Erro de conexão.'); }
+}
+
+document.getElementById('edit-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
 
 // ── Modal ─────────────────────────────────────────────
 function openModal(id, name) {

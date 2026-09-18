@@ -3,10 +3,10 @@
 // Atualiza um registro de conversão existente.
 // Casos de uso:
 //   - Promover Contact → Purchase (adicionar valor)
-//   - Corrigir valor de uma venda
+//   - Corrigir nome, produto, observação, data, origem, tipo ou valor
 //
 // Auth:  header x-dash-key: <DASH_KEY> ou <CLIENT_KEY>
-// Body:  { id, event_name?, value? }
+// Body:  { id, event_name?, value?, display_name?, produto?, observacao?, event_date?, origem? }
 
 export async function onRequestOptions() {
   return new Response(null, {
@@ -29,11 +29,18 @@ export async function onRequestPost(context) {
   let body = {};
   try { body = await request.json(); } catch (_) { body = {}; }
 
-  const { id, event_name, value } = body;
+  const { id, event_name, value, display_name, produto, observacao, event_date, origem } = body;
 
   if (!id) return json({ error: 'id é obrigatório' }, 400);
   if (event_name && !['Contact', 'Purchase'].includes(event_name)) {
     return json({ error: 'event_name inválido' }, 400);
+  }
+  const ORIGENS = ['ad', 'google', 'organic', 'referral'];
+  if (origem && !ORIGENS.includes(origem)) {
+    return json({ error: 'origem inválida' }, 400);
+  }
+  if (event_date && !/^\d{4}-\d{2}-\d{2}$/.test(event_date)) {
+    return json({ error: 'event_date deve ser YYYY-MM-DD' }, 400);
   }
 
   if (!env.DB) return json({ error: 'DB não configurado' }, 500);
@@ -41,11 +48,13 @@ export async function onRequestPost(context) {
   const sets = [];
   const binds = [];
 
-  if (event_name) { sets.push('event_name = ?'); binds.push(event_name); }
-  if (value !== undefined) {
-    const valueCents = Math.round(parseBRFloat(value) * 100);
-    sets.push('value_cents = ?'); binds.push(valueCents);
-  }
+  if (event_name)                      { sets.push('event_name = ?');   binds.push(event_name); }
+  if (value !== undefined)             { sets.push('value_cents = ?');   binds.push(Math.round(parseBRFloat(value) * 100)); }
+  if (display_name !== undefined)      { sets.push('display_name = ?'); binds.push(display_name.trim()); }
+  if (produto !== undefined)           { sets.push('produto = ?');       binds.push(produto.trim()); }
+  if (observacao !== undefined)        { sets.push('observacao = ?');    binds.push(observacao.trim()); }
+  if (event_date)                      { sets.push('event_date = ?');    binds.push(event_date); }
+  if (origem)                          { sets.push('origem = ?');        binds.push(origem); }
 
   if (!sets.length) return json({ error: 'Nada para atualizar' }, 400);
 
