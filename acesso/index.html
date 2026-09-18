@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Fort Popular — Painel Interno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:    #CC1B1B;
+      --red2:   #a81515;
+      --gold:   #FFD700;
+      --bg:     #0c0404;
+      --card:   #140808;
+      --border: rgba(204,27,27,0.25);
+      --text:   #f0e8e8;
+      --muted:  #8a7070;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+    }
+
+    /* ── HEADER ── */
+    .logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo-cross {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 12px rgba(204,27,27,0.6));
+    }
+    .logo h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      color: var(--red);
+      font-size: 1.8rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .logo p {
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── CARDS ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .nav-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 22px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .nav-card:hover {
+      border-color: var(--red);
+      background: rgba(204,27,27,0.06);
+      transform: translateY(-2px);
+    }
+    .nav-card:active { transform: translateY(0); }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+    .icon-registrar {
+      background: rgba(204,27,27,0.15);
+      border: 1px solid rgba(204,27,27,0.3);
+    }
+    .icon-relatorio {
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.25);
+    }
+
+    .card-text { flex: 1; }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .card-arrow {
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    footer .dot {
+      margin: 0 6px;
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <div class="logo-cross">✚</div>
+    <h1>Fort Popular</h1>
+    <p>Sistema interno</p>
+  </div>
+
+  <div class="cards">
+    <a class="nav-card" href="/conversao/?key=fortpopular2026">
+      <div class="card-icon icon-registrar">💬</div>
+      <div class="card-text">
+        <div class="card-title">Registrar Conversão</div>
+        <div class="card-desc">Registre contatos e vendas do atendimento</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+
+    <a class="nav-card" href="/relatorio/?key=fortpopular2026">
+      <div class="card-icon icon-relatorio">📊</div>
+      <div class="card-text">
+        <div class="card-title">Relatório</div>
+        <div class="card-desc">Métricas de campanhas e resultados</div>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+  </div>
+
+  <footer>
+    Farmácias Fort Popular · Itaipuaçu
+    <span class="dot">·</span>
+    Acesso restrito
+  </footer>
+
+</body>
+</html>
