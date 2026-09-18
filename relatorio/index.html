@@ -128,6 +128,100 @@
     #help-box { padding:24px 16px; }
     .col-imp { display:none; }
   }
+
+  /* ── ABAS ── */
+  .tab-bar { display:flex; gap:4px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:18px; }
+  .tab-btn { flex:1; padding:10px 6px; border:none; background:transparent; color:var(--muted); border-radius:9px; font-size:0.84rem; cursor:pointer; transition:all .2s; font-family:inherit; white-space:nowrap; }
+  .tab-btn.active { background:var(--gold); color:#0c0404; font-weight:700; }
+  .tab-btn:hover:not(.active) { color:var(--gold); }
+
+  /* ── FORMULÁRIO DE CONVERSÃO ── */
+  .f-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:24px; max-width:500px; margin:0 auto; }
+  .tipo-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+  .tipo-btn { padding:14px 10px; border:1px solid var(--border); background:transparent; color:var(--muted); border-radius:10px; font-size:.93rem; cursor:pointer; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:5px; font-family:inherit; }
+  .tipo-btn .t-ico { font-size:1.4rem; }
+  .tipo-btn.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+  .origem-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:20px; }
+  .origem-btn { padding:10px 8px; border:1px solid var(--border); background:transparent; color:var(--muted); border-radius:9px; font-size:.8rem; font-weight:600; cursor:pointer; transition:all .2s; text-align:center; font-family:inherit; }
+  .origem-btn.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+  .f-field { margin-bottom:16px; }
+  .f-field label { display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:7px; }
+  .f-field input { width:100%; padding:12px 14px; background:rgba(255,215,0,0.04); border:1px solid var(--border); border-radius:9px; color:var(--text); font-size:.95rem; outline:none; transition:border-color .2s; font-family:inherit; }
+  .f-field input:focus { border-color:var(--gold); }
+  .f-field input::placeholder { color:var(--muted); }
+  .f-value-row { display:none; }
+  .f-value-row.show { display:block; }
+  .f-section-div { display:flex; align-items:center; gap:10px; margin:4px 0 16px; }
+  .f-section-div span { font-size:.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
+  .f-section-div::before,.f-section-div::after { content:''; flex:1; height:1px; background:var(--border); }
+  .match-badge { font-size:.65rem; background:rgba(95,217,138,.12); color:var(--green); border:1px solid rgba(95,217,138,.25); border-radius:20px; padding:2px 8px; font-weight:600; white-space:nowrap; }
+  .f-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn-registrar { width:100%; padding:14px; background:var(--gold); color:#0c0404; border:none; border-radius:10px; font-size:.97rem; font-weight:700; cursor:pointer; margin-top:4px; letter-spacing:.03em; transition:opacity .2s,transform .1s; font-family:inherit; }
+  .btn-registrar:active { transform:scale(.98); }
+  .btn-registrar:disabled { opacity:.45; cursor:not-allowed; }
+  .f-feedback { margin-top:14px; padding:12px 14px; border-radius:10px; font-size:.88rem; display:none; }
+  .f-feedback.ok { background:rgba(95,217,138,.1); border:1px solid rgba(95,217,138,.3); color:var(--green); display:block; }
+  .f-feedback.err { background:rgba(204,27,27,.1); border:1px solid rgba(204,27,27,.3); color:#e05a5a; display:block; }
+
+  /* ── HISTÓRICO ── */
+  .h-filters { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .h-filters input { flex:1; min-width:110px; padding:10px 12px; font-size:.85rem; background:var(--card2); border:1.5px solid var(--border); border-radius:8px; color:var(--text); outline:none; font-family:inherit; }
+  .h-filters input:focus { border-color:var(--gold); }
+  .h-search { min-width:160px; }
+  .btn-filter { padding:10px 18px; background:var(--gold); color:#0c0404; border:none; border-radius:9px; font-size:.85rem; font-weight:700; cursor:pointer; font-family:inherit; }
+  .h-summary { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+  @media (min-width:480px) { .h-summary { grid-template-columns:repeat(4,1fr); } }
+  .h-stat { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 12px; text-align:center; }
+  .hs-label { font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  .hs-val   { font-size:1.15rem; font-weight:700; color:var(--gold); }
+  .h-table-wrap { overflow-x:auto; }
+  .badge-purchase { background:rgba(95,217,138,.12); color:var(--green); padding:2px 8px; border-radius:20px; font-size:.71rem; font-weight:600; }
+  .badge-contact  { background:rgba(100,160,255,.12); color:#64a0ff;  padding:2px 8px; border-radius:20px; font-size:.71rem; font-weight:600; }
+  .meta-ok { color:var(--green); font-size:.85rem; }
+  .meta-no { color:var(--muted); font-size:.85rem; }
+  .plat-ico { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; font-size:11px; font-weight:900; vertical-align:middle; flex-shrink:0; }
+  .plat-meta   { background:#1877F2; color:#fff; font-style:italic; }
+  .plat-google { background:#fff; color:#4285F4; }
+  .plat-organic,.plat-referral { font-size:14px; }
+  .btn-upgrade { padding:3px 10px; background:var(--gold-dim); border:1px solid rgba(255,215,0,.35); color:var(--gold); border-radius:20px; font-size:.71rem; font-weight:700; cursor:pointer; white-space:nowrap; transition:all .15s; font-family:inherit; }
+  .btn-upgrade:hover { background:var(--gold); color:#0c0404; }
+  .h-empty { text-align:center; padding:40px 20px; color:var(--muted); font-size:.88rem; }
+  @media (max-width:819px) {
+    .h-table-wrap { overflow:hidden; }
+    .h-table-wrap table  { display:block !important; }
+    .h-table-wrap thead  { display:none !important; }
+    .h-table-wrap tbody  { display:flex !important; flex-direction:column; gap:8px; padding:8px; }
+    .h-table-wrap tbody tr { display:flex !important; flex-wrap:wrap; align-items:center; gap:4px 8px; border:1px solid var(--border) !important; border-radius:10px; padding:12px 14px; background:rgba(204,27,27,.02); }
+    .h-table-wrap tbody tr:hover { background:rgba(255,215,0,.04); }
+    .h-table-wrap tbody td { display:block !important; padding:0 !important; white-space:normal !important; border:none !important; }
+    .h-td-date  { order:1; flex:1 1 auto; font-size:.75rem; color:var(--muted); white-space:nowrap !important; }
+    .h-td-badge { order:2; flex:0 0 auto; }
+    .h-td-meta  { order:3; flex:0 0 auto; white-space:nowrap !important; }
+    .h-td-act   { order:4; flex:0 0 auto; }
+    .h-td-cli   { order:5; flex:0 0 100%; padding-top:3px; }
+    .h-td-val   { order:6; flex:0 0 50%; font-size:.82rem; padding-top:5px; }
+    .h-td-ltv   { order:7; flex:0 0 50%; font-size:.82rem; text-align:right; padding-top:5px; }
+    .h-td-val::before { content:'Valor '; color:var(--muted); font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+    .h-td-ltv::before { content:'LTV '; color:var(--muted); font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  }
+
+  /* ── MODAL ── */
+  .conv-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:100; align-items:center; justify-content:center; }
+  .conv-modal-overlay.open { display:flex; }
+  .conv-modal { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; width:92%; max-width:360px; box-shadow:0 16px 48px rgba(0,0,0,.6); }
+  .conv-modal h3 { font-size:1.1rem; color:var(--gold); margin-bottom:5px; }
+  .conv-modal p { font-size:.82rem; color:var(--muted); margin-bottom:20px; }
+  .conv-modal .f-field { margin-bottom:0; }
+  .modal-btns { display:flex; gap:8px; margin-top:18px; }
+  .modal-btns button { flex:1; padding:13px; border-radius:9px; font-weight:700; font-size:.9rem; cursor:pointer; border:none; font-family:inherit; }
+  .btn-cancel  { background:rgba(255,255,255,.05); color:var(--muted); border:1px solid var(--border) !important; }
+  .btn-confirm { background:var(--gold); color:#0c0404; }
+
+  /* Desktop: form + history side by side */
+  @media (min-width:820px) {
+    .reg-cols { display:grid; grid-template-columns:460px 1fr; gap:24px; align-items:start; }
+    .f-card { max-width:none; }
+  }
 </style>
 </head>
 <body>
@@ -235,6 +329,16 @@
     </div>
   </div>
   <div class="gold-bar"></div>
+
+  <!-- ABAS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tb-relatorio" onclick="switchTab('relatorio',this)">📊 Relatório</button>
+    <button class="tab-btn" id="tb-registrar" onclick="switchTab('registrar',this)">📋 Registrar</button>
+    <button class="tab-btn" id="tb-historico" onclick="switchTab('historico',this)">📋 Histórico</button>
+  </div>
+
+  <!-- TAB: RELATÓRIO -->
+  <div id="tab-relatorio">
 
   <!-- FILTRO DE DATAS -->
   <div class="card" style="padding:14px 16px;margin-bottom:16px;">
@@ -535,6 +639,133 @@
 
   <div style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:20px;">
     Dados via Meta Ads API · Delay de até 3h
+  </div>
+  </div><!-- /tab-relatorio -->
+
+  <!-- TAB: REGISTRAR -->
+  <div id="tab-registrar" style="display:none;">
+    <div style="max-width:500px;margin:0 auto;">
+      <!-- FORMULÁRIO -->
+      <div>
+        <div class="f-card">
+          <div class="tipo-grid">
+            <button class="tipo-btn active" onclick="setTipo('Contact',this)">
+              <span class="t-ico">💬</span>Contato
+            </button>
+            <button class="tipo-btn" onclick="setTipo('Purchase',this)">
+              <span class="t-ico">💰</span>Venda
+            </button>
+          </div>
+          <div class="origem-grid">
+            <button class="origem-btn active" data-o="ad" onclick="setOrigem('ad',this)"><span class="plat-ico plat-meta" style="margin-right:5px;">f</span>Meta Ads</button>
+            <button class="origem-btn" data-o="google" onclick="setOrigem('google',this)"><span class="plat-ico plat-google" style="margin-right:5px;">G</span>Google Ads</button>
+            <button class="origem-btn" data-o="organic" onclick="setOrigem('organic',this)">🚶 Orgânico</button>
+            <button class="origem-btn" data-o="referral" onclick="setOrigem('referral',this)">🤝 Indicação</button>
+          </div>
+          <div class="f-field">
+            <label>Telefone / WhatsApp *</label>
+            <input id="f-phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
+          </div>
+          <div class="f-field">
+            <label>Nome do cliente</label>
+            <input id="f-name" type="text" placeholder="Maria Silva">
+          </div>
+          <div class="f-field f-value-row" id="f-value-row">
+            <label>Valor da venda (R$) *</label>
+            <input id="f-value" type="text" placeholder="0,00" inputmode="decimal">
+          </div>
+          <div class="f-field">
+            <label>Data (padrão: hoje)</label>
+            <input id="f-date" type="date">
+          </div>
+          <div class="f-section-div">
+            <span>Dados adicionais</span>
+            <span class="match-badge">melhora match Meta</span>
+          </div>
+          <div class="f-field">
+            <label>Email</label>
+            <input id="f-email" type="email" placeholder="email@cliente.com" inputmode="email" autocomplete="off">
+          </div>
+          <div class="f-field">
+            <label>CPF</label>
+            <input id="f-cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" oninput="fmtCpf(this)">
+          </div>
+          <div class="f-field">
+            <label>Bairro</label>
+            <input id="f-neighborhood" type="text" placeholder="Ex: Centro">
+          </div>
+          <div class="f-field">
+            <label>Endereço (rua, nº)</label>
+            <input id="f-address" type="text" placeholder="Ex: Rua das Flores, 123">
+          </div>
+          <div class="f-grid2">
+            <div class="f-field">
+              <label>Cidade</label>
+              <input id="f-city" type="text" placeholder="Ex: Itaipuaçu">
+            </div>
+            <div class="f-field">
+              <label>Estado</label>
+              <input id="f-state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;">
+            </div>
+          </div>
+          <div class="f-field">
+            <label>CEP</label>
+            <input id="f-zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9" oninput="fmtCep(this)">
+          </div>
+          <button class="btn-registrar" id="btn-registrar" onclick="submitConv()">Registrar contato</button>
+          <div class="f-feedback" id="f-feedback"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: HISTÓRICO (mobile standalone) -->
+  <div id="tab-historico" style="display:none;">
+    <div class="h-filters">
+      <input type="date" id="h-from" placeholder="De">
+      <input type="date" id="h-to" placeholder="Até">
+      <input type="search" id="h-q" class="h-search" placeholder="Nome ou telefone…"
+             onkeydown="if(event.key==='Enter')loadHist()">
+      <button class="btn-filter" onclick="loadHist()">Filtrar</button>
+    </div>
+    <div class="h-summary">
+      <div class="h-stat"><div class="hs-label">Registros</div><div class="hs-val" id="hs-total">—</div></div>
+      <div class="h-stat"><div class="hs-label">Vendas</div><div class="hs-val" id="hs-purchases">—</div></div>
+      <div class="h-stat"><div class="hs-label">Receita</div><div class="hs-val" id="hs-revenue">—</div></div>
+      <div class="h-stat"><div class="hs-label">Investido <span class="plat-ico plat-meta" style="width:12px;height:12px;font-size:8px;vertical-align:0;">f</span></div><div class="hs-val" id="hs-spend">—</div></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div class="h-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>LTV</th>
+              <th><span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="hist-body"><tr><td colspan="7" class="h-empty">Selecione o período e clique Filtrar.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL: Contact → Purchase -->
+<div class="conv-modal-overlay" id="conv-modal-overlay">
+  <div class="conv-modal">
+    <h3>Promover para Venda</h3>
+    <p id="conv-modal-sub">Informe o valor da compra.</p>
+    <div class="f-field">
+      <label>Valor da venda (R$) *</label>
+      <input id="conv-modal-value" type="text" placeholder="0,00" inputmode="decimal">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeConvModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmConvUpdate()">Confirmar</button>
+    </div>
   </div>
 </div>
 
@@ -1108,6 +1339,260 @@ async function fetchConversionsSummary(s, u) {
     renderFunil(d);
   } catch(_) {}
 }
+
+// ── ABAS ────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  ['relatorio','registrar','historico'].forEach(id => {
+    document.getElementById('tab-' + id).style.display = 'none';
+    document.getElementById('tb-' + id).classList.remove('active');
+  });
+  document.getElementById('tab-' + name).style.display = 'block';
+  btn.classList.add('active');
+  if (name === 'historico') {
+    initHistDates();
+    loadHist();
+  }
+  if (name === 'registrar') {
+    initHistDates();
+  }
+}
+
+// ── CONVERSÃO — FORM ─────────────────────────────────────────────────
+let convTipo   = 'Contact';
+let convOrigem = 'ad';
+let convEditId = null;
+
+function setTipo(t, btn) {
+  convTipo = t;
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('f-value-row').classList.toggle('show', t === 'Purchase');
+  document.getElementById('btn-registrar').textContent = t === 'Purchase' ? 'Registrar venda' : 'Registrar contato';
+}
+
+function setOrigem(o, btn) {
+  convOrigem = o;
+  document.querySelectorAll('.origem-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function submitConv() {
+  const phone        = document.getElementById('f-phone').value.trim();
+  const name         = document.getElementById('f-name').value.trim();
+  const value        = document.getElementById('f-value').value.trim();
+  const date         = document.getElementById('f-date').value;
+  const email        = document.getElementById('f-email').value.trim();
+  const cpf          = document.getElementById('f-cpf').value.trim();
+  const neighborhood = document.getElementById('f-neighborhood').value.trim();
+  const address      = document.getElementById('f-address').value.trim();
+  const city         = document.getElementById('f-city').value.trim();
+  const state        = document.getElementById('f-state').value.trim().toUpperCase();
+  const zip          = document.getElementById('f-zip').value.trim();
+
+  if (!phone) { showConvFeedback('Informe o telefone do cliente.', false); return; }
+  if (convTipo === 'Purchase' && !value) { showConvFeedback('Informe o valor da venda.', false); return; }
+
+  const btn = document.getElementById('btn-registrar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+  document.getElementById('f-feedback').className = 'f-feedback';
+
+  const body = { event_name: convTipo, phone, origem: convOrigem };
+  if (name)         body.name         = name;
+  if (value)        body.value        = value;
+  if (date)         body.date         = date;
+  if (email)        body.email        = email;
+  if (cpf)          body.cpf          = cpf;
+  if (neighborhood) body.neighborhood = neighborhood;
+  if (address)      body.address      = address;
+  if (city)         body.city         = city;
+  if (state)        body.state        = state;
+  if (zip)          body.zip          = zip;
+
+  try {
+    const resp = await fetch('/api/log-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': CLIENT_KEY },
+      body: JSON.stringify(body),
+    });
+    const data = await resp.json();
+    if (resp.ok && data.saved) {
+      let msg;
+      if (data.meta_skipped) {
+        msg = '✓ Registrado — sem CAPI (orgânico/data antiga)';
+      } else if (data.ok) {
+        const sig = data.match_signals || 0;
+        const qual = sig >= 5 ? 'Excelente' : sig >= 3 ? 'Bom' : 'Básico';
+        msg = `✓ Registrado · Meta CAPI ✓ · Match ${qual} (${sig} sinais)`;
+      } else {
+        msg = '✓ Registrado · ⚠ CAPI falhou';
+      }
+      showConvFeedback(msg, true);
+      ['f-phone','f-name','f-value','f-date','f-email','f-cpf','f-neighborhood','f-address','f-city','f-state','f-zip']
+        .forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-phone').focus();
+    } else {
+      showConvFeedback('Erro: ' + (data.error || 'inesperado'), false);
+    }
+  } catch { showConvFeedback('Erro de conexão.', false); }
+  finally {
+    btn.disabled = false;
+    btn.textContent = convTipo === 'Purchase' ? 'Registrar venda' : 'Registrar contato';
+  }
+}
+
+function showConvFeedback(msg, ok) {
+  const el = document.getElementById('f-feedback');
+  el.textContent = msg;
+  el.className = 'f-feedback ' + (ok ? 'ok' : 'err');
+  if (ok) setTimeout(() => { el.className = 'f-feedback'; }, 5000);
+}
+
+// ── CONVERSÃO — HISTÓRICO ────────────────────────────────────────────
+function initHistDates() {
+  const hFrom = document.getElementById('h-from');
+  const hTo   = document.getElementById('h-to');
+  if (!hFrom.value) {
+    const d = new Date();
+    hFrom.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+    hTo.value   = ymd(d);
+  }
+}
+
+async function loadHist() {
+  const tbody = document.getElementById('hist-body');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" class="h-empty">Carregando...</td></tr>';
+  ['hs-total','hs-purchases','hs-revenue','hs-spend'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = '—';
+  });
+
+  const from = document.getElementById('h-from').value;
+  const to   = document.getElementById('h-to').value;
+  const q    = (document.getElementById('h-q').value || '').trim();
+
+  const params = new URLSearchParams({ key: CLIENT_KEY, limit: '200' });
+  if (from) params.set('from', from);
+  if (to)   params.set('to',   to);
+  if (q)    params.set('q',    q);
+
+  try {
+    const resp = await fetch('/api/conversions-history?' + params);
+    if (resp.status === 401) {
+      tbody.innerHTML = '<tr><td colspan="7" class="h-empty">Chave inválida.</td></tr>';
+      return;
+    }
+    const data = await resp.json();
+    const rows = data.conversions || [];
+
+    const purchases  = rows.filter(r => r.event_name === 'Purchase');
+    const revCents   = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
+    const spendCents = data.spend_cents || 0;
+    const setHS = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setHS('hs-total',     rows.length);
+    setHS('hs-purchases', purchases.length);
+    setHS('hs-revenue',   'R$\u00a0' + (revCents / 100).toLocaleString('pt-BR',{minimumFractionDigits:2}));
+    setHS('hs-spend',     spendCents ? 'R$\u00a0' + (spendCents / 100).toLocaleString('pt-BR',{minimumFractionDigits:2}) : '—');
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="h-empty">Nenhum registro no período.</td></tr>';
+      return;
+    }
+
+    const origemIco = {
+      ad:       '<span class="plat-ico plat-meta" title="Meta Ads">f</span>',
+      google:   '<span class="plat-ico plat-google" title="Google Ads">G</span>',
+      organic:  '<span class="plat-ico plat-organic" title="Orgânico">🚶</span>',
+      referral: '<span class="plat-ico plat-referral" title="Indicação">🤝</span>',
+    };
+    const metaIcon = '<span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span>';
+
+    const rowsHtml = rows.map(r => {
+      const ph   = r.phone_last4 ? `****${r.phone_last4}` : '';
+      const nome = hEsc(r.display_name || '—');
+      const cli  = `<span style="font-weight:600;">${nome}</span>`
+        + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem]||''}</span>` : '');
+      const ic    = r.event_name === 'Contact';
+      const badge = ic
+        ? '<span class="badge-contact">Contato</span>'
+        : '<span class="badge-purchase">Venda</span>';
+      const val   = r.value_cents
+        ? 'R$\u00a0' + (r.value_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2})
+        : '—';
+      const ltv = (r.client_ltv_cents && r.phone_normalized)
+        ? '<span style="color:var(--green);font-weight:700;">R$\u00a0'
+          + (r.client_ltv_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2})
+          + '</span>'
+          + (r.client_purchases > 1 ? `<br><span style="color:var(--muted);font-size:.75em;">${r.client_purchases}x compras</span>` : '')
+        : '<span style="color:var(--muted);">—</span>';
+      const meta  = r.meta_ok
+        ? `${metaIcon} <span class="meta-ok">✓</span>`
+        : `<span class="meta-no">—</span>`;
+      const upBtn = ic
+        ? `<button class="btn-upgrade" onclick="openConvModal(${r.id},'${hEsc(r.display_name)}')">+ Venda</button>`
+        : '';
+      return `<tr>
+        <td class="h-td-date">${r.event_date || '—'}</td>
+        <td class="h-td-cli">${cli}</td>
+        <td class="h-td-badge">${badge}</td>
+        <td class="h-td-val">${val}</td>
+        <td class="h-td-ltv">${ltv}</td>
+        <td class="h-td-meta">${meta}</td>
+        <td class="h-td-act">${upBtn}</td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML = rowsHtml;
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="7" class="h-empty">Erro: ${hEsc(e.message)}</td></tr>`;
+  }
+}
+
+function hEsc(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtCpf(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if (v.length>9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+  else if (v.length>6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+  else if (v.length>3) v = v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+  el.value = v;
+}
+function fmtCep(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,8);
+  if (v.length>5) v = v.replace(/(\d{5})(\d{0,3})/,'$1-$2');
+  el.value = v;
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────
+function openConvModal(id, name) {
+  convEditId = id;
+  document.getElementById('conv-modal-sub').textContent = name ? `Cliente: ${name}` : 'Informe o valor da compra.';
+  document.getElementById('conv-modal-value').value = '';
+  document.getElementById('conv-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('conv-modal-value').focus(), 80);
+}
+function closeConvModal() {
+  document.getElementById('conv-modal-overlay').classList.remove('open');
+  convEditId = null;
+}
+async function confirmConvUpdate() {
+  const value = document.getElementById('conv-modal-value').value.trim();
+  if (!value) { alert('Informe o valor.'); return; }
+  if (!convEditId) return;
+  try {
+    const resp = await fetch('/api/update-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': CLIENT_KEY },
+      body: JSON.stringify({ id: convEditId, event_name: 'Purchase', value }),
+    });
+    const data = await resp.json();
+    if (resp.ok && data.ok) { closeConvModal(); loadHist(); }
+    else alert('Erro: ' + (data.error || 'inesperado'));
+  } catch { alert('Erro de conexão.'); }
+}
+document.getElementById('conv-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConvModal();
+});
 
 function renderFunil(d) {
   const contacts  = d.contacts  || 0;
