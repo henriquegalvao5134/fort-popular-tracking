@@ -63,11 +63,14 @@
     #app { max-width:960px; margin:0 auto; padding:24px 16px 60px; }
 
     .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
-    .filters input[type=date] {
+    .filters input[type=date],
+    .filters select {
       background:var(--card); border:1px solid var(--border); color:var(--text);
       border-radius:8px; padding:8px 12px; font-size:13px; outline:none;
     }
-    .filters input[type=date]:focus { border-color:var(--gold); }
+    .filters input[type=date]:focus,
+    .filters select:focus { border-color:var(--gold); }
+    .filters select { cursor:pointer; }
 
     /* KPIs */
     .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
@@ -129,6 +132,13 @@
   <div class="filters">
     <input id="f-since" type="date">
     <input id="f-until" type="date">
+    <select id="f-limit" onchange="applyLimit()">
+      <option value="20">20 clientes</option>
+      <option value="50">50 clientes</option>
+      <option value="100" selected>100 clientes</option>
+      <option value="200">200 clientes</option>
+      <option value="500">500 clientes</option>
+    </select>
     <button class="btn" onclick="load()">Filtrar</button>
     <button class="btn-outline" onclick="exportCSV()">↓ Exportar CSV</button>
   </div>
@@ -165,7 +175,7 @@
   </div>
 
   <!-- TABELA CLIENTES -->
-  <div class="section-title">Clientes — LTV</div>
+  <div class="section-title" id="tbl-title">Clientes — LTV</div>
   <div class="card">
     <div class="table-scroll">
       <table>
@@ -258,13 +268,26 @@ function render(d) {
   document.getElementById('k-cac').textContent     = (d.cac_cents || 0) > 0 ? fmt(d.cac_cents) : '—';
   document.getElementById('k-ticket').textContent  = avgTicket > 0 ? fmt(avgTicket) : '—';
 
+  renderTable(clients);
+}
+
+function renderTable(clients) {
+  const limit = parseInt(document.getElementById('f-limit').value, 10);
+  const shown = clients.slice(0, limit);
+  const total = clients.length;
+
+  document.getElementById('tbl-title').textContent =
+    total > limit
+      ? `Clientes — LTV  (exibindo ${shown.length} de ${total})`
+      : `Clientes — LTV  (${total})`;
+
   const cliBody = document.getElementById('cli-body');
-  if (!clients.length) {
+  if (!shown.length) {
     cliBody.innerHTML =
       '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Nenhum cliente encontrado no período</td></tr>';
     return;
   }
-  cliBody.innerHTML = clients.map(c => {
+  cliBody.innerHTML = shown.map(c => {
     const ticket = c.visits > 0 ? c.total_cents / c.visits : 0;
     return `<tr>
       <td class="gold">${c.display_name || '—'}</td>
@@ -276,6 +299,10 @@ function render(d) {
       <td class="muted">${c.last_visit  || '—'}</td>
     </tr>`;
   }).join('');
+}
+
+function applyLimit() {
+  if (_data) renderTable(_data.clients || []);
 }
 
 function exportCSV() {
