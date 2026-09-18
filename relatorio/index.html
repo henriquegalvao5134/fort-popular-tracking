@@ -121,7 +121,7 @@
 
   /* RESPONSIVE */
   @media (max-width:620px) {
-    #app { padding:16px 12px 60px; }
+    #app { padding:16px 12px 24px; }
     .kpi-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
     .kpi-val  { font-size:20px; }
     #auction-insight { text-align:left !important; max-width:100% !important; margin-top:6px; }
@@ -218,7 +218,7 @@
 </div>
 
 <!-- APP -->
-<div id="app" style="display:none;max-width:960px;margin:0 auto;padding:28px 16px 60px;">
+<div id="app" style="display:none;max-width:960px;margin:0 auto;padding:28px 16px 32px;">
 
   <!-- HEADER -->
   <div id="app-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
@@ -1149,44 +1149,6 @@ function renderFunil(d) {
 }
 </script>
 
-<!-- Barra de navegação fixa -->
-<style>
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    display: flex;
-    background: #0c0404;
-    border-top: 1px solid rgba(204,27,27,0.35);
-    z-index: 999;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .bottom-nav a {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 8px;
-    text-decoration: none;
-    color: #8a7070;
-    font-size: 0.7rem;
-    gap: 4px;
-    transition: color 0.15s;
-  }
-  .bottom-nav a:hover { color: #FFD700; }
-  .bottom-nav a .bn-icon { font-size: 1.2rem; }
-  body { padding-bottom: 62px; }
-</style>
-<nav class="bottom-nav">
-  <a href="/">
-    <span class="bn-icon">⌂</span>
-    Início
-  </a>
-  <a href="/conversao/?key=fortpopular2026">
-    <span class="bn-icon">📋</span>
-    Registrar
-  </a>
-</nav>
 
 </body>
 </html>
