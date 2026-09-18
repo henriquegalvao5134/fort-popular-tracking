@@ -539,6 +539,13 @@
     <input type="date" id="h-to"   placeholder="Até">
     <input type="search" id="h-q" class="search-input" placeholder="Nome ou telefone…"
            onkeydown="if(event.key==='Enter')loadHist()">
+    <select id="h-limit" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+      <option value="200" selected>200</option>
+      <option value="500">500</option>
+    </select>
     <button class="btn-filter" onclick="loadHist()">Filtrar</button>
   </div>
 
@@ -736,7 +743,8 @@ async function loadHist() {
   const to   = document.getElementById('h-to').value;
   const q    = (document.getElementById('h-q').value || '').trim();
 
-  const params = new URLSearchParams({ key: KEY, limit: '200' });
+  const limit = document.getElementById('h-limit').value || '200';
+  const params = new URLSearchParams({ key: KEY, limit });
   if (from) params.set('from', from);
   if (to)   params.set('to',   to);
   if (q)    params.set('q',    q);
