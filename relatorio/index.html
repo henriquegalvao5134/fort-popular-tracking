@@ -22,6 +22,7 @@
     --text: #f5f0f0;
     --muted: #8a7070;
     --bg: #0c0404;
+    --green: #5fd98a;
   }
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
@@ -97,7 +98,7 @@
   #help-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; display:none; align-items:flex-start; justify-content:center; padding:24px 16px; overflow-y:auto; }
   #help-overlay.open { display:flex; }
   #help-box { background:#160808; border:1px solid var(--border); border-radius:16px; width:100%; max-width:680px; padding:32px 28px; position:relative; margin:auto; }
-  #help-box h2 { font-family:'Playfair Display',Georgia,serif; color:var(--gold); font-size:22px; font-weight:400; letter-spacing:4px; margin-bottom:4px; }
+  #help-box h2 { color:var(--gold); font-size:22px; font-weight:700; letter-spacing:4px; margin-bottom:4px; }
   #help-box .help-sub { font-size:12px; color:var(--muted); margin-bottom:24px; }
   .help-section { margin-bottom:22px; }
   .help-section h3 { font-size:12px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:6px; }
@@ -111,7 +112,6 @@
 
   /* GRIDS */
   .kpi-grid    { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
-  .roi-inputs  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px; }
   .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
   /* STICKY FIRST COLUMN */
@@ -124,8 +124,6 @@
     #app { padding:16px 12px 60px; }
     .kpi-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
     .kpi-val  { font-size:20px; }
-    .roi-inputs { grid-template-columns:1fr 1fr; }
-    #roi-out  { grid-template-columns:repeat(2,1fr) !important; }
     #auction-insight { text-align:left !important; max-width:100% !important; margin-top:6px; }
     #help-box { padding:24px 16px; }
     .col-imp { display:none; }
@@ -148,58 +146,50 @@
       <div class="help-item"><strong>Últimos 7 / 30 dias</strong><span>Mostra os últimos 7 ou 30 dias contando a partir de hoje.</span></div>
       <div class="help-item"><strong>Mês atual</strong><span>Do primeiro dia do mês corrente até hoje.</span></div>
       <div class="help-item"><strong>Máximo</strong><span>Todo o histórico disponível desde o início das campanhas.</span></div>
-      <div class="help-item"><strong>Personalizado</strong><span>Escolha qualquer data de início e fim nos campos à direita e clique em Aplicar.</span></div>
-      <div class="help-item"><strong>Para ver apenas hoje</strong><span>Use o filtro personalizado colocando a data de hoje nos dois campos (início e fim) e clique Aplicar.</span></div>
+      <div class="help-item"><strong>Para ver apenas hoje</strong><span>Use o filtro personalizado colocando a data de hoje nos dois campos e clique Aplicar.</span></div>
     </div>
 
     <div class="help-section">
       <h3>Números do Topo — KPIs</h3>
       <div class="help-item"><strong>Investimento</strong><span>Total gasto em anúncios no período selecionado.</span></div>
-      <div class="help-item"><strong>Conversas</strong><span>Quantas pessoas iniciaram uma conversa no WhatsApp após ver o anúncio. É a principal métrica para campanhas de atendimento da farmácia.</span></div>
-      <div class="help-item"><strong>Custo / Conversa</strong><span>Quanto custou cada conversa gerada. Divide o investimento pelo número de conversas. Quanto menor, melhor.</span></div>
-      <div class="help-item"><strong>Alcance</strong><span>Quantas pessoas únicas viram os anúncios no período. Uma mesma pessoa é contada apenas uma vez, independente de quantas vezes viu.</span></div>
-      <div class="help-item"><strong>Setas ↑ ↓ e percentual</strong><span>Comparam o período selecionado com o período anterior de mesmo tamanho. Exemplo: se você selecionou os últimos 7 dias, a comparação é com os 7 dias antes disso. Verde significa melhora, vermelho significa queda.</span></div>
+      <div class="help-item"><strong>Conversas</strong><span>Quantas pessoas iniciaram uma conversa no WhatsApp após ver o anúncio. É a principal métrica para campanhas da farmácia.</span></div>
+      <div class="help-item"><strong>Custo / Conversa</strong><span>Quanto custou cada conversa gerada. Quanto menor, melhor.</span></div>
+      <div class="help-item"><strong>Alcance</strong><span>Quantas pessoas únicas viram os anúncios. Uma mesma pessoa é contada apenas uma vez.</span></div>
+      <div class="help-item"><strong>Setas ↑ ↓</strong><span>Comparam o período selecionado com o período anterior de mesmo tamanho. Verde = melhora, vermelho = queda.</span></div>
     </div>
 
     <div class="help-section">
       <h3>Instagram Orgânico</h3>
-      <div class="help-item"><strong>Seguidores</strong><span>Total atual de seguidores da conta. O número embaixo (+X no período) mostra quantos seguidores foram conquistados no período selecionado.</span></div>
-      <div class="help-item"><strong>Gráfico de crescimento</strong><span>Linha que mostra como o número de seguidores evoluiu dia a dia. Uma linha subindo significa que a conta está crescendo. Esse crescimento reflete o resultado combinado dos anúncios e do conteúdo orgânico.</span></div>
+      <div class="help-item"><strong>Seguidores</strong><span>Total atual de seguidores e ganho no período.</span></div>
+      <div class="help-item"><strong>Gráfico de crescimento</strong><span>Evolução dia a dia dos seguidores. Reflete o resultado combinado dos anúncios e do conteúdo orgânico.</span></div>
     </div>
 
     <div class="help-section">
-      <h3>Investimento Diário</h3>
-      <div class="help-item"><strong>Gráfico de barras</strong><span>Mostra quanto foi gasto em anúncios em cada dia do período. Dias sem barra indicam que não houve gasto (campanhas pausadas ou sem orçamento).</span></div>
+      <h3>Funil de Vendas</h3>
+      <div class="help-item"><strong>Topo (Meta Ads)</strong><span>Impressões → Cliques → Conversas — dados automáticos das campanhas.</span></div>
+      <div class="help-item"><strong>Base (Registros manuais)</strong><span>Contatos e Vendas registrados pelo atendimento no painel /conversao/.</span></div>
+      <div class="help-item"><strong>ROI automático</strong><span>Calculado com base nas vendas registradas com valor. Receita gerada, custo por venda e ROI aparecem automaticamente.</span></div>
     </div>
 
     <div class="help-section">
       <h3>Análise de Leilão — CPM</h3>
-      <div class="help-item"><strong>O que é o CPM?</strong><span>CPM significa "custo por mil visualizações". Ele mostra o quanto está sendo cobrado para o anúncio aparecer para 1.000 pessoas. Quando o CPM sobe, significa que há mais anunciantes competindo pelo mesmo público — o leilão está mais disputado.</span></div>
-      <div class="help-item"><strong>Pontos coloridos</strong><span>Verde = CPM abaixo da média do período (leilão tranquilo). Amarelo = CPM um pouco acima da média. Vermelho = leilão aquecido, muitos concorrentes disputando o mesmo público naquele dia.</span></div>
-      <div class="help-item"><strong>Linha tracejada</strong><span>É a média de CPM do período. Serve de referência para saber se um dia está caro ou barato em relação ao próprio histórico da conta.</span></div>
-      <div class="help-item"><strong>Texto de contexto (canto direito)</strong><span>Explicação automática do que está acontecendo no dia mais recente do período: se o leilão está aquecido, por qual motivo (dia da semana, sazonalidade do nicho de saúde) e se é um bom momento para escalar o investimento.</span></div>
-      <div class="help-item"><strong>Por que o CPM varia?</strong><span>No nicho de saúde e farmácia, o leilão tende a subir em temporadas de dengue (jan–mar), inverno (jun–ago) e datas sazonais como Dia das Mães e fim de ano. Pagamentos do mês (dias 5 e 20) também costumam aumentar o volume de compras e a concorrência no leilão.</span></div>
+      <div class="help-item"><strong>O que é o CPM?</strong><span>Custo por mil visualizações. Quando o CPM sobe, há mais anunciantes competindo pelo mesmo público.</span></div>
+      <div class="help-item"><strong>Pontos coloridos</strong><span>Verde = CPM abaixo da média. Amarelo = um pouco acima. Vermelho = leilão aquecido.</span></div>
+      <div class="help-item"><strong>Por que o CPM varia?</strong><span>No nicho de saúde, o leilão sobe em temporadas de dengue (jan–mar), inverno (jun–ago) e datas como Dia das Mães e fim de ano. Pagamentos do mês (dias 5 e 20) também aumentam a concorrência.</span></div>
     </div>
 
     <div class="help-section">
-      <h3>Calculadora de ROI</h3>
-      <div class="help-item"><strong>Leads reais</strong><span>Quantas pessoas entraram em contato (via WhatsApp ou qualquer canal) e eram realmente clientes potenciais no período. Você preenche manualmente com base no seu controle — não depende de nenhum sistema automático.</span></div>
-      <div class="help-item"><strong>Clientes fechados</strong><span>Quantos desses leads efetivamente agendaram e pagaram pelo serviço. Também preenchido manualmente por você.</span></div>
-      <div class="help-item"><strong>Faturamento total (R$)</strong><span>Quanto o negócio faturou no período considerando os clientes que vieram dos anúncios. Informe o valor total — sem precisar calcular por cliente.</span></div>
-      <div class="help-item"><strong>Faturamento</strong><span>O valor que você informou como faturamento total. É o retorno financeiro gerado pelos anúncios no período.</span></div>
-      <div class="help-item"><strong>Custo por cliente</strong><span>Quanto foi gasto em anúncios para cada cliente que fechou serviço.</span></div>
-      <div class="help-item"><strong>ROI</strong><span>Retorno sobre investimento. Um ROI de 300% significa que para cada R$1 investido em anúncios, R$3 voltaram em receita. Quanto maior, melhor.</span></div>
-      <div class="help-item"><strong>Taxa de conversão</strong><span>Aparece quando você preenche "Leads reais". Mostra quantos % dos contatos viraram clientes. Verde (≥30%) é excelente, amarelo (15–29%) é aceitável, vermelho (abaixo de 15%) indica que os leads não estão sendo bem aproveitados no atendimento.</span></div>
+      <h3>Métricas de Criativo</h3>
+      <div class="help-item"><strong>Hook Rate</strong><span>Quantas pessoas assistiram pelo menos 25% do vídeo. Mede se o gancho inicial prende atenção. Verde ≥ 15%.</span></div>
+      <div class="help-item"><strong>Body Rate</strong><span>De quem passou do gancho, quantos chegaram a 75% do vídeo. Mede se a mensagem sustenta o interesse. Verde ≥ 60%.</span></div>
+      <div class="help-item"><strong>Connect Rate</strong><span>De quem viu 25%, quantos clicaram. Mede se o CTA converte atenção em ação. Verde ≥ 7%.</span></div>
     </div>
 
     <div class="help-section">
       <h3>Tabela de Campanhas</h3>
-      <div class="help-item"><strong>Todas / Ativas / Pausadas</strong><span>Filtros para mostrar só as campanhas ativas, só as pausadas, ou todas juntas. Campanhas ativas aparecem sempre no topo da lista.</span></div>
-      <div class="help-item"><strong>Gasto</strong><span>Quanto cada campanha gastou no período.</span></div>
-      <div class="help-item"><strong>Conversas</strong><span>Quantas conversas no WhatsApp cada campanha gerou.</span></div>
-      <div class="help-item"><strong>Alcance / Impressões</strong><span>Alcance = pessoas únicas que viram. Impressões = total de vezes que o anúncio foi exibido (a mesma pessoa pode ver mais de uma vez).</span></div>
-      <div class="help-item"><strong>CTR</strong><span>Porcentagem das pessoas que viram o anúncio e clicaram nele. Um CTR alto indica que o criativo (imagem/vídeo) está chamando atenção do público certo.</span></div>
-      <div class="help-item"><strong>Linha de Totais</strong><span>Última linha da tabela com a soma de todas as campanhas visíveis.</span></div>
+      <div class="help-item"><strong>Todas / Ativas / Pausadas</strong><span>Filtros para mostrar campanhas por status. Ativas aparecem sempre no topo.</span></div>
+      <div class="help-item"><strong>Custo/Conv</strong><span>Quanto custou cada conversa no WhatsApp gerada por essa campanha.</span></div>
+      <div class="help-item"><strong>CTR</strong><span>Porcentagem das pessoas que viram e clicaram. Alto = criativo relevante para o público.</span></div>
     </div>
 
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);text-align:center;">
@@ -231,7 +221,7 @@
 <div id="app" style="display:none;max-width:960px;margin:0 auto;padding:28px 16px 60px;">
 
   <!-- HEADER -->
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+  <div id="app-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
     <div style="background:#CC1B1B;padding:6px 16px;border-radius:7px;border:2px solid #FFD700;display:inline-block;text-align:center;">
       <div style="font-size:8px;color:#FFD700;letter-spacing:4px;font-weight:800;font-family:Arial,sans-serif;line-height:1;margin-bottom:1px;">FARMÁCIAS</div>
       <div style="font-family:Impact,'Arial Black',Arial,sans-serif;font-size:20px;color:#fff;letter-spacing:2px;font-weight:900;line-height:1;">FORT <span style="color:#FFD700;">POPULAR</span></div>
@@ -314,7 +304,7 @@
     </div>
   </div>
 
-  <!-- GRÁFICO -->
+  <!-- GRÁFICO INVESTIMENTO -->
   <div class="card" style="padding:20px;margin-bottom:16px;">
     <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px;">Investimento diário (R$)</div>
     <canvas id="chartSpend" height="65"></canvas>
@@ -334,42 +324,95 @@
     <canvas id="chartCPM" height="70"></canvas>
   </div>
 
-  <!-- ROI -->
+  <!-- FUNIL DE VENDAS -->
   <div class="card" style="padding:20px;margin-bottom:16px;">
-    <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:14px;">Calculadora de ROI</div>
-    <div class="roi-inputs">
-      <div>
-        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Leads reais</label>
-        <input id="roi-leads" type="number" min="0" placeholder="Ex: 20" style="width:100%;" oninput="calcROI()">
+    <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:16px;">Funil de Vendas</div>
+
+    <!-- TOPO: Meta Ads automático -->
+    <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Do anúncio ao WhatsApp · Meta Ads</div>
+    <div style="display:flex;align-items:center;overflow-x:auto;margin-bottom:16px;gap:0;">
+
+      <div class="roi-box" style="flex:1;min-width:80px;padding:12px 8px;border-color:#64a0ff33;">
+        <div class="roi-label" style="font-size:9px;">Impressões</div>
+        <div id="fm-imp" style="font-size:16px;font-weight:700;color:#64a0ff;">—</div>
       </div>
-      <div>
-        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Clientes fechados</label>
-        <input id="roi-clients" type="number" min="0" placeholder="Ex: 8" style="width:100%;" oninput="calcROI()">
+
+      <div style="flex-shrink:0;text-align:center;padding:0 6px;">
+        <div id="fm-hook-rate" style="font-size:10px;color:var(--muted);white-space:nowrap;">—</div>
+        <div style="color:var(--gold);font-size:16px;line-height:1;">→</div>
+        <div style="font-size:9px;color:var(--muted);">Hook</div>
       </div>
-      <div>
-        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;">Faturamento total (R$)</label>
-        <input id="roi-ticket" type="number" min="0" placeholder="Ex: 3.200" style="width:100%;" oninput="calcROI()">
+
+      <div id="fm-v25-box" class="roi-box" style="flex:1;min-width:80px;padding:12px 8px;border-color:#a07ad433;display:none;">
+        <div class="roi-label" style="font-size:9px;">Views 25%</div>
+        <div id="fm-v25" style="font-size:16px;font-weight:700;color:#a07ad4;">—</div>
+      </div>
+
+      <div id="fm-click-arrow" style="flex-shrink:0;text-align:center;padding:0 6px;display:none;">
+        <div id="fm-click-rate" style="font-size:10px;color:var(--muted);white-space:nowrap;">—</div>
+        <div style="color:var(--gold);font-size:16px;line-height:1;">→</div>
+        <div style="font-size:9px;color:var(--muted);">Click</div>
+      </div>
+
+      <div class="roi-box" style="flex:1;min-width:80px;padding:12px 8px;border-color:var(--gold)33;">
+        <div class="roi-label" style="font-size:9px;">Cliques</div>
+        <div id="fm-clicks" style="font-size:16px;font-weight:700;color:var(--gold);">—</div>
+      </div>
+
+      <div style="flex-shrink:0;text-align:center;padding:0 6px;">
+        <div id="fm-conv-rate" style="font-size:10px;color:var(--muted);white-space:nowrap;">—</div>
+        <div style="color:var(--gold);font-size:16px;line-height:1;">→</div>
+        <div style="font-size:9px;color:var(--muted);">Conv.</div>
+      </div>
+
+      <div class="roi-box" style="flex:1;min-width:80px;padding:12px 8px;border-color:var(--green)33;">
+        <div class="roi-label" style="font-size:9px;color:var(--green);">Conversas</div>
+        <div id="fm-conv" style="font-size:16px;font-weight:700;color:var(--green);">—</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:3px;">WhatsApp</div>
+      </div>
+
+    </div>
+
+    <!-- Divisor -->
+    <div style="position:relative;margin:4px 0 18px;">
+      <div style="height:1px;background:var(--border);"></div>
+      <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--card);padding:0 10px;font-size:10px;color:var(--muted);white-space:nowrap;">Do WhatsApp à venda · Registros manuais</span>
+    </div>
+
+    <!-- BASE: Manual -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+      <div class="roi-box" style="border-color:#64a0ff44;">
+        <div class="roi-label" style="color:#64a0ff;">Contatos</div>
+        <div class="roi-val" id="funil-contacts" style="color:#64a0ff;">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;">entraram em contato</div>
+      </div>
+      <div class="roi-box" style="border-color:var(--gold)44;">
+        <div class="roi-label">Vendas</div>
+        <div class="roi-val" id="funil-purchases">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;" id="funil-purch-rate">—</div>
       </div>
     </div>
-    <div id="roi-out" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;">
-      <div class="roi-box">
-        <div class="roi-label">Faturamento</div>
-        <div class="roi-val" id="roi-rev" style="color:#5fd98a;">—</div>
+
+    <!-- ROI automático -->
+    <div id="funil-roi" style="display:none;grid-template-columns:repeat(4,1fr);gap:10px;">
+      <div class="roi-box" style="border-color:#5fd98a44;">
+        <div class="roi-label">Receita registrada</div>
+        <div class="roi-val" id="funil-revenue" style="color:#5fd98a;">—</div>
       </div>
-      <div class="roi-box" id="roi-cpc-box">
-        <div class="roi-label">Custo por cliente</div>
-        <div class="roi-val" id="roi-cpc">—</div>
+      <div class="roi-box">
+        <div class="roi-label">Custo por venda</div>
+        <div class="roi-val" id="funil-cpv">—</div>
       </div>
       <div class="roi-box">
         <div class="roi-label">ROI</div>
-        <div class="roi-val" id="roi-pct">—</div>
+        <div class="roi-val" id="funil-roi-pct">—</div>
       </div>
-      <div class="roi-box" id="roi-conv-box" style="display:none;">
-        <div class="roi-label">Taxa de conversão</div>
-        <div class="roi-val" id="roi-conv">—</div>
+      <div class="roi-box">
+        <div class="roi-label">Ticket médio</div>
+        <div class="roi-val" id="funil-ticket">—</div>
       </div>
     </div>
-    <div id="roi-hint" style="font-size:12px;color:var(--muted);text-align:center;margin-top:4px;">Preencha os campos para calcular</div>
+    <div id="funil-hint" style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px;display:none;">Registre vendas com valor no painel /conversao/ para calcular o ROI automaticamente</div>
   </div>
 
   <!-- CAMPANHAS -->
@@ -389,7 +432,9 @@
           <th class="col-name" style="text-align:left;">Campanha</th>
           <th>Gasto</th>
           <th>Conversas</th>
+          <th>Custo/Conv</th>
           <th>Alcance</th>
+          <th>CPM</th>
           <th class="col-imp">Impressões</th>
           <th>CTR</th>
           <th style="text-align:center;">Status</th>
@@ -401,6 +446,93 @@
     </div>
   </div>
 
+  <!-- MÉTRICAS DE CRIATIVO -->
+  <div id="creative-section" style="display:none;margin-bottom:32px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Métricas de Criativo — por Anúncio</div>
+
+    <div class="card" style="margin-bottom:14px;padding:20px 24px;">
+      <div style="margin-bottom:18px;">
+        <div style="font-size:14px;font-weight:600;color:var(--gold);margin-bottom:4px;">Como ler as métricas de criativo</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Cada anúncio passa por um funil de atenção. As três métricas revelam em qual etapa o criativo está falhando ou performando bem.</div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;margin-bottom:20px;overflow-x:auto;">
+        <div style="flex:1;min-width:160px;background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-radius:12px 0 0 12px;padding:16px 14px;">
+          <div style="font-size:22px;margin-bottom:6px;">👁️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px;">Hook Rate</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Quantas pessoas assistiram pelo menos <strong style="color:var(--text);">25%</strong> do vídeo.</div>
+          <div style="font-size:11px;background:rgba(0,0,0,0.3);border-radius:6px;padding:8px 10px;font-family:monospace;color:#c4b8a0;margin-bottom:10px;">views 25% ÷ impressões × 100</div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+            <span><span style="color:#5fd98a;font-weight:700;">● Bom</span> <span style="color:var(--muted);">≥ 15%</span></span>
+            <span><span style="color:#d4b872;font-weight:700;">● Ok</span> <span style="color:var(--muted);">10 – 14%</span></span>
+            <span><span style="color:#e05a5a;font-weight:700;">● Ruim</span> <span style="color:var(--muted);">&lt; 10%</span></span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 2px;background:rgba(255,215,0,0.04);border-top:1px solid rgba(255,215,0,0.2);border-bottom:1px solid rgba(255,215,0,0.2);">
+          <div style="color:var(--gold);font-size:18px;opacity:.5;">▶</div>
+        </div>
+        <div style="flex:1;min-width:160px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.2);border-left:none;border-right:none;padding:16px 14px;">
+          <div style="font-size:22px;margin-bottom:6px;">🎬</div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px;">Body Rate</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">De quem passou do hook, quantos chegaram a <strong style="color:var(--text);">75%</strong> do vídeo.</div>
+          <div style="font-size:11px;background:rgba(0,0,0,0.3);border-radius:6px;padding:8px 10px;font-family:monospace;color:#c4b8a0;margin-bottom:10px;">views 75% ÷ views 25% × 100</div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+            <span><span style="color:#5fd98a;font-weight:700;">● Bom</span> <span style="color:var(--muted);">≥ 60%</span></span>
+            <span><span style="color:#d4b872;font-weight:700;">● Ok</span> <span style="color:var(--muted);">40 – 59%</span></span>
+            <span><span style="color:#e05a5a;font-weight:700;">● Ruim</span> <span style="color:var(--muted);">&lt; 40%</span></span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 2px;background:rgba(255,215,0,0.04);border-top:1px solid rgba(255,215,0,0.2);border-bottom:1px solid rgba(255,215,0,0.2);">
+          <div style="color:var(--gold);font-size:18px;opacity:.5;">▶</div>
+        </div>
+        <div style="flex:1;min-width:160px;background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-radius:0 12px 12px 0;padding:16px 14px;">
+          <div style="font-size:22px;margin-bottom:6px;">💬</div>
+          <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px;">Connect Rate</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5;">De quem chegou a 25%, quantos <strong style="color:var(--text);">clicaram</strong> no botão WhatsApp.</div>
+          <div style="font-size:11px;background:rgba(0,0,0,0.3);border-radius:6px;padding:8px 10px;font-family:monospace;color:#c4b8a0;margin-bottom:10px;">cliques ÷ views 25% × 100</div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+            <span><span style="color:#5fd98a;font-weight:700;">● Bom</span> <span style="color:var(--muted);">≥ 7%</span></span>
+            <span><span style="color:#d4b872;font-weight:700;">● Ok</span> <span style="color:var(--muted);">4 – 6%</span></span>
+            <span><span style="color:#e05a5a;font-weight:700;">● Ruim</span> <span style="color:var(--muted);">&lt; 4%</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.15);border-radius:8px;padding:12px 16px;font-size:11px;color:var(--muted);line-height:1.7;">
+        <strong style="color:#FFE44D;">Como usar para otimizar:</strong>
+        <span style="display:block;margin-top:4px;">
+          Se o <strong style="color:var(--text);">Hook</strong> está ruim → os primeiros segundos não prendem. Troque a abertura do vídeo.<br>
+          Se o <strong style="color:var(--text);">Body</strong> está ruim → o meio do vídeo perde a atenção. A mensagem precisa de mais ritmo.<br>
+          Se o <strong style="color:var(--text);">Connect</strong> está ruim → o CTA não está claro. Reforce a oferta e o botão WhatsApp.
+        </span>
+      </div>
+    </div>
+
+    <div class="card" style="overflow:hidden;">
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-name" style="text-align:left;">Anúncio</th>
+            <th style="text-align:left;">Campanha</th>
+            <th>Hook Rate</th>
+            <th>Body Rate</th>
+            <th>Connect Rate</th>
+            <th>Impressões</th>
+            <th>Cliques</th>
+          </tr>
+        </thead>
+        <tbody id="creative-body"></tbody>
+      </table>
+      </div>
+      <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:20px;font-size:11px;color:var(--muted);">
+        <span><span style="color:#5fd98a;">●</span> Hook ≥15% · Body ≥60% · Connect ≥7%</span>
+        <span><span style="color:#d4b872;">●</span> Hook 10–14% · Body 40–59% · Connect 4–6%</span>
+        <span><span style="color:#e05a5a;">●</span> Abaixo do mínimo</span>
+      </div>
+    </div>
+  </div>
+
   <div style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:20px;">
     Dados via Meta Ads API · Delay de até 3h
   </div>
@@ -409,6 +541,7 @@
 <script>
 let CLIENT_KEY = '';
 let allCampaigns = [];
+let currentAds = [];
 let currentSpend = 0;
 let chartInstance = null;
 let igChartInstance = null;
@@ -424,7 +557,8 @@ function doLogin() {
 }
 
 (function init() {
-  const k = new URLSearchParams(location.search).get('key') || sessionStorage.getItem('rkey');
+  const p = new URLSearchParams(location.search);
+  const k = p.get('key') || sessionStorage.getItem('rkey');
   if (k) { CLIENT_KEY = k; loadData(); }
 })();
 
@@ -484,11 +618,8 @@ async function loadData() {
     document.getElementById('dateTo').value = until;
   }
 
-  const [curr, prev] = await Promise.all([
-    fetchData(since, until),
-    fetchPrev(),
-  ]);
-
+  // Carrega período atual primeiro — página aparece imediatamente
+  const curr = await fetchData(since, until);
   if (!curr) return;
 
   document.getElementById('login').style.display = 'none';
@@ -498,23 +629,39 @@ async function loadData() {
     since.split('-').reverse().join('/') + ' — ' + until.split('-').reverse().join('/');
 
   allCampaigns = curr.campaigns;
+  currentAds   = curr.ads || [];
   renderCampaigns();
-  renderKPIs(curr, prev);
+  renderKPIs(curr, null);
   renderChart(curr.daily || []);
   renderAuctionChart(curr.daily_campaign || []);
+  renderCreativeMetrics(curr.ads || []);
+  renderFunilMeta();
 
-  // Instagram carrega em paralelo sem bloquear a exibição dos dados de anúncio
+  // Período anterior em background — atualiza setas quando chegar
+  fetchPrev().then(prev => { if (prev) renderKPIs(curr, prev); });
+
+  // Funil manual e Instagram em background
+  fetchConversionsSummary(since, until);
   fetchInstagram(since, until).then(ig => { if (ig) renderInstagram(ig); });
 }
 
 async function fetchData(s, u) {
-  const r = await fetch(`/api/client-report?key=${CLIENT_KEY}&since=${s}&until=${u}`);
-  if (r.status === 401 || r.status === 403) {
+  try {
+    const r = await fetch(`/api/client-report?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+    if (r.status === 401 || r.status === 403) {
+      document.getElementById('loginErr').style.display = 'block';
+      return null;
+    }
+    const d = await r.json();
+    if (!d.ok) {
+      document.getElementById('loginErr').style.display = 'block';
+      return null;
+    }
+    return d;
+  } catch {
     document.getElementById('loginErr').style.display = 'block';
     return null;
   }
-  const d = await r.json();
-  return d.ok ? d : null;
 }
 
 async function fetchInstagram(s, u) {
@@ -608,7 +755,6 @@ function hexRgba(hex, a) {
 function renderAuctionChart(dailyCampaign) {
   if (!dailyCampaign || dailyCampaign.length === 0) return;
 
-  // Agrupa por campanha
   const campMap = {};
   for (const row of dailyCampaign) {
     if (!campMap[row.campaign_id]) {
@@ -618,10 +764,7 @@ function renderAuctionChart(dailyCampaign) {
     campMap[row.campaign_id].spend += parseFloat(row.spend || 0);
   }
 
-  // Ordena por gasto desc (campanha principal primeiro)
   const camps = Object.values(campMap).sort((a, b) => b.spend - a.spend);
-
-  // Datas únicas ordenadas
   const allDates = [...new Set(dailyCampaign.map(r => r.date_start))].sort();
   const DAYS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const labels = allDates.map(d => {
@@ -675,10 +818,8 @@ function renderAuctionChart(dailyCampaign) {
       plugins: {
         legend: {
           display: camps.length > 1,
-          labels: {
-            color: '#8a7070', font: { size: 11 }, boxWidth: 12,
-            filter: item => item.text !== '__avg__',
-          }
+          labels: { color: '#8a7070', font: { size: 11 }, boxWidth: 12,
+                    filter: item => item.text !== '__avg__' }
         },
         tooltip: {
           backgroundColor: '#1e0d0d', titleColor: '#FFD700', bodyColor: '#f5f0f0',
@@ -694,7 +835,6 @@ function renderAuctionChart(dailyCampaign) {
     }
   });
 
-  // Insight baseado na campanha de maior gasto (linha principal)
   const main = camps[0];
   const lastDate = allDates[allDates.length - 1];
   const lastCPM = main.rows[lastDate] || 0;
@@ -717,7 +857,12 @@ async function fetchPrev() {
   const diff = Math.round((u-s)/(1000*86400)) + 1;
   const ps = new Date(s); ps.setDate(ps.getDate()-diff);
   const pu = new Date(s); pu.setDate(pu.getDate()-1);
-  return fetchData(ymd(ps), ymd(pu));
+  try {
+    const r = await fetch(`/api/client-report?key=${CLIENT_KEY}&since=${ymd(ps)}&until=${ymd(pu)}&lite=1`);
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.ok ? d : null;
+  } catch { return null; }
 }
 
 // ---------- ACTION HELPERS ----------
@@ -726,6 +871,14 @@ function getConv(campaign) {
   const started = a.find(x => x.action_type === 'onsite_conversion.messaging_conversation_started_7d');
   const total   = a.find(x => x.action_type === 'onsite_conversion.total_messaging_connection');
   return parseInt((started || total || {value:'0'}).value);
+}
+
+function fmtPct(v, decimals = 1) { return v.toFixed(decimals) + '%'; }
+
+function creativeColor(rate, threshHigh, threshLow) {
+  if (rate >= threshHigh) return '#5fd98a';
+  if (rate >= threshLow)  return '#d4b872';
+  return '#e05a5a';
 }
 
 // ---------- KPIs ----------
@@ -766,8 +919,13 @@ function setKPI(kid, did, val, prev, fmtFn, lowerBetter) {
 
 // ---------- CHART ----------
 function renderChart(daily) {
-  const labels = daily.map(d => d.date_start.substring(5).replace('-','/'));
-  const values = daily.map(d => parseFloat(d.spend||0));
+  const byDate = {};
+  for (const d of daily) {
+    byDate[d.date_start] = (byDate[d.date_start] || 0) + parseFloat(d.spend || 0);
+  }
+  const dates = Object.keys(byDate).sort();
+  const labels = dates.map(d => d.substring(5).replace('-','/'));
+  const values = dates.map(d => byDate[d]);
   if (chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('chartSpend'), {
     type: 'bar',
@@ -777,22 +935,13 @@ function renderChart(daily) {
     },
     options: {
       plugins: { legend: { display: false }, tooltip: {
-        backgroundColor: '#1e0d0d',
-        titleColor: '#FFD700',
-        bodyColor: '#f5f0f0',
-        borderColor: 'rgba(255,215,0,0.25)',
-        borderWidth: 1,
+        backgroundColor: '#1e0d0d', titleColor: '#FFD700', bodyColor: '#f5f0f0',
+        borderColor: 'rgba(255,215,0,0.25)', borderWidth: 1,
         callbacks: { label: ctx => 'R$ ' + ctx.parsed.y.toFixed(2) }
       }},
       scales: {
-        y: {
-          grid: { color: 'rgba(255,215,0,0.08)' },
-          ticks: { color: '#8a7070', callback: v => 'R$'+v }
-        },
-        x: {
-          grid: { display: false },
-          ticks: { color: '#8a7070' }
-        }
+        y: { grid: { color: 'rgba(255,215,0,0.08)' }, ticks: { color: '#8a7070', callback: v => 'R$'+v } },
+        x: { grid: { display: false }, ticks: { color: '#8a7070' } }
       }
     }
   });
@@ -813,11 +962,7 @@ function renderCampaigns() {
       if (campFilter === 'paused') return c.status !== 'ACTIVE';
       return true;
     })
-    .sort((a, b) => {
-      const aActive = a.status === 'ACTIVE' ? 0 : 1;
-      const bActive = b.status === 'ACTIVE' ? 0 : 1;
-      return aActive - bActive;
-    });
+    .sort((a, b) => (a.status === 'ACTIVE' ? 0 : 1) - (b.status === 'ACTIVE' ? 0 : 1));
 
   const tbody = document.getElementById('camp-body');
   const tfoot = document.getElementById('camp-foot');
@@ -830,16 +975,21 @@ function renderCampaigns() {
     const spend = parseFloat(c.spend||0);
     const reach = parseInt(c.reach||0);
     const imp   = parseInt(c.impressions||0);
+    const cpm   = parseFloat(c.cpm||0);
+    const cpc   = conv > 0 ? spend / conv : 0;
     totSpend += spend; totConv += conv; totReach += reach; totImp += imp;
-    const name  = c.campaign_name.length > 40 ? c.campaign_name.substring(0,40)+'…' : c.campaign_name;
+    const name  = c.campaign_name.length > 38 ? c.campaign_name.substring(0,38)+'…' : c.campaign_name;
     const badge = c.status === 'ACTIVE'
       ? '<span class="badge-on">Ativa</span>'
       : '<span class="badge-off">Pausada</span>';
+    const cpcColor = cpc > 0 && cpc < 15 ? 'color:#5fd98a' : cpc >= 15 ? 'color:#e05a5a' : '';
     tbody.innerHTML += `<tr>
       <td class="col-name">${name}</td>
       <td>${fmt(spend)}</td>
       <td>${fmtN(conv)}</td>
-      <td>${fmtN(reach)}</td>
+      <td style="${cpcColor}">${cpc > 0 ? fmt(cpc) : '—'}</td>
+      <td>${reach > 0 ? fmtN(reach) : '—'}</td>
+      <td>${cpm > 0 ? fmt(cpm) : '—'}</td>
       <td class="col-imp">${fmtN(imp)}</td>
       <td>${parseFloat(c.ctr||0).toFixed(2)}%</td>
       <td style="text-align:center;">${badge}</td>
@@ -850,51 +1000,193 @@ function renderCampaigns() {
     <td class="col-name">Total · ${filtered.length} campanha${filtered.length!==1?'s':''}</td>
     <td>${fmt(totSpend)}</td>
     <td>${fmtN(totConv)}</td>
-    <td>${fmtN(totReach)}</td>
+    <td>${totConv > 0 ? fmt(totSpend/totConv) : '—'}</td>
+    <td>${totReach > 0 ? fmtN(totReach) : '—'}</td>
+    <td>—</td>
     <td class="col-imp">${fmtN(totImp)}</td>
     <td>—</td>
     <td></td>
   </tr>`;
 }
 
-// ---------- ROI ----------
-function calcROI() {
-  const leads   = parseFloat(document.getElementById('roi-leads').value)||0;
-  const clients = parseFloat(document.getElementById('roi-clients').value)||0;
-  const ticket  = parseFloat(document.getElementById('roi-ticket').value)||0;
-  const out  = document.getElementById('roi-out');
-  const hint = document.getElementById('roi-hint');
-  if (ticket > 0) {
-    const rev = ticket;
-    const cpc = clients > 0 ? currentSpend / clients : 0;
-    const roi = ((rev - currentSpend) / currentSpend * 100);
-    document.getElementById('roi-rev').textContent = fmt(rev);
-    const cpcBox = document.getElementById('roi-cpc-box');
-    if (clients > 0) {
-      document.getElementById('roi-cpc').textContent = fmt(cpc);
-      cpcBox.style.display = 'block';
+// ---------- CREATIVE METRICS ----------
+function renderCreativeMetrics(ads) {
+  const section = document.getElementById('creative-section');
+  const tbody   = document.getElementById('creative-body');
+
+  const active = ads.filter(a => a.insights && parseInt(a.insights.impressions || 0) > 0);
+  if (!active.length) {
+    if (ads.length > 0) {
+      section.style.display = 'block';
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Sem impressões de anúncios no período selecionado.</td></tr>`;
     } else {
-      cpcBox.style.display = 'none';
+      section.style.display = 'none';
     }
-    const el = document.getElementById('roi-pct');
-    el.textContent = roi.toFixed(0) + '%';
-    el.style.color = roi >= 0 ? '#5fd98a' : '#e05a5a';
-    // Taxa de conversão: só mostra se leads foi preenchido
-    const convBox = document.getElementById('roi-conv-box');
-    if (leads > 0) {
-      const conv = (clients / leads * 100);
-      const convEl = document.getElementById('roi-conv');
-      convEl.textContent = conv.toFixed(0) + '%';
-      convEl.style.color = conv >= 30 ? '#5fd98a' : conv >= 15 ? '#d4b872' : '#e05a5a';
-      convBox.style.display = 'block';
-    } else {
-      convBox.style.display = 'none';
-    }
-    out.style.display = 'grid'; hint.style.display = 'none';
+    return;
+  }
+
+  const campName = {};
+  for (const c of allCampaigns) campName[c.campaign_id] = c.campaign_name;
+
+  tbody.innerHTML = active
+    .sort((a, b) => parseFloat(b.insights.impressions||0) - parseFloat(a.insights.impressions||0))
+    .map(a => {
+      const ins    = a.insights;
+      const imp    = parseInt(ins.impressions || 0);
+      const clicks = parseInt(ins.clicks || 0);
+
+      const arr25 = ins.video_p25_watched_actions;
+      const v25   = Array.isArray(arr25) && arr25.length > 0 ? parseInt((arr25[0]||{value:'0'}).value) : 0;
+
+      const arr75 = ins.video_p75_watched_actions;
+      const v75   = Array.isArray(arr75) && arr75.length > 0 ? parseInt((arr75[0]||{value:'0'}).value) : 0;
+
+      const hookRate = imp > 0 && v25 > 0 ? v25 / imp * 100 : null;
+      const bodyRate = v25 > 0 && v75 > 0 ? v75 / v25 * 100 : null;
+      const connRate = v25 > 0 && clicks > 0 ? clicks / v25 * 100 : null;
+
+      const cell = (rate, hi, lo) => rate !== null
+        ? `<span style="color:${creativeColor(rate,hi,lo)};font-weight:600">${fmtPct(rate)}</span>`
+        : `<span style="color:var(--muted)">—</span>`;
+
+      const adName = (a.name||'').length > 32 ? a.name.substring(0,32)+'…' : (a.name||'—');
+      const cName  = (campName[a.campaign_id]||'').length > 28
+        ? campName[a.campaign_id].substring(0,28)+'…'
+        : (campName[a.campaign_id]||'—');
+
+      return `<tr>
+        <td class="col-name" style="font-size:12px;">${adName}</td>
+        <td style="font-size:11px;color:var(--muted);text-align:left;">${cName}</td>
+        <td>${cell(hookRate,15,10)}</td>
+        <td>${cell(bodyRate,60,40)}</td>
+        <td>${cell(connRate,7,4)}</td>
+        <td>${fmtN(imp)}</td>
+        <td>${clicks > 0 ? fmtN(clicks) : '—'}</td>
+      </tr>`;
+    }).join('');
+
+  section.style.display = 'block';
+}
+
+// ---------- FUNIL META (topo automático) ----------
+function renderFunilMeta() {
+  const totImp    = allCampaigns.reduce((s,c) => s + parseInt(c.impressions||0), 0);
+  const totClicks = allCampaigns.reduce((s,c) => s + parseInt(c.clicks||0), 0);
+  const totConv   = allCampaigns.reduce((s,c) => s + getConv(c), 0);
+
+  let totV25 = 0;
+  for (const ad of currentAds) {
+    if (!ad.insights) continue;
+    const arr = ad.insights.video_p25_watched_actions;
+    if (Array.isArray(arr) && arr.length > 0) totV25 += parseInt(arr[0]?.value || 0);
+  }
+
+  const pct = (n, d) => d > 0 ? (n / d * 100).toFixed(1) + '%' : '—';
+
+  document.getElementById('fm-imp').textContent    = totImp    > 0 ? fmtN(totImp)    : '—';
+  document.getElementById('fm-clicks').textContent = totClicks > 0 ? fmtN(totClicks) : '—';
+  document.getElementById('fm-conv').textContent   = totConv   > 0 ? fmtN(totConv)   : '—';
+  document.getElementById('fm-conv-rate').textContent = pct(totConv, totClicks);
+
+  if (totV25 > 0) {
+    document.getElementById('fm-v25').textContent         = fmtN(totV25);
+    document.getElementById('fm-hook-rate').textContent   = pct(totV25, totImp);
+    document.getElementById('fm-click-rate').textContent  = pct(totClicks, totV25);
+    document.getElementById('fm-v25-box').style.display   = 'block';
+    document.getElementById('fm-click-arrow').style.display = 'block';
   } else {
-    out.style.display = 'none'; hint.style.display = 'block';
+    document.getElementById('fm-hook-rate').textContent = pct(totClicks, totImp);
+  }
+}
+
+// ---------- FUNIL MANUAL ----------
+async function fetchConversionsSummary(s, u) {
+  try {
+    const r = await fetch(`/api/conversions-summary?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+    if (!r.ok) return;
+    const d = await r.json();
+    renderFunil(d);
+  } catch(_) {}
+}
+
+function renderFunil(d) {
+  const contacts  = d.contacts  || 0;
+  const purchases = d.purchases || 0;
+  const revenue   = (d.revenue_cents || 0) / 100;
+
+  document.getElementById('funil-contacts').textContent  = contacts  || '—';
+  document.getElementById('funil-purchases').textContent = purchases || '—';
+
+  if (contacts > 0 && purchases > 0) {
+    const r = (purchases / contacts * 100).toFixed(0);
+    document.getElementById('funil-purch-rate').textContent = `${r}% dos contatos`;
+  }
+
+  const roiEl  = document.getElementById('funil-roi');
+  const hintEl = document.getElementById('funil-hint');
+
+  if (purchases > 0) {
+    if (revenue > 0) {
+      document.getElementById('funil-revenue').textContent = fmt(revenue);
+      document.getElementById('funil-ticket').textContent  = fmt(revenue / purchases);
+      document.getElementById('funil-cpv').textContent     = currentSpend > 0 ? fmt(currentSpend / purchases) : '—';
+      if (currentSpend > 0) {
+        const roi = ((revenue - currentSpend) / currentSpend * 100);
+        const el = document.getElementById('funil-roi-pct');
+        el.textContent = roi.toFixed(0) + '%';
+        el.style.color = roi >= 0 ? '#5fd98a' : '#e05a5a';
+      }
+      hintEl.style.display = 'none';
+    } else {
+      document.getElementById('funil-revenue').textContent = '—';
+      document.getElementById('funil-ticket').textContent  = '—';
+      document.getElementById('funil-cpv').textContent     = currentSpend > 0 ? fmt(currentSpend / purchases) : '—';
+      document.getElementById('funil-roi-pct').textContent = '—';
+      hintEl.style.display = 'block';
+    }
+    roiEl.style.display = 'grid';
   }
 }
 </script>
+
+<!-- Barra de navegação fixa -->
+<style>
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex;
+    background: #0c0404;
+    border-top: 1px solid rgba(204,27,27,0.35);
+    z-index: 999;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .bottom-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    text-decoration: none;
+    color: #8a7070;
+    font-size: 0.7rem;
+    gap: 4px;
+    transition: color 0.15s;
+  }
+  .bottom-nav a:hover { color: #FFD700; }
+  .bottom-nav a .bn-icon { font-size: 1.2rem; }
+  body { padding-bottom: 62px; }
+</style>
+<nav class="bottom-nav">
+  <a href="/">
+    <span class="bn-icon">⌂</span>
+    Início
+  </a>
+  <a href="/conversao/?key=fortpopular2026">
+    <span class="bn-icon">📋</span>
+    Registrar
+  </a>
+</nav>
+
 </body>
 </html>

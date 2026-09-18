@@ -60,7 +60,7 @@ export async function onRequestGet(context) {
       ),
       fetchAll(
         `https://graph.facebook.com/v20.0/act_${accountId}/insights` +
-        `?level=ad&fields=ad_id,ad_name,campaign_id,spend,impressions,clicks,reach,ctr,cpm,actions` +
+        `?level=ad&fields=ad_id,ad_name,campaign_id,spend,impressions,clicks,reach,ctr,cpm,actions,video_p25_watched_actions,video_p75_watched_actions` +
         `&time_range=${timeRange}&limit=200&access_token=${token}`
       ),
       fetchAll(
