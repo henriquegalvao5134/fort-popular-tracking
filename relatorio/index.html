@@ -135,6 +135,12 @@
   .bottom-nav a:hover { color:#FFD700; }
   .bottom-nav .bn-icon { font-size:1.2rem; }
   @media (max-width:620px) { #app { padding:16px 12px 72px; } }
+
+  /* ── CLIENTES VIEW ── */
+  .btn-clientes { background:none; border:1.5px solid var(--border); color:var(--muted); border-radius:20px; padding:5px 12px; font-size:12px; cursor:pointer; transition:.15s; white-space:nowrap; }
+  .btn-clientes:hover { border-color:var(--gold); color:var(--gold); }
+  .btn-clientes.active { background:rgba(255,215,0,0.08); border-color:var(--gold); color:var(--gold); }
+  .cl-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
 </style>
 </head>
 <body>
@@ -238,10 +244,13 @@
         <div style="font-size:13px;color:var(--muted);" id="periodLabel">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px;">Atualizado às <span id="updatedAt">—</span></div>
       </div>
+      <button class="btn-clientes" id="btn-clientes" onclick="switchView(currentView==='clientes'?'relatorio':'clientes')">👥 Clientes</button>
       <button class="btn-help" onclick="document.getElementById('help-overlay').classList.add('open')" title="Como usar o relatório">?</button>
     </div>
   </div>
   <div class="gold-bar"></div>
+
+  <div id="view-relatorio">
 
   <!-- FILTRO DE DATAS -->
   <div class="card" style="padding:14px 16px;margin-bottom:16px;">
@@ -543,6 +552,46 @@
   <div style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:20px;">
     Dados via Meta Ads API · Delay de até 3h
   </div>
+
+  </div><!-- /view-relatorio -->
+
+  <!-- CLIENTES & LTV -->
+  <div id="view-clientes" style="display:none;padding-bottom:20px;">
+    <div class="cl-kpi-grid">
+      <div class="card" style="padding:18px;">
+        <div class="kpi-label">Clientes únicos</div>
+        <div class="kpi-val" id="cl-unique">—</div>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="kpi-label">LTV médio</div>
+        <div class="kpi-val" id="cl-ltv-avg">—</div>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div class="kpi-label">Ticket médio</div>
+        <div class="kpi-val" id="cl-ticket-avg">—</div>
+      </div>
+    </div>
+    <div class="card" style="overflow:hidden;margin-bottom:16px;">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-name" style="text-align:left;">Nome</th>
+              <th style="text-align:left;">Telefone</th>
+              <th>Visitas</th>
+              <th>Compras</th>
+              <th>LTV Total</th>
+              <th>Ticket Médio</th>
+              <th>Última visita</th>
+            </tr>
+          </thead>
+          <tbody id="cl-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);padding-bottom:16px;">
+      Registros manuais do atendimento
+    </div>
   </div>
 
 </div>
@@ -554,6 +603,7 @@
 
 <script>
 let CLIENT_KEY = '';
+let currentView = 'relatorio';
 let allCampaigns = [];
 let currentAds = [];
 let currentSpend = 0;
@@ -657,6 +707,7 @@ async function loadData() {
   // Funil manual e Instagram em background
   fetchConversionsSummary(since, until);
   fetchInstagram(since, until).then(ig => { if (ig) renderInstagram(ig); });
+  if (currentView === 'clientes') loadClientes();
 }
 
 async function fetchData(s, u) {
@@ -1121,6 +1172,81 @@ async function fetchConversionsSummary(s, u) {
     const d = await r.json();
     renderFunil(d);
   } catch(_) {}
+}
+
+// ---------- VIEW SWITCH ----------
+function switchView(name) {
+  currentView = name;
+  document.getElementById('view-relatorio').style.display = name === 'relatorio' ? '' : 'none';
+  document.getElementById('view-clientes').style.display  = name === 'clientes'  ? '' : 'none';
+  document.getElementById('btn-clientes').classList.toggle('active', name === 'clientes');
+  if (name === 'clientes') loadClientes();
+}
+
+// ---------- CLIENTES & LTV ----------
+async function loadClientes() {
+  if (!CLIENT_KEY || !since) return;
+  const tbody = document.getElementById('cl-body');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">Carregando...</td></tr>';
+  try {
+    const r = await fetch(`/api/conversions-history?key=${CLIENT_KEY}&from=${since}&to=${until}&limit=500`);
+    if (!r.ok) return;
+    const d = await r.json();
+    renderClientes(d.conversions || []);
+  } catch {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">Erro ao carregar dados.</td></tr>';
+  }
+}
+
+function renderClientes(conversions) {
+  const map = {};
+  for (const c of conversions) {
+    const key = c.phone_normalized || c.phone_last4 || 'anon';
+    if (!map[key]) {
+      map[key] = { name: c.display_name || '—', phone: c.phone_last4 || '—',
+                   visits: 0, purchases: 0, ltv: 0, totalPurchases: 0, lastDate: '' };
+    }
+    const e = map[key];
+    e.visits++;
+    if ((c.value_cents || 0) > 0) e.purchases++;
+    if (c.event_date > e.lastDate) {
+      e.lastDate = c.event_date;
+      e.ltv = (c.client_ltv_cents || 0) / 100;
+      e.totalPurchases = c.client_purchases || 0;
+      if (c.display_name) e.name = c.display_name;
+    }
+  }
+
+  const clients = Object.values(map).sort((a, b) => b.ltv - a.ltv || b.visits - a.visits);
+  const unique = clients.length;
+  const withLtv = clients.filter(c => c.ltv > 0);
+  const ltvSum = clients.reduce((s, c) => s + c.ltv, 0);
+  const ltvAvg = withLtv.length ? ltvSum / withLtv.length : 0;
+  const allPurch = clients.reduce((s, c) => s + c.totalPurchases, 0);
+  const ticketAvg = allPurch > 0 ? ltvSum / allPurch : 0;
+
+  document.getElementById('cl-unique').textContent    = fmtN(unique);
+  document.getElementById('cl-ltv-avg').textContent   = ltvAvg > 0 ? fmt(ltvAvg) : '—';
+  document.getElementById('cl-ticket-avg').textContent = ticketAvg > 0 ? fmt(ticketAvg) : '—';
+
+  const tbody = document.getElementById('cl-body');
+  if (!clients.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;">Nenhum registro no período.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = clients.map(c => {
+    const ticket = c.totalPurchases > 0 ? fmt(c.ltv / c.totalPurchases) : '—';
+    const date = c.lastDate ? c.lastDate.substring(5).replace('-','/') + '/' + c.lastDate.substring(0,4) : '—';
+    return `<tr>
+      <td class="col-name">${c.name}</td>
+      <td style="text-align:left;color:var(--muted);">****${c.phone}</td>
+      <td>${c.visits}</td>
+      <td>${c.purchases || '—'}</td>
+      <td style="color:var(--gold)">${c.ltv > 0 ? fmt(c.ltv) : '—'}</td>
+      <td>${ticket}</td>
+      <td style="color:var(--muted)">${date}</td>
+    </tr>`;
+  }).join('');
 }
 
 function renderFunil(d) {
