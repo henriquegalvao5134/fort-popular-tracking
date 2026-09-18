@@ -52,6 +52,7 @@ export async function onRequestPost(context) {
   const {
     event_name, phone, name, value, date, origem,
     email, cpf, city, state, zip, neighborhood, address,
+    produto, observacao,
   } = body;
 
   // Validações
@@ -169,8 +170,9 @@ export async function onRequestPost(context) {
         INSERT INTO manual_conversions
           (event_id, event_name, display_name, phone_last4, phone_normalized,
            value_cents, event_date, origem, meta_ok, registered_at,
-           email, cpf, city, state, zip, neighborhood, address)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           email, cpf, city, state, zip, neighborhood, address,
+           produto, observacao)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         eventId,
         event_name,
@@ -189,6 +191,8 @@ export async function onRequestPost(context) {
         zipDigits,
         (neighborhood || '').trim(),
         (address      || '').trim(),
+        (produto      || '').trim(),
+        (observacao   || '').trim(),
       ).run();
     } catch (_) { /* não bloqueia a resposta */ }
   }

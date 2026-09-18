@@ -81,6 +81,7 @@ export async function onRequestGet(context) {
     SELECT mc.id, mc.event_id, mc.event_name, mc.display_name,
            mc.phone_last4, mc.phone_normalized, mc.value_cents,
            mc.event_date, mc.origem, mc.meta_ok, mc.registered_at,
+           mc.produto, mc.observacao,
            COALESCE(ltv.total_cents, 0)    AS client_ltv_cents,
            COALESCE(ltv.purchase_count, 0) AS client_purchases
     FROM manual_conversions mc

@@ -150,7 +150,7 @@
       transition: border-color 0.2s;
       font-family: inherit;
     }
-    input:focus { border-color: var(--red); }
+    input:focus, textarea:focus { border-color: var(--red); }
     input::placeholder { color: var(--muted); }
 
     .value-row { display: none; }
@@ -563,6 +563,20 @@
              oninput="fmtCep(this)">
     </div>
 
+    <!-- Produto / Observação -->
+    <div class="section-divider">
+      <span>Atendimento</span>
+    </div>
+    <div class="field">
+      <label>Produto / Medicamento</label>
+      <input id="produto" type="text" placeholder="Ex: Rivotril 2mg, Dipirona…">
+    </div>
+    <div class="field">
+      <label>Observação</label>
+      <textarea id="observacao" placeholder="Ex: Cliente não respondeu, pediu orçamento, retorno agendado…"
+        style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;resize:vertical;min-height:72px;font-family:inherit;transition:border-color .2s;"></textarea>
+    </div>
+
     <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
     <div class="feedback" id="feedback"></div>
 
@@ -579,10 +593,10 @@
     <input type="search" id="h-q" class="search-input" placeholder="Nome ou telefone…"
            onkeydown="if(event.key==='Enter')loadHist()">
     <select id="h-limit" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
-      <option value="20">20</option>
+      <option value="20" selected>20</option>
       <option value="50">50</option>
       <option value="100">100</option>
-      <option value="200" selected>200</option>
+      <option value="200">200</option>
       <option value="500">500</option>
     </select>
     <button class="btn-filter" onclick="loadHist()">Filtrar</button>
@@ -718,6 +732,9 @@ async function submitForm() {
   btn.textContent = 'Enviando…';
   document.getElementById('feedback').className = 'feedback';
 
+  const produto    = document.getElementById('produto').value.trim();
+  const observacao = document.getElementById('observacao').value.trim();
+
   const body = { event_name: tipoAtual, phone, origem: origemAtual };
   if (name)         body.name         = name;
   if (value)        body.value        = value;
@@ -729,6 +746,8 @@ async function submitForm() {
   if (city)         body.city         = city;
   if (state)        body.state        = state;
   if (zip)          body.zip          = zip;
+  if (produto)      body.produto      = produto;
+  if (observacao)   body.observacao   = observacao;
 
   try {
     const resp = await fetch('/api/log-conversion', {
@@ -754,6 +773,8 @@ async function submitForm() {
       // Limpa dados adicionais
       ['email','cpf','neighborhood','address','city','state','zip']
         .forEach(id => document.getElementById(id).value = '');
+      // Limpa atendimento
+      ['produto','observacao'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('phone').focus();
     } else {
       showFeedback('Erro: ' + (data.error || 'inesperado'), false);
@@ -824,9 +845,12 @@ async function loadHist() {
     body.innerHTML = rows.map(r => {
       const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
       const nome  = esc(r.display_name || '—');
-      // Cliente: nome na primeira linha, telefone + origem na segunda
+      const prod  = r.produto    ? `<br><span style="color:var(--blue);font-size:.75em;">💊 ${esc(r.produto)}</span>` : '';
+      const obs   = r.observacao ? `<br><span style="color:#f59e0b;font-size:.75em;">📝 ${esc(r.observacao)}</span>` : '';
+      // Cliente: nome na primeira linha, telefone + origem + produto + obs
       const cli = `<span style="font-weight:600;">${nome}</span>`
-        + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem] || ''}</span>` : '');
+        + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem] || ''}</span>` : '')
+        + prod + obs;
       const ic    = r.event_name === 'Contact';
       const badge = ic
         ? '<span class="badge-contact">Contato</span>'
