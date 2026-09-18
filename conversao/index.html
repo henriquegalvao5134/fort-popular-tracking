@@ -404,11 +404,43 @@
     .btn-cancel  { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border) !important; }
     .btn-confirm { background: var(--red); color: #fff; }
 
+    /* ── HEADER NAV (desktop) ── */
+    .header-nav { display: none; }
+
     /* ── DESKTOP 2-COLUNAS ── */
     @media (min-width: 820px) {
-      body { padding: 28px 40px 48px; }
-      header { margin-bottom: 18px; }
+      body { padding: 28px 40px 24px; }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      header > div { text-align: left; }
+      .header-nav {
+        display: flex;
+        gap: 6px;
+      }
+      .header-nav a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: color .15s, border-color .15s;
+      }
+      .header-nav a:hover {
+        color: var(--text);
+        border-color: var(--red);
+      }
       .nav-tabs { display: none; }
+      .bottom-nav { display: none; }
       #main-cols {
         display: grid;
         grid-template-columns: 460px 1fr;
@@ -435,8 +467,15 @@
 <body>
 
 <header>
-  <h1>Fort Popular</h1>
-  <p>Farmácia · Conversões WhatsApp</p>
+  <div>
+    <h1>Fort Popular</h1>
+    <p>Farmácia · Conversões WhatsApp</p>
+  </div>
+  <nav class="header-nav">
+    <a href="/acesso/?key=fortpopular2026">⌂ Início</a>
+    <a href="/relatorio/?key=fortpopular2026">📊 Relatório</a>
+    <a href="/clientes/?key=fortpopular2026">👥 Clientes</a>
+  </nav>
 </header>
 
 <div class="nav-tabs">
@@ -882,6 +921,7 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 <nav class="bottom-nav">
   <a href="/acesso/?key=fortpopular2026"><span class="bn-icon">⌂</span> Início</a>
   <a href="/relatorio/?key=fortpopular2026"><span class="bn-icon">📊</span> Relatório</a>
+  <a href="/clientes/?key=fortpopular2026"><span class="bn-icon">👥</span> Clientes</a>
 </nav>
 </body>
 </html>
