@@ -121,6 +121,9 @@ export async function onRequestPost(context) {
     event_id:      eventId,
     action_source: 'chat',
     user_data:     userData,
+    data_processing_options:         ['LDU'],
+    data_processing_options_country: 0,
+    data_processing_options_state:   0,
   };
 
   if (event_name === 'Purchase') {

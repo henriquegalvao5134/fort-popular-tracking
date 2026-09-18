@@ -251,6 +251,9 @@ async function sendToMeta({ body, clientIp, userAgent, fbp, fbc, hashedEm, hashe
       event_source_url: body.event_source_url || '',
       action_source: 'website',
       user_data: metaUserData,
+      data_processing_options: ['LDU'],
+      data_processing_options_country: 0,
+      data_processing_options_state: 0,
     }],
   };
 
