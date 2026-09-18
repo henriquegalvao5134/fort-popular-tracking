@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Fort Popular — Clientes & LTV</title>
+  <style>
+    :root {
+      --bg:     #0c0404;
+      --card:   #140808;
+      --card2:  #1e0d0d;
+      --gold:   #FFD700;
+      --gold-l: #FFE44D;
+      --green:  #5fd98a;
+      --muted:  #8a7070;
+      --border: rgba(204,27,27,0.35);
+      --red:    #e05a5a;
+      --text:   #f0e8e8;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:14px; }
+    a { color:var(--gold); text-decoration:none; }
+    a:hover { color:var(--gold-l); }
+
+    /* HEADER */
+    header {
+      background:var(--card);
+      border-bottom:1px solid var(--border);
+      padding:14px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    header h1 { font-size:14px; font-weight:700; color:var(--gold); letter-spacing:.04em; }
+
+    /* LOGIN */
+    #login { display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .login-box {
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:32px; width:100%; max-width:320px; text-align:center;
+    }
+    .login-box input {
+      width:100%; background:var(--bg); border:1.5px solid var(--border);
+      color:var(--text); border-radius:8px; padding:10px 14px;
+      font-size:14px; margin-bottom:12px; outline:none;
+    }
+    .login-box input:focus { border-color:var(--gold); }
+    #login-err { display:none; color:var(--red); margin-bottom:12px; font-size:12px; }
+
+    /* BUTTONS */
+    .btn {
+      background:var(--gold); color:#0c0404; border:none;
+      border-radius:8px; padding:9px 18px; font-size:13px; font-weight:700; cursor:pointer;
+    }
+    .btn:hover { background:var(--gold-l); }
+    .btn-outline {
+      background:transparent; color:var(--green); border:1px solid var(--green);
+      border-radius:8px; padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer;
+    }
+    .btn-outline:hover { background:var(--green); color:#0c0404; }
+
+    /* APP */
+    #app { max-width:960px; margin:0 auto; padding:24px 16px 60px; }
+
+    .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
+    .filters input[type=date] {
+      background:var(--card); border:1px solid var(--border); color:var(--text);
+      border-radius:8px; padding:8px 12px; font-size:13px; outline:none;
+    }
+    .filters input[type=date]:focus { border-color:var(--gold); }
+
+    /* KPIs */
+    .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+    .kpi { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .kpi-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+    .kpi-val { font-size:22px; font-weight:700; color:var(--gold); }
+    .kpi-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+    /* TABLE */
+    .section-title { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:20px; }
+    .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding:10px 14px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+    td { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.04); }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:var(--card2); }
+    .num { text-align:right; }
+    .gold { color:var(--gold); font-weight:600; }
+    .green { color:var(--green); }
+    .muted { color:var(--muted); }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+    @media (max-width:600px) {
+      .kpi-grid { grid-template-columns:repeat(2,1fr); }
+      .filters { flex-direction:column; align-items:stretch; }
+      header h1 { font-size:12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>FORT POPULAR · CLIENTES & LTV</h1>
+  <a id="back-link" href="/relatorio/">← Relatório</a>
+</header>
+
+<div id="login" style="display:none;">
+  <div class="login-box">
+    <div style="background:#CC1B1B;padding:12px 28px;border-radius:8px;border:2px solid #FFD700;display:inline-block;margin:0 auto 20px;text-align:center;">
+      <div style="font-size:9px;color:#FFD700;letter-spacing:5px;font-weight:800;font-family:Arial,sans-serif;line-height:1;margin-bottom:2px;">FARMÁCIAS</div>
+      <div style="font-family:Impact,'Arial Black',Arial,sans-serif;font-size:32px;color:#fff;letter-spacing:2px;line-height:1;">FORT <span style="color:#FFD700;">POPULAR</span></div>
+    </div>
+    <div id="login-err">Senha incorreta</div>
+    <input id="key-input" type="password" placeholder="Chave de acesso" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()" style="width:100%;padding:12px;">Entrar</button>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <div style="margin-bottom:20px;">
+    <a id="back-link-app" href="/relatorio/">← Relatório</a>
+  </div>
+
+  <div class="filters">
+    <input id="f-since" type="date">
+    <input id="f-until" type="date">
+    <button class="btn" onclick="load()">Filtrar</button>
+    <button class="btn-outline" onclick="exportCSV()">↓ Exportar CSV</button>
+  </div>
+
+  <!-- KPIs linha 1 -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Clientes únicos</div>
+      <div class="kpi-val" id="k-clients">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Novos no período</div>
+      <div class="kpi-val" id="k-new">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">LTV médio</div>
+      <div class="kpi-val" id="k-ltv">—</div>
+      <div class="kpi-sub">receita por cliente</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">CAC</div>
+      <div class="kpi-val" id="k-cac">—</div>
+      <div class="kpi-sub">custo por cliente novo</div>
+    </div>
+  </div>
+
+  <!-- KPIs linha 2 -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Ticket médio</div>
+      <div class="kpi-val" id="k-ticket">—</div>
+      <div class="kpi-sub">por visita</div>
+    </div>
+  </div>
+
+  <!-- TABELA CLIENTES -->
+  <div class="section-title">Clientes — LTV</div>
+  <div class="card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Telefone</th>
+            <th class="num">Visitas</th>
+            <th class="num">LTV total</th>
+            <th class="num">Ticket médio</th>
+            <th>Primeira visita</th>
+            <th>Última visita</th>
+          </tr>
+        </thead>
+        <tbody id="cli-body">
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Carregando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let CLIENT_KEY = '';
+let _data = null;
+
+function today() { return new Date().toISOString().slice(0,10); }
+function monthStart() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+}
+function fmt(cents) {
+  return 'R$\u00a0' + (cents/100).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function init() {
+  const p = new URLSearchParams(location.search);
+  const k = p.get('key') || sessionStorage.getItem('fp_cli_key') || '';
+  if (k) { CLIENT_KEY = k; sessionStorage.setItem('fp_cli_key', k); show(); }
+  else { document.getElementById('login').style.display = 'flex'; }
+}
+
+function doLogin() {
+  const k = document.getElementById('key-input').value.trim();
+  if (!k) return;
+  CLIENT_KEY = k;
+  sessionStorage.setItem('fp_cli_key', k);
+  document.getElementById('login').style.display = 'none';
+  show();
+}
+
+function show() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const backUrl = `/relatorio/?key=${CLIENT_KEY}`;
+  document.getElementById('back-link').href = backUrl;
+  document.getElementById('back-link-app').href = backUrl;
+  document.getElementById('f-since').value = monthStart();
+  document.getElementById('f-until').value = today();
+  load();
+}
+
+async function load() {
+  const since = document.getElementById('f-since').value;
+  const until = document.getElementById('f-until').value;
+  document.getElementById('cli-body').innerHTML =
+    '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Carregando…</td></tr>';
+  const r = await fetch(`/api/clients-report?key=${CLIENT_KEY}&since=${since}&until=${until}`);
+  if (r.status === 401) {
+    document.getElementById('login').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-err').style.display = 'block';
+    return;
+  }
+  _data = await r.json();
+  render(_data);
+}
+
+function render(d) {
+  const clients = d.clients || [];
+  const totalClients = clients.length;
+  const totalLtv    = clients.reduce((s, c) => s + (c.total_cents || 0), 0);
+  const totalVisits = clients.reduce((s, c) => s + (c.visits || 0), 0);
+  const avgLtv      = totalClients > 0 ? totalLtv / totalClients : 0;
+  const avgTicket   = totalVisits  > 0 ? totalLtv / totalVisits  : 0;
+
+  document.getElementById('k-clients').textContent = totalClients || '—';
+  document.getElementById('k-new').textContent     = d.new_clients ?? '—';
+  document.getElementById('k-ltv').textContent     = avgLtv    > 0 ? fmt(avgLtv)    : '—';
+  document.getElementById('k-cac').textContent     = (d.cac_cents || 0) > 0 ? fmt(d.cac_cents) : '—';
+  document.getElementById('k-ticket').textContent  = avgTicket > 0 ? fmt(avgTicket) : '—';
+
+  const cliBody = document.getElementById('cli-body');
+  if (!clients.length) {
+    cliBody.innerHTML =
+      '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">Nenhum cliente encontrado no período</td></tr>';
+    return;
+  }
+  cliBody.innerHTML = clients.map(c => {
+    const ticket = c.visits > 0 ? c.total_cents / c.visits : 0;
+    return `<tr>
+      <td class="gold">${c.display_name || '—'}</td>
+      <td class="muted">****${c.phone_last4 || '—'}</td>
+      <td class="num">${c.visits}</td>
+      <td class="num green">${c.total_cents > 0 ? fmt(c.total_cents) : '—'}</td>
+      <td class="num">${ticket > 0 ? fmt(ticket) : '—'}</td>
+      <td class="muted">${c.first_visit || '—'}</td>
+      <td class="muted">${c.last_visit  || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportCSV() {
+  if (!_data) return;
+  const clients = _data.clients || [];
+  const rows = [['Nome','Telefone','Visitas','LTV Total (R$)','Ticket Médio (R$)','Primeira Visita','Última Visita']];
+  for (const c of clients) {
+    const ticket = c.visits > 0 ? (c.total_cents / c.visits / 100).toFixed(2) : '0';
+    rows.push([
+      c.display_name || '',
+      `****${c.phone_last4}`,
+      c.visits,
+      (c.total_cents / 100).toFixed(2),
+      ticket,
+      c.first_visit || '',
+      c.last_visit  || '',
+    ]);
+  }
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `clientes-fort-popular-${today()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+init();
+</script>
+</body>
+</html>
