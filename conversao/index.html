@@ -925,6 +925,7 @@ async function loadHist() {
     return (b.registered_at || 0) - (a.registered_at || 0);
   });
 
+  try {
     const purchases = rows.filter(r => r.event_name === 'Purchase');
     const revCents  = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
     const agentCount = agentRows.length;
