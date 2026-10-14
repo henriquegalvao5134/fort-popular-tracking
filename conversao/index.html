@@ -601,8 +601,13 @@
   <div class="hist-filters">
     <input type="date" id="h-from" placeholder="De">
     <input type="date" id="h-to"   placeholder="Até">
-    <input type="search" id="h-q" class="search-input" placeholder="Nome ou telefone…"
+    <input type="search" id="h-q" class="search-input" placeholder="Nome, telefone ou trecho…"
            onkeydown="if(event.key==='Enter')loadHist()">
+    <select id="h-source" title="Fonte dos dados" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
+      <option value="manual">📋 Manual</option>
+      <option value="agent">🤖 Agente IA</option>
+      <option value="all">🔀 Todos</option>
+    </select>
     <select id="h-limit" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
       <option value="20" selected>20</option>
       <option value="50">50</option>
@@ -630,6 +635,10 @@
       <div class="hs-label">Investido <span class="plat-ico plat-meta" style="width:12px;height:12px;font-size:8px;vertical-align:0;">f</span></div>
       <div class="hs-val" id="hs-spend">—</div>
     </div>
+    <div class="hist-stat" id="hs-agent-card" style="display:none;">
+      <div class="hs-label">🤖 Agente IA</div>
+      <div class="hs-val" id="hs-agent-count" style="color:var(--blue);">—</div>
+    </div>
   </div>
 
   <div class="card" style="padding:0;overflow:hidden;">
@@ -643,6 +652,7 @@
             <th>Valor</th>
             <th>LTV</th>
             <th><span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span></th>
+            <th id="th-fonte" style="display:none;">Fonte</th>
             <th></th>
           </tr>
         </thead>
@@ -857,32 +867,67 @@ function showFeedback(msg, ok) {
 
 // ── Histórico ─────────────────────────────────────────
 async function loadHist() {
-  const body = document.getElementById('hist-body');
-  body.innerHTML = '<tr><td colspan="7" class="hist-empty">Carregando...</td></tr>';
+  const histBody = document.getElementById('hist-body');
+  histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Carregando...</td></tr>';
   ['hs-total','hs-purchases','hs-revenue','hs-spend'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('hs-agent-count').textContent = '—';
 
-  const from = document.getElementById('h-from').value;
-  const to   = document.getElementById('h-to').value;
-  const q    = (document.getElementById('h-q').value || '').trim();
+  const from   = document.getElementById('h-from').value;
+  const to     = document.getElementById('h-to').value;
+  const q      = (document.getElementById('h-q').value || '').trim();
+  const limit  = document.getElementById('h-limit').value || '200';
+  const source = document.getElementById('h-source').value;
 
-  const limit = document.getElementById('h-limit').value || '200';
+  // Mostrar/ocultar coluna "Fonte" e card agente
+  const showFonte = source === 'all';
+  document.getElementById('th-fonte').style.display       = showFonte ? '' : 'none';
+  document.getElementById('hs-agent-card').style.display  = (source !== 'manual') ? '' : 'none';
+
   const params = new URLSearchParams({ key: KEY, limit });
   if (from) params.set('from', from);
   if (to)   params.set('to',   to);
   if (q)    params.set('q',    q);
 
-  try {
-    const resp = await fetch('/api/conversions-history?' + params);
-    if (resp.status === 401) {
-      body.innerHTML = '<tr><td colspan="7" class="hist-empty">Chave inválida.</td></tr>';
-      return;
+  let manualRows = [], agentRows = [], spendCents = 0;
+
+  // Busca manual (D1)
+  if (source === 'manual' || source === 'all') {
+    try {
+      const resp = await fetch('/api/conversions-history?' + params);
+      if (resp.status === 401) {
+        histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Chave inválida.</td></tr>';
+        return;
+      }
+      const data = await resp.json();
+      manualRows = (data.conversions || []).map(r => ({ ...r, source: 'manual' }));
+      spendCents = data.spend_cents || 0;
+    } catch (e) {
+      console.error('manual fetch error', e);
     }
-    const data = await resp.json();
-    const rows = data.conversions || [];
+  }
+
+  // Busca agente IA (Supabase)
+  if (source === 'agent' || source === 'all') {
+    try {
+      const resp = await fetch('/api/agent-conversations?' + params);
+      if (resp.ok) {
+        const data = await resp.json();
+        agentRows = data.conversions || [];
+      }
+    } catch (e) {
+      console.error('agent fetch error', e);
+    }
+  }
+
+  // Mescla e ordena por data desc
+  const rows = [...manualRows, ...agentRows].sort((a, b) => {
+    if (b.event_date !== a.event_date) return b.event_date > a.event_date ? 1 : -1;
+    return (b.registered_at || 0) - (a.registered_at || 0);
+  });
 
     const purchases = rows.filter(r => r.event_name === 'Purchase');
     const revCents  = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
-    const spendCents = data.spend_cents || 0;
+    const agentCount = agentRows.length;
     document.getElementById('hs-total').textContent     = rows.length;
     document.getElementById('hs-purchases').textContent = purchases.length;
     document.getElementById('hs-revenue').textContent   =
@@ -890,9 +935,10 @@ async function loadHist() {
     document.getElementById('hs-spend').textContent     = spendCents
       ? 'R$\u00a0' + (spendCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
       : '—';
+    document.getElementById('hs-agent-count').textContent = agentCount || '—';
 
     if (!rows.length) {
-      body.innerHTML = '<tr><td colspan="7" class="hist-empty">Nenhum registro no período.</td></tr>';
+      histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Nenhum registro no período.</td></tr>';
       return;
     }
 
@@ -904,12 +950,21 @@ async function loadHist() {
     };
     const metaIcon = '<span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span>';
 
-    body.innerHTML = rows.map(r => {
+    histBody.innerHTML = rows.map(r => {
+      const isAgent = r.source === 'agent';
       const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
-      const nome  = esc(r.display_name || '—');
+      const nome  = esc(r.display_name || (isAgent ? r.phone_normalized || '—' : '—'));
       const prod  = r.produto    ? `<br><span style="color:var(--blue);font-size:.75em;">💊 ${esc(r.produto)}</span>` : '';
-      const obs   = r.observacao ? `<br><span style="color:#f59e0b;font-size:.75em;">📝 ${esc(r.observacao)}</span>` : '';
-      // Cliente: nome na primeira linha, telefone + origem + produto + obs
+
+      // Agente: mostra trecho da conversa + confiança ao invés de observação
+      let obs = '';
+      if (isAgent && r.observacao) {
+        const conf = r.ai_confidence ? `<span style="background:rgba(96,165,250,.15);color:var(--blue);border-radius:3px;padding:1px 5px;font-size:.7em;font-weight:700;">${r.ai_confidence}%</span> ` : '';
+        obs = `<br><span style="color:#a78bfa;font-size:.75em;">🤖 ${conf}${esc(r.observacao.slice(0, 80))}</span>`;
+      } else if (!isAgent && r.observacao) {
+        obs = `<br><span style="color:#f59e0b;font-size:.75em;">📝 ${esc(r.observacao)}</span>`;
+      }
+
       const cli = `<span style="font-weight:600;">${nome}</span>`
         + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem] || ''}</span>` : '')
         + prod + obs;
@@ -920,8 +975,7 @@ async function loadHist() {
       const val   = r.value_cents
         ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         : '—';
-      // LTV: total all-time do cliente (só mostra se > 0 e tem phone)
-      const ltv = (r.client_ltv_cents && r.phone_normalized)
+      const ltv = (!isAgent && r.client_ltv_cents && r.phone_normalized)
         ? '<span style="color:var(--green);font-weight:700;">R$\u00a0'
           + (r.client_ltv_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
           + '</span>'
@@ -930,22 +984,28 @@ async function loadHist() {
       const meta  = r.meta_ok
         ? `${metaIcon} <span class="meta-ok">✓</span>`
         : `<span class="meta-no">—</span>`;
-      const upBtn = ic
-        ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>`
+
+      // Botões: agente não tem editar/promover (dados somente leitura)
+      const upBtn   = (!isAgent && ic) ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>` : '';
+      const editBtn = !isAgent ? `<button class="btn-edit" onclick='openEditModal(${JSON.stringify(r)})' title="Editar">✏️</button>` : '';
+
+      const fonteCell = showFonte
+        ? `<td style="white-space:nowrap;">${isAgent ? '<span style="color:#a78bfa;font-size:.75em;">🤖 IA</span>' : '<span style="color:var(--muted);font-size:.75em;">📋</span>'}</td>`
         : '';
-      const editBtn = `<button class="btn-edit" onclick='openEditModal(${JSON.stringify(r)})' title="Editar">✏️</button>`;
-      return `<tr>
+
+      return `<tr${isAgent ? ' style="opacity:.92;"' : ''}>
         <td class="td-date">${r.event_date || '—'}</td>
         <td class="td-cli">${cli}</td>
         <td class="td-badge">${badge}</td>
         <td class="td-val">${val}</td>
         <td class="td-ltv">${ltv}</td>
         <td class="td-meta">${meta}</td>
+        ${fonteCell}
         <td class="td-act" style="white-space:nowrap;">${upBtn} ${editBtn}</td>
       </tr>`;
     }).join('');
   } catch (e) {
-    body.innerHTML = `<tr><td colspan="7" class="hist-empty">Erro: ${esc(e.message)}</td></tr>`;
+    histBody.innerHTML = `<tr><td colspan="8" class="hist-empty">Erro: ${esc(e.message)}</td></tr>`;
   }
 }
 
