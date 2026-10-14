@@ -3,612 +3,509 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Conversões — Farmácia Fort Popular</title>
+  <title>Conversões — Fort Popular</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --red:    #dc2626;
-      --red2:   #b91c1c;
-      --bg:     #0f0c0c;
-      --card:   #160f0f;
-      --border: rgba(220,38,38,0.22);
-      --text:   #f0e8e8;
-      --muted:  #7a6060;
-      --green:  #4ade80;
-      --blue:   #60a5fa;
+      --bg:       #0a0e1f;
+      --surface:  #111827;
+      --surface2: #1a2235;
+      --border:   rgba(255,255,255,0.07);
+      --brand:    #6366f1;
+      --brand2:   #4f46e5;
+      --green:    #10b981;
+      --blue:     #3b82f6;
+      --purple:   #a855f7;
+      --amber:    #f59e0b;
+      --text:     #f1f5f9;
+      --muted:    #64748b;
+      --muted2:   #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Poppins', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 28px 16px 80px;
     }
 
     /* ── HEADER ── */
-    header { text-align: center; margin-bottom: 24px; }
-    header h1 {
-      font-family: 'Playfair Display', Georgia, serif;
-      color: var(--red);
-      font-size: 1.6rem;
-      letter-spacing: 0.04em;
-      margin-bottom: 5px;
-    }
-    header p { color: var(--muted); font-size: 0.85rem; }
-
-    /* ── NAV TABS ── */
-    .nav-tabs {
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      height: 60px;
       display: flex;
-      max-width: 460px;
-      margin: 0 auto 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 4px;
-      gap: 4px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .nav-tab {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      border-radius: 9px;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
+    .app-logo { display: flex; align-items: center; gap: 10px; }
+    .app-logo-icon {
+      width: 34px; height: 34px;
+      background: var(--brand);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
     }
-    .nav-tab.active { background: var(--red); color: #fff; font-weight: 700; }
+    .app-logo-text h1 { font-size: .92rem; font-weight: 700; line-height: 1.2; }
+    .app-logo-text p  { font-size: .68rem; color: var(--muted2); }
+    .header-nav-links { display: none; gap: 4px; }
+    .header-nav-links a {
+      padding: 7px 12px; border-radius: 8px;
+      color: var(--muted2); text-decoration: none;
+      font-size: .8rem; font-weight: 500; transition: all .15s;
+    }
+    .header-nav-links a:hover { background: var(--surface2); color: var(--text); }
 
-    /* ── CARD ── */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      max-width: 460px;
+    /* ── TABS ── */
+    .tabs-bar {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+    }
+    .tab-btn {
+      padding: 14px 18px;
+      background: transparent; border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: inherit; font-size: .85rem; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+
+    /* ── MAIN ── */
+    .main-content {
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 24px 16px 80px;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
     }
 
     /* ── TIPO ── */
     .tipo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 20px;
     }
     .tipo-btn {
       padding: 14px 10px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      border-radius: 10px;
-      font-size: 0.93rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted2); border-radius: 10px;
+      font-size: .88rem; font-weight: 500;
+      cursor: pointer; transition: all .2s;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
       font-family: inherit;
     }
-    .tipo-btn .ico { font-size: 1.4rem; }
+    .tipo-btn .ico { font-size: 1.3rem; }
     .tipo-btn.active {
-      border-color: var(--red);
-      color: var(--red);
-      background: rgba(220,38,38,0.08);
+      border-color: var(--brand); color: var(--brand);
+      background: rgba(99,102,241,.1);
     }
 
     /* ── ORIGEM ── */
     .origem-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6px; margin-bottom: 20px;
     }
     .origem-btn {
       padding: 10px 8px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      border-radius: 9px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted2); border-radius: 8px;
+      font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
       font-family: inherit;
     }
     .origem-btn.active {
-      border-color: var(--red);
-      color: var(--red);
-      background: rgba(220,38,38,0.08);
+      border-color: var(--brand); color: var(--brand);
+      background: rgba(99,102,241,.1);
     }
 
     /* ── CAMPOS ── */
-    .field { margin-bottom: 16px; }
+    .field { margin-bottom: 14px; }
     label {
       display: block;
-      color: var(--muted);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 7px;
+      font-size: .68rem; font-weight: 700;
+      color: var(--muted2);
+      text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: 6px;
     }
-    input {
-      width: 100%;
-      padding: 13px 15px;
-      background: rgba(220,38,38,0.04);
+    input, textarea, select {
+      width: 100%; padding: 11px 13px;
+      background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 9px;
-      color: var(--text);
-      font-size: 0.97rem;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
+      border-radius: 8px;
+      color: var(--text); font-size: .9rem; font-family: inherit;
+      outline: none; transition: border-color .2s, box-shadow .2s;
     }
-    input:focus, textarea:focus { border-color: var(--red); }
-    input::placeholder { color: var(--muted); }
-
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
     .value-row { display: none; }
     .value-row.show { display: block; }
 
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 4px 0 16px;
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 4px 0 14px;
     }
-    .section-divider span {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
+    .divider span {
+      font-size: .65rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em; white-space: nowrap;
     }
-    .section-divider::before,
-    .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
     }
     .match-badge {
-      font-size: 0.65rem;
-      background: rgba(74,222,128,0.12);
-      color: var(--green);
-      border: 1px solid rgba(74,222,128,0.25);
-      border-radius: 20px;
-      padding: 2px 8px;
-      font-weight: 600;
-      white-space: nowrap;
+      font-size: .62rem;
+      background: rgba(16,185,129,.1); color: var(--green);
+      border: 1px solid rgba(16,185,129,.2);
+      border-radius: 20px; padding: 2px 7px; font-weight: 600; white-space: nowrap;
     }
-    .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .btn-submit {
-      width: 100%;
-      padding: 15px;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.97rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 4px;
-      letter-spacing: 0.03em;
-      transition: opacity 0.2s, transform 0.1s;
-      font-family: inherit;
+      width: 100%; padding: 13px;
+      background: var(--brand); color: #fff; border: none;
+      border-radius: 10px; font-size: .92rem; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s, transform .1s; letter-spacing: .02em;
     }
-    .btn-submit:active { transform: scale(0.98); }
-    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-submit:hover  { background: var(--brand2); }
+    .btn-submit:active { transform: scale(.98); }
+    .btn-submit:disabled { opacity: .45; cursor: not-allowed; }
 
     .feedback {
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      display: none;
+      margin-top: 14px; padding: 12px 14px;
+      border-radius: 8px; font-size: .85rem; display: none;
     }
-    .feedback.ok {
-      background: rgba(74,222,128,0.1);
-      border: 1px solid rgba(74,222,128,0.3);
-      color: var(--green);
-      display: block;
-    }
-    .feedback.err {
-      background: rgba(220,38,38,0.1);
-      border: 1px solid rgba(220,38,38,0.3);
-      color: #ef4444;
-      display: block;
-    }
+    .feedback.ok  { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); color: var(--green); display: block; }
+    .feedback.err { background: rgba(239,68,68,.1);  border: 1px solid rgba(239,68,68,.25);  color: #ef4444; display: block; }
 
     /* ── HISTÓRICO ── */
-    #hist-section { display: none; max-width: 460px; margin: 0 auto; }
-
-    .hist-col-title {
-      display: none;
-      font-family: 'Playfair Display', Georgia, serif;
-      color: var(--red);
-      font-size: 1rem;
-      letter-spacing: 0.04em;
-      margin-bottom: 14px;
-    }
+    #hist-section { display: none; }
+    .hist-col-title { display: none; font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
 
     .hist-filters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
     }
-    .hist-filters input {
-      flex: 1;
-      min-width: 110px;
-      padding: 10px 12px;
-      font-size: 0.85rem;
+    .hist-filters input,
+    .hist-filters select {
+      flex: 1; min-width: 110px; padding: 9px 12px; font-size: .82rem;
     }
-    .hist-filters .search-input { min-width: 160px; }
+    .hist-filters .search-input { min-width: 150px; }
     .btn-filter {
-      padding: 10px 18px;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: 9px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
+      padding: 9px 18px;
+      background: var(--brand); color: #fff; border: none;
+      border-radius: 8px; font-size: .82rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; white-space: nowrap;
+      transition: background .15s;
     }
+    .btn-filter:hover { background: var(--brand2); }
 
-    /* Stats */
-    .hist-summary {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
+    /* ── KPIs ── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 16px;
     }
-    @media (min-width: 480px) {
-      .hist-summary { grid-template-columns: repeat(4, 1fr); }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px;
     }
-    .hist-stat {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 12px;
-      text-align: center;
+    .kpi-label {
+      font-size: .65rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px;
     }
-    .hs-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .hs-val   { font-size: 1.15rem; font-weight: 700; color: var(--red); }
+    .kpi-val { font-size: 1.3rem; font-weight: 700; }
+    .kpi-green  { color: var(--green); }
+    .kpi-blue   { color: var(--blue); }
+    .kpi-purple { color: var(--purple); }
+    .kpi-brand  { color: var(--brand); }
 
-    /* Table */
-    .hist-table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    /* ── TABLE ── */
+    .table-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
     thead th {
-      padding: 10px 12px;
-      text-align: left;
-      color: var(--muted);
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      padding: 12px 14px; text-align: left;
+      color: var(--muted); font-size: .65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .07em;
       border-bottom: 1px solid var(--border);
-      white-space: nowrap;
+      background: var(--surface2); white-space: nowrap;
     }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: rgba(220,38,38,0.04); }
-    tbody td { padding: 10px 12px; color: var(--text); white-space: nowrap; }
+    tbody tr:hover { background: rgba(255,255,255,.025); }
+    tbody td { padding: 12px 14px; color: var(--text); white-space: nowrap; }
 
-    .badge-purchase { background: rgba(74,222,128,0.12); color: var(--green); padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
-    .badge-contact  { background: rgba(96,165,250,0.12); color: var(--blue);  padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
-    .meta-ok  { color: var(--green); font-size: 0.85rem; }
-    .meta-no  { color: var(--muted); font-size: 0.85rem; }
-    .plat-ico { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; font-size:11px; font-weight:900; vertical-align:middle; flex-shrink:0; }
-    .plat-meta   { background:#1877F2; color:#fff; font-style:italic; }
-    .plat-google { background:#fff; color:#4285F4; }
-    .plat-organic  { font-size:14px; }
-    .plat-referral { font-size:14px; }
-
-    .btn-upgrade {
-      padding: 3px 10px;
-      background: rgba(220,38,38,0.12);
-      border: 1px solid rgba(220,38,38,0.35);
-      color: var(--red);
-      border-radius: 20px;
-      font-size: 0.71rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
-      font-family: inherit;
+    .badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 9px; border-radius: 20px;
+      font-size: .7rem; font-weight: 700; white-space: nowrap;
     }
-    .btn-upgrade:hover { background: var(--red); color: #fff; }
-    .btn-edit {
-      padding: 3px 7px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
+    .badge-venda   { background: rgba(16,185,129,.12); color: var(--green); }
+    .badge-contato { background: rgba(59,130,246,.12);  color: var(--blue); }
+    .badge-manual  { background: rgba(148,163,184,.08); color: var(--muted2); }
+    .badge-ia      { background: rgba(168,85,247,.12);  color: var(--purple); }
+
+    .conf-pill {
+      display: inline-block; padding: 1px 6px; border-radius: 4px;
+      font-size: .67rem; font-weight: 700;
     }
-    .btn-edit:hover { background: rgba(255,255,255,0.12); }
+    .conf-high { background: rgba(16,185,129,.15);  color: var(--green); }
+    .conf-med  { background: rgba(245,158,11,.15);  color: var(--amber); }
+    .conf-low  { background: rgba(148,163,184,.08); color: var(--muted2); }
 
-    .hist-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
+    .plat-ico {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 16px; height: 16px; border-radius: 4px;
+      font-size: 10px; font-weight: 900; vertical-align: middle; flex-shrink: 0;
+    }
+    .plat-meta   { background: #1877F2; color: #fff; font-style: italic; }
+    .plat-google { background: #fff; color: #4285F4; }
 
-    /* ── HISTÓRICO: CARDS MOBILE ── */
-    @media (max-width: 819px) {
-      .hist-table-wrap { overflow: hidden; }
-      .hist-table-wrap table  { display: block !important; }
-      .hist-table-wrap thead  { display: none !important; }
-      .hist-table-wrap tbody  { display: flex !important; flex-direction: column; gap: 8px; padding: 8px; }
-      .hist-table-wrap tbody tr {
-        display: flex !important;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 4px 8px;
+    .btn-row {
+      padding: 4px 10px; border-radius: 6px;
+      font-size: .72rem; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent;
+      transition: all .15s; font-family: inherit; white-space: nowrap;
+    }
+    .btn-row-upgrade { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.3); color: var(--green); }
+    .btn-row-upgrade:hover { background: var(--green); color: #fff; }
+    .btn-row-edit    { background: rgba(255,255,255,.05); border-color: var(--border); color: var(--muted2); }
+    .btn-row-edit:hover { background: rgba(255,255,255,.1); color: var(--text); }
+
+    .hist-empty { text-align: center; padding: 48px 20px; color: var(--muted); font-size: .88rem; }
+
+    /* ── MOBILE CARDS ── */
+    @media (max-width: 767px) {
+      .table-wrap table  { display: block !important; }
+      .table-wrap thead  { display: none !important; }
+      .table-wrap tbody  { display: flex !important; flex-direction: column; gap: 8px; padding: 8px; }
+      .table-wrap tbody tr {
+        display: flex !important; flex-wrap: wrap;
+        align-items: center; gap: 4px 8px;
         border: 1px solid var(--border) !important;
-        border-radius: 10px;
-        padding: 12px 14px;
-        background: rgba(220,38,38,0.02);
+        border-radius: 10px; padding: 12px;
+        background: var(--surface2);
       }
-      .hist-table-wrap tbody tr:hover { background: rgba(220,38,38,0.06); }
-      .hist-table-wrap tbody td {
-        display: block !important;
-        padding: 0 !important;
-        white-space: normal !important;
-        border: none !important;
+      .table-wrap tbody td {
+        display: block !important; padding: 0 !important;
+        white-space: normal !important; border: none !important;
       }
-      /* Linha 1: data (expande) + badge + meta + botão */
-      .td-date  { order: 1; flex: 1 1 auto; font-size: .75rem; color: var(--muted); white-space: nowrap !important; }
-      .td-badge { order: 2; flex: 0 0 auto; }
-      .td-meta  { order: 3; flex: 0 0 auto; white-space: nowrap !important; }
-      .td-act   { order: 4; flex: 0 0 auto; }
-      /* Linha 2: cliente (100% força quebra) */
-      .td-cli   { order: 5; flex: 0 0 100%; padding-top: 3px; }
-      /* Linha 3: valor + LTV */
-      .td-val   { order: 6; flex: 0 0 50%; font-size: .82rem; padding-top: 5px; }
-      .td-ltv   { order: 7; flex: 0 0 50%; font-size: .82rem; text-align: right; padding-top: 5px; }
-      .td-val::before { content: 'Valor '; color: var(--muted); font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
-      .td-ltv::before { content: 'LTV '; color: var(--muted); font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+      .td-date  { order:1; flex:1 1 auto; font-size:.73rem; color:var(--muted2); white-space:nowrap !important; }
+      .td-badge { order:2; flex:0 0 auto; }
+      .td-meta  { order:3; flex:0 0 auto; }
+      .td-act   { order:4; flex:0 0 auto; }
+      .td-cli   { order:5; flex:0 0 100%; padding-top:4px !important; }
+      .td-val   { order:6; flex:0 0 50%; font-size:.82rem; padding-top:6px !important; }
+      .td-ltv   { order:7; flex:0 0 50%; font-size:.82rem; text-align:right; padding-top:6px !important; }
+      .td-val::before { content:'Valor '; color:var(--muted); font-size:.64rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+      .td-ltv::before { content:'LTV ';   color:var(--muted); font-size:.64rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
     }
 
     /* ── MODAL ── */
     .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 100;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.75); z-index: 100;
       align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
     }
     .modal-overlay.open { display: flex; }
     .modal {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      width: 92%; max-width: 360px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+      width: 92%; max-width: 400px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.6);
     }
-    .modal h3 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.1rem;
-      color: var(--red);
-      margin-bottom: 5px;
-    }
-    .modal p { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
-    .modal .field { margin-bottom: 0; }
-    .modal-btns { display: flex; gap: 8px; margin-top: 18px; }
+    .modal h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+    .modal p  { font-size: .8rem; color: var(--muted2); margin-bottom: 18px; }
+    .modal-btns { display: flex; gap: 8px; margin-top: 16px; }
     .modal-btns button {
-      flex: 1; padding: 13px; border-radius: 9px;
-      font-weight: 700; font-size: 0.9rem; cursor: pointer;
+      flex: 1; padding: 12px; border-radius: 8px;
+      font-weight: 700; font-size: .88rem; cursor: pointer;
       border: none; font-family: inherit;
     }
-    .btn-cancel  { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border) !important; }
-    .btn-confirm { background: var(--red); color: #fff; }
+    .btn-cancel  { background: var(--surface2); color: var(--muted2); border: 1px solid var(--border) !important; }
+    .btn-confirm { background: var(--brand); color: #fff; }
+    .btn-confirm:hover { background: var(--brand2); }
 
-    /* ── HEADER NAV (desktop) ── */
-    .header-nav { display: none; }
-
-    /* ── DESKTOP 2-COLUNAS ── */
+    /* ── DESKTOP ── */
     @media (min-width: 820px) {
-      body { padding: 28px 40px 24px; }
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 18px;
-      }
-      header > div { text-align: left; }
-      .header-nav {
-        display: flex;
-        gap: 6px;
-      }
-      .header-nav a {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 0.82rem;
-        font-weight: 600;
-        transition: color .15s, border-color .15s;
-      }
-      .header-nav a:hover {
-        color: var(--text);
-        border-color: var(--red);
-      }
-      .nav-tabs { display: none; }
-      .bottom-nav { display: none; }
+      .main-content { padding: 28px 32px 32px; }
+      .tabs-bar { padding: 0 32px; }
+      .header-nav-links { display: flex; }
       #main-cols {
         display: grid;
-        grid-template-columns: 460px 1fr;
+        grid-template-columns: 480px 1fr;
         gap: 24px;
-        max-width: 1200px;
-        margin: 0 auto;
         align-items: start;
       }
-      #form-section, #hist-section {
-        display: block !important;
-        max-width: none;
-      }
-      .card { max-width: none; }
+      #form-section, #hist-section { display: block !important; max-width: none; }
       .hist-col-title { display: block; }
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
-    /* ── BOTTOM NAV ── */
-    .bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; background:#160f0f; border-top:1px solid rgba(220,38,38,0.35); z-index:999; padding-bottom:env(safe-area-inset-bottom); }
-    .bottom-nav a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 8px; text-decoration:none; color:#7a6060; font-size:.7rem; gap:4px; transition:color .15s; }
-    .bottom-nav a:hover { color:#dc2626; }
-    .bottom-nav .bn-icon { font-size:1.2rem; }
+    /* ── BOTTOM NAV (mobile) ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; display: flex;
+      background: var(--surface); border-top: 1px solid var(--border);
+      z-index: 999; padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottom-nav a {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 10px 8px; text-decoration: none;
+      color: var(--muted); font-size: .67rem; font-weight: 500;
+      gap: 3px; transition: color .15s;
+    }
+    .bottom-nav a:hover { color: var(--brand); }
+    .bottom-nav .bn-icon { font-size: 1.15rem; }
+    @media (min-width: 820px) { .bottom-nav { display: none; } }
   </style>
 </head>
 <body>
 
-<header>
-  <div>
-    <h1>Fort Popular</h1>
-    <p>Farmácia · Conversões WhatsApp</p>
+<!-- ── HEADER ── -->
+<header class="app-header">
+  <div class="app-logo">
+    <div class="app-logo-icon">💊</div>
+    <div class="app-logo-text">
+      <h1>Fort Popular</h1>
+      <p>Conversões WhatsApp</p>
+    </div>
   </div>
-  <nav class="header-nav">
+  <nav class="header-nav-links">
     <a href="/acesso/?key=fortpopular2026">⌂ Início</a>
     <a href="/relatorio/?key=fortpopular2026">📊 Relatório</a>
     <a href="/clientes/?key=fortpopular2026">👥 Clientes</a>
   </nav>
 </header>
 
-<div class="nav-tabs">
-  <button class="nav-tab active" onclick="showSection('form', this)">Registrar</button>
-  <button class="nav-tab" onclick="showSection('hist', this)">Histórico</button>
-</div>
+<!-- ── TABS ── -->
+<nav class="tabs-bar">
+  <button class="tab-btn active" onclick="showSection('form',this)">Registrar</button>
+  <button class="tab-btn"        onclick="showSection('hist',this)">Histórico</button>
+</nav>
 
+<!-- ── CONTENT ── -->
+<div class="main-content">
 <div id="main-cols">
 
-<!-- ── FORMULÁRIO ── -->
+<!-- FORMULÁRIO -->
 <div id="form-section">
-  <div class="card">
+<div class="form-card">
 
-    <!-- Tipo -->
-    <div class="tipo-grid">
-      <button class="tipo-btn active" onclick="setTipo('Contact', this)">
-        <span class="ico">💬</span>Contato
-      </button>
-      <button class="tipo-btn" onclick="setTipo('Purchase', this)">
-        <span class="ico">💰</span>Venda
-      </button>
-    </div>
-
-    <!-- Origem -->
-    <div class="origem-grid">
-      <button class="origem-btn active" data-o="ad"       onclick="setOrigem('ad', this)"><span class="plat-ico plat-meta" style="margin-right:5px;">f</span>Meta Ads</button>
-      <button class="origem-btn"        data-o="google"   onclick="setOrigem('google', this)"><span class="plat-ico plat-google" style="margin-right:5px;">G</span>Google Ads</button>
-      <button class="origem-btn"        data-o="organic"  onclick="setOrigem('organic', this)">🚶 Orgânico</button>
-      <button class="origem-btn"        data-o="referral" onclick="setOrigem('referral', this)">🤝 Indicação</button>
-    </div>
-
-    <!-- Campos -->
-    <div class="field">
-      <label>Telefone / WhatsApp *</label>
-      <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
-    </div>
-    <div class="field">
-      <label>Nome do cliente</label>
-      <input id="name" type="text" placeholder="Maria Silva">
-    </div>
-    <div class="field value-row" id="value-row">
-      <label>Valor da venda (R$) *</label>
-      <input id="value" type="text" placeholder="0,00" inputmode="decimal">
-    </div>
-    <div class="field">
-      <label>Data (padrão: hoje)</label>
-      <input id="date" type="date">
-    </div>
-
-    <!-- Dados adicionais: melhora match quality no Meta -->
-    <div class="section-divider">
-      <span>Dados adicionais</span>
-      <span class="match-badge">melhora match Meta</span>
-    </div>
-    <div class="field">
-      <label>Email</label>
-      <input id="email" type="email" placeholder="email@cliente.com" inputmode="email" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>CPF</label>
-      <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"
-             oninput="fmtCpf(this)">
-    </div>
-    <div class="field">
-      <label>Bairro</label>
-      <input id="neighborhood" type="text" placeholder="Ex: Centro">
-    </div>
-    <div class="field">
-      <label>Endereço (rua, nº)</label>
-      <input id="address" type="text" placeholder="Ex: Rua das Flores, 123">
-    </div>
-    <div class="grid2">
-      <div class="field">
-        <label>Cidade</label>
-        <input id="city" type="text" placeholder="Ex: Itaipuaçu">
-      </div>
-      <div class="field">
-        <label>Estado</label>
-        <input id="state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;">
-      </div>
-    </div>
-    <div class="field">
-      <label>CEP</label>
-      <input id="zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9"
-             oninput="fmtCep(this)">
-    </div>
-
-    <!-- Produto / Observação -->
-    <div class="section-divider">
-      <span>Atendimento</span>
-    </div>
-    <div class="field">
-      <label>Produto / Medicamento</label>
-      <input id="produto" type="text" placeholder="Ex: Rivotril 2mg, Dipirona…">
-    </div>
-    <div class="field">
-      <label>Observação</label>
-      <textarea id="observacao" placeholder="Ex: Cliente não respondeu, pediu orçamento, retorno agendado…"
-        style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;resize:vertical;min-height:72px;font-family:inherit;transition:border-color .2s;"></textarea>
-    </div>
-
-    <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
-    <div class="feedback" id="feedback"></div>
-
+  <div class="tipo-grid">
+    <button class="tipo-btn active" onclick="setTipo('Contact',this)">
+      <span class="ico">💬</span>Contato
+    </button>
+    <button class="tipo-btn" onclick="setTipo('Purchase',this)">
+      <span class="ico">💰</span>Venda
+    </button>
   </div>
+
+  <div class="origem-grid">
+    <button class="origem-btn active" data-o="ad"       onclick="setOrigem('ad',this)"><span class="plat-ico plat-meta">f</span> Meta Ads</button>
+    <button class="origem-btn"        data-o="google"   onclick="setOrigem('google',this)"><span class="plat-ico plat-google">G</span> Google Ads</button>
+    <button class="origem-btn"        data-o="organic"  onclick="setOrigem('organic',this)">🚶 Orgânico</button>
+    <button class="origem-btn"        data-o="referral" onclick="setOrigem('referral',this)">🤝 Indicação</button>
+  </div>
+
+  <div class="field">
+    <label>Telefone / WhatsApp *</label>
+    <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
+  </div>
+  <div class="field">
+    <label>Nome do cliente</label>
+    <input id="name" type="text" placeholder="Maria Silva">
+  </div>
+  <div class="field value-row" id="value-row">
+    <label>Valor da venda (R$) *</label>
+    <input id="value" type="text" placeholder="0,00" inputmode="decimal">
+  </div>
+  <div class="field">
+    <label>Data (padrão: hoje)</label>
+    <input id="date" type="date">
+  </div>
+
+  <div class="divider">
+    <span>Dados adicionais</span>
+    <span class="match-badge">melhora match Meta</span>
+  </div>
+  <div class="field">
+    <label>Email</label>
+    <input id="email" type="email" placeholder="email@cliente.com" autocomplete="off">
+  </div>
+  <div class="field">
+    <label>CPF</label>
+    <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" oninput="fmtCpf(this)">
+  </div>
+  <div class="field">
+    <label>Bairro</label>
+    <input id="neighborhood" type="text" placeholder="Centro">
+  </div>
+  <div class="field">
+    <label>Endereço</label>
+    <input id="address" type="text" placeholder="Rua das Flores, 123">
+  </div>
+  <div class="grid2">
+    <div class="field"><label>Cidade</label><input id="city" type="text" placeholder="Itaipuaçu"></div>
+    <div class="field"><label>Estado</label><input id="state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;"></div>
+  </div>
+  <div class="field">
+    <label>CEP</label>
+    <input id="zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9" oninput="fmtCep(this)">
+  </div>
+
+  <div class="divider"><span>Atendimento</span></div>
+  <div class="field">
+    <label>Produto / Medicamento</label>
+    <input id="produto" type="text" placeholder="Rivotril 2mg, Dipirona…">
+  </div>
+  <div class="field">
+    <label>Observação</label>
+    <textarea id="observacao" placeholder="Cliente pediu orçamento, retorno agendado…" style="min-height:68px;resize:vertical;"></textarea>
+  </div>
+
+  <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
+  <div class="feedback" id="feedback"></div>
+
+</div>
 </div>
 
-<!-- ── HISTÓRICO ── -->
+<!-- HISTÓRICO -->
 <div id="hist-section">
-  <span class="hist-col-title">Histórico de conversões</span>
+  <p class="hist-col-title">Histórico de Conversões</p>
 
   <div class="hist-filters">
-    <input type="date" id="h-from" placeholder="De">
-    <input type="date" id="h-to"   placeholder="Até">
-    <input type="search" id="h-q" class="search-input" placeholder="Nome, telefone ou trecho…"
+    <input type="date" id="h-from">
+    <input type="date" id="h-to">
+    <input type="search" id="h-q" class="search-input" placeholder="Nome ou telefone…"
            onkeydown="if(event.key==='Enter')loadHist()">
-    <select id="h-source" title="Fonte dos dados" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
+    <select id="h-source">
       <option value="manual">📋 Manual</option>
       <option value="agent">🤖 Agente IA</option>
       <option value="all">🔀 Todos</option>
     </select>
-    <select id="h-limit" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
+    <select id="h-limit">
       <option value="20" selected>20</option>
       <option value="50">50</option>
       <option value="100">100</option>
@@ -618,46 +515,46 @@
     <button class="btn-filter" onclick="loadHist()">Filtrar</button>
   </div>
 
-  <div class="hist-summary">
-    <div class="hist-stat">
-      <div class="hs-label">Registros</div>
-      <div class="hs-val" id="hs-total">—</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Registros</div>
+      <div class="kpi-val kpi-brand" id="hs-total">—</div>
     </div>
-    <div class="hist-stat">
-      <div class="hs-label">Vendas</div>
-      <div class="hs-val" id="hs-purchases">—</div>
+    <div class="kpi-card">
+      <div class="kpi-label">Vendas</div>
+      <div class="kpi-val kpi-green" id="hs-purchases">—</div>
     </div>
-    <div class="hist-stat">
-      <div class="hs-label">Receita</div>
-      <div class="hs-val" id="hs-revenue">—</div>
+    <div class="kpi-card">
+      <div class="kpi-label">Receita</div>
+      <div class="kpi-val kpi-green" id="hs-revenue">—</div>
     </div>
-    <div class="hist-stat">
-      <div class="hs-label">Investido <span class="plat-ico plat-meta" style="width:12px;height:12px;font-size:8px;vertical-align:0;">f</span></div>
-      <div class="hs-val" id="hs-spend">—</div>
+    <div class="kpi-card">
+      <div class="kpi-label">Investido <span class="plat-ico plat-meta" style="width:11px;height:11px;font-size:7px;vertical-align:0;">f</span></div>
+      <div class="kpi-val kpi-blue" id="hs-spend">—</div>
     </div>
-    <div class="hist-stat" id="hs-agent-card" style="display:none;">
-      <div class="hs-label">🤖 Agente IA</div>
-      <div class="hs-val" id="hs-agent-count" style="color:var(--blue);">—</div>
+    <div class="kpi-card" id="hs-agent-card" style="display:none;">
+      <div class="kpi-label">🤖 Agente IA</div>
+      <div class="kpi-val kpi-purple" id="hs-agent-count">—</div>
     </div>
   </div>
 
-  <div class="card" style="padding:0;overflow:hidden;">
-    <div class="hist-table-wrap">
+  <div class="table-card">
+    <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>Data</th>
-            <th>Cliente</th>
+            <th>Contato</th>
             <th>Tipo</th>
             <th>Valor</th>
             <th>LTV</th>
-            <th><span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span></th>
+            <th>Meta</th>
             <th id="th-fonte" style="display:none;">Fonte</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="hist-body">
-          <tr><td colspan="7" class="hist-empty">Carregando...</td></tr>
+          <tr><td colspan="8" class="hist-empty">Carregando…</td></tr>
         </tbody>
       </table>
     </div>
@@ -665,51 +562,37 @@
 </div>
 
 </div><!-- /main-cols -->
+</div><!-- /main-content -->
 
-<!-- ── MODAL: Editar Registro ── -->
+<!-- ── MODAL: Editar ── -->
 <div class="modal-overlay" id="edit-overlay">
   <div class="modal" style="max-width:420px;">
     <h3>Editar Registro</h3>
-    <p id="edit-sub" style="margin-bottom:16px;font-size:.82rem;color:var(--muted);"></p>
-
-    <div class="field">
-      <label>Nome do cliente</label>
-      <input id="edit-name" type="text" placeholder="Maria Silva">
-    </div>
-    <div class="field">
-      <label>Data</label>
-      <input id="edit-date" type="date">
-    </div>
+    <p id="edit-sub"></p>
+    <div class="field"><label>Nome</label><input id="edit-name" type="text" placeholder="Maria Silva"></div>
+    <div class="field"><label>Data</label><input id="edit-date" type="date"></div>
     <div class="field">
       <label>Tipo</label>
-      <select id="edit-type" onchange="toggleEditValue()" style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;font-family:inherit;">
+      <select id="edit-type" onchange="toggleEditValue()">
         <option value="Contact">Contato</option>
         <option value="Purchase">Venda</option>
       </select>
     </div>
     <div class="field" id="edit-value-row">
-      <label>Valor da venda (R$)</label>
+      <label>Valor (R$)</label>
       <input id="edit-value" type="text" placeholder="0,00" inputmode="decimal">
     </div>
     <div class="field">
       <label>Origem</label>
-      <select id="edit-origem" style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;font-family:inherit;">
+      <select id="edit-origem">
         <option value="ad">Meta Ads</option>
         <option value="google">Google Ads</option>
         <option value="organic">Orgânico</option>
         <option value="referral">Indicação</option>
       </select>
     </div>
-    <div class="field">
-      <label>Produto / Medicamento</label>
-      <input id="edit-produto" type="text" placeholder="Ex: Rivotril 2mg">
-    </div>
-    <div class="field">
-      <label>Observação</label>
-      <textarea id="edit-observacao" placeholder="Ex: Cliente não respondeu…"
-        style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;resize:vertical;min-height:60px;font-family:inherit;transition:border-color .2s;"></textarea>
-    </div>
-
+    <div class="field"><label>Produto</label><input id="edit-produto" type="text" placeholder="Rivotril 2mg"></div>
+    <div class="field"><label>Observação</label><textarea id="edit-observacao" style="min-height:56px;resize:vertical;" placeholder="…"></textarea></div>
     <div class="modal-btns">
       <button class="btn-cancel"  onclick="closeEditModal()">Cancelar</button>
       <button class="btn-confirm" onclick="confirmEdit()">Salvar</button>
@@ -717,15 +600,12 @@
   </div>
 </div>
 
-<!-- ── MODAL: Contact → Purchase ── -->
+<!-- ── MODAL: Promover para Venda ── -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <h3>Promover para Venda</h3>
     <p id="modal-sub">Informe o valor da compra.</p>
-    <div class="field">
-      <label>Valor da venda (R$) *</label>
-      <input id="modal-value" type="text" placeholder="0,00" inputmode="decimal">
-    </div>
+    <div class="field"><label>Valor da venda (R$) *</label><input id="modal-value" type="text" placeholder="0,00" inputmode="decimal"></div>
     <div class="modal-btns">
       <button class="btn-cancel"  onclick="closeModal()">Cancelar</button>
       <button class="btn-confirm" onclick="confirmUpdate()">Confirmar</button>
@@ -733,11 +613,19 @@
   </div>
 </div>
 
+<!-- ── BOTTOM NAV ── -->
+<nav class="bottom-nav">
+  <a href="/acesso/?key=fortpopular2026"><span class="bn-icon">⌂</span> Início</a>
+  <a href="/relatorio/?key=fortpopular2026"><span class="bn-icon">📊</span> Relatório</a>
+  <a href="/clientes/?key=fortpopular2026"><span class="bn-icon">👥</span> Clientes</a>
+</nav>
+
 <script>
 const KEY = new URLSearchParams(location.search).get('key') || '';
 let tipoAtual   = 'Contact';
 let origemAtual = 'ad';
 let editingId   = null;
+let editingRow  = null;
 
 // ── Init ──────────────────────────────────────────────
 (function init() {
@@ -751,9 +639,9 @@ let editingId   = null;
 
 function today() { return new Date().toISOString().slice(0, 10); }
 
-// ── Navegação (mobile) ────────────────────────────────
+// ── Tabs (mobile) ─────────────────────────────────────
 function showSection(section, btn) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('form-section').style.display = section === 'form' ? 'block' : 'none';
   document.getElementById('hist-section').style.display = section === 'hist' ? 'block' : 'none';
@@ -795,6 +683,8 @@ async function submitForm() {
   const city         = document.getElementById('city').value.trim();
   const state        = document.getElementById('state').value.trim().toUpperCase();
   const zip          = document.getElementById('zip').value.trim();
+  const produto      = document.getElementById('produto').value.trim();
+  const observacao   = document.getElementById('observacao').value.trim();
 
   if (!phone) { showFeedback('Informe o telefone do cliente.', false); return; }
   if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
@@ -803,9 +693,6 @@ async function submitForm() {
   btn.disabled = true;
   btn.textContent = 'Enviando…';
   document.getElementById('feedback').className = 'feedback';
-
-  const produto    = document.getElementById('produto').value.trim();
-  const observacao = document.getElementById('observacao').value.trim();
 
   const body = { event_name: tipoAtual, phone, origem: origemAtual };
   if (name)         body.name         = name;
@@ -840,13 +727,9 @@ async function submitForm() {
         msg = '✓ Registrado · ⚠ CAPI falhou';
       }
       showFeedback(msg, true);
-      // Limpa campos principais
-      ['phone','name','value','date'].forEach(id => document.getElementById(id).value = '');
-      // Limpa dados adicionais
-      ['email','cpf','neighborhood','address','city','state','zip']
+      ['phone','name','value','date','email','cpf','neighborhood','address','city','state','zip','produto']
         .forEach(id => document.getElementById(id).value = '');
-      // Limpa atendimento
-      ['produto','observacao'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('observacao').value = '';
       document.getElementById('phone').focus();
     } else {
       showFeedback('Erro: ' + (data.error || 'inesperado'), false);
@@ -868,7 +751,7 @@ function showFeedback(msg, ok) {
 // ── Histórico ─────────────────────────────────────────
 async function loadHist() {
   const histBody = document.getElementById('hist-body');
-  histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Carregando...</td></tr>';
+  histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Carregando…</td></tr>';
   ['hs-total','hs-purchases','hs-revenue','hs-spend'].forEach(id => document.getElementById(id).textContent = '—');
   document.getElementById('hs-agent-count').textContent = '—';
 
@@ -878,10 +761,9 @@ async function loadHist() {
   const limit  = document.getElementById('h-limit').value || '200';
   const source = document.getElementById('h-source').value;
 
-  // Mostrar/ocultar coluna "Fonte" e card agente
   const showFonte = source === 'all';
-  document.getElementById('th-fonte').style.display       = showFonte ? '' : 'none';
-  document.getElementById('hs-agent-card').style.display  = (source !== 'manual') ? '' : 'none';
+  document.getElementById('th-fonte').style.display      = showFonte ? '' : 'none';
+  document.getElementById('hs-agent-card').style.display = (source !== 'manual') ? '' : 'none';
 
   const params = new URLSearchParams({ key: KEY, limit });
   if (from) params.set('from', from);
@@ -890,7 +772,7 @@ async function loadHist() {
 
   let manualRows = [], agentRows = [], spendCents = 0;
 
-  // Busca manual (D1)
+  // D1 — registros manuais
   if (source === 'manual' || source === 'all') {
     try {
       const resp = await fetch('/api/conversions-history?' + params);
@@ -901,12 +783,10 @@ async function loadHist() {
       const data = await resp.json();
       manualRows = (data.conversions || []).map(r => ({ ...r, source: 'manual' }));
       spendCents = data.spend_cents || 0;
-    } catch (e) {
-      console.error('manual fetch error', e);
-    }
+    } catch (e) { console.error('manual fetch error', e); }
   }
 
-  // Busca agente IA (Supabase)
+  // Supabase — Agente IA
   if (source === 'agent' || source === 'all') {
     try {
       const resp = await fetch('/api/agent-conversations?' + params);
@@ -914,9 +794,7 @@ async function loadHist() {
         const data = await resp.json();
         agentRows = data.conversions || [];
       }
-    } catch (e) {
-      console.error('agent fetch error', e);
-    }
+    } catch (e) { console.error('agent fetch error', e); }
   }
 
   // Mescla e ordena por data desc
@@ -926,16 +804,16 @@ async function loadHist() {
   });
 
   try {
-    const purchases = rows.filter(r => r.event_name === 'Purchase');
-    const revCents  = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
+    const purchases  = rows.filter(r => r.event_name === 'Purchase');
+    const revCents   = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
     const agentCount = agentRows.length;
+
     document.getElementById('hs-total').textContent     = rows.length;
     document.getElementById('hs-purchases').textContent = purchases.length;
     document.getElementById('hs-revenue').textContent   =
       'R$\u00a0' + (revCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     document.getElementById('hs-spend').textContent     = spendCents
-      ? 'R$\u00a0' + (spendCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-      : '—';
+      ? 'R$\u00a0' + (spendCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '—';
     document.getElementById('hs-agent-count').textContent = agentCount || '—';
 
     if (!rows.length) {
@@ -946,8 +824,8 @@ async function loadHist() {
     const origemIco = {
       ad:       '<span class="plat-ico plat-meta" title="Meta Ads">f</span>',
       google:   '<span class="plat-ico plat-google" title="Google Ads">G</span>',
-      organic:  '<span class="plat-ico plat-organic" title="Orgânico">🚶</span>',
-      referral: '<span class="plat-ico plat-referral" title="Indicação">🤝</span>',
+      organic:  '🚶',
+      referral: '🤝',
     };
     const metaIcon = '<span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span>';
 
@@ -955,47 +833,50 @@ async function loadHist() {
       const isAgent = r.source === 'agent';
       const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
       const nome  = esc(r.display_name || (isAgent ? r.phone_normalized || '—' : '—'));
-      const prod  = r.produto    ? `<br><span style="color:var(--blue);font-size:.75em;">💊 ${esc(r.produto)}</span>` : '';
+      const prod  = r.produto
+        ? `<br><span style="color:var(--blue);font-size:.75em;">💊 ${esc(r.produto)}</span>` : '';
 
-      // Agente: mostra trecho da conversa + confiança ao invés de observação
       let obs = '';
       if (isAgent && r.observacao) {
-        const conf = r.ai_confidence ? `<span style="background:rgba(96,165,250,.15);color:var(--blue);border-radius:3px;padding:1px 5px;font-size:.7em;font-weight:700;">${r.ai_confidence}%</span> ` : '';
-        obs = `<br><span style="color:#a78bfa;font-size:.75em;">🤖 ${conf}${esc(r.observacao.slice(0, 80))}</span>`;
+        const conf = r.ai_confidence
+          ? `<span class="conf-pill ${r.ai_confidence>=85?'conf-high':r.ai_confidence>=50?'conf-med':'conf-low'}">${r.ai_confidence}%</span> `
+          : '';
+        obs = `<br><span style="color:var(--purple);font-size:.75em;">🤖 ${conf}${esc(r.observacao.slice(0,80))}</span>`;
       } else if (!isAgent && r.observacao) {
-        obs = `<br><span style="color:#f59e0b;font-size:.75em;">📝 ${esc(r.observacao)}</span>`;
+        obs = `<br><span style="color:var(--amber);font-size:.75em;">📝 ${esc(r.observacao)}</span>`;
       }
 
       const cli = `<span style="font-weight:600;">${nome}</span>`
-        + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem] || ''}</span>` : '')
+        + (ph ? `<br><span style="color:var(--muted2);font-size:.75em;">${ph} ${origemIco[r.origem]||''}</span>` : '')
         + prod + obs;
-      const ic    = r.event_name === 'Contact';
-      const badge = ic
-        ? '<span class="badge-contact">Contato</span>'
-        : '<span class="badge-purchase">Venda</span>';
-      const val   = r.value_cents
-        ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-        : '—';
-      const ltv = (!isAgent && r.client_ltv_cents && r.phone_normalized)
-        ? '<span style="color:var(--green);font-weight:700;">R$\u00a0'
-          + (r.client_ltv_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-          + '</span>'
-          + (r.client_purchases > 1 ? `<br><span style="color:var(--muted);font-size:.75em;">${r.client_purchases}x compras</span>` : '')
-        : '<span style="color:var(--muted);">—</span>';
-      const meta  = r.meta_ok
-        ? `${metaIcon} <span class="meta-ok">✓</span>`
-        : `<span class="meta-no">—</span>`;
 
-      // Botões: agente não tem editar/promover (dados somente leitura)
-      const upBtn   = (!isAgent && ic) ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>` : '';
-      const editBtn = !isAgent ? `<button class="btn-edit" onclick='openEditModal(${JSON.stringify(r)})' title="Editar">✏️</button>` : '';
+      const badge = r.event_name === 'Contact'
+        ? '<span class="badge badge-contato">Contato</span>'
+        : '<span class="badge badge-venda">Venda</span>';
+
+      const val = r.value_cents
+        ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        : '<span style="color:var(--muted);">—</span>';
+
+      const ltv = (!isAgent && r.client_ltv_cents && r.phone_normalized)
+        ? `<span style="color:var(--green);font-weight:700;">R$\u00a0${(r.client_ltv_cents/100).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>`
+          + (r.client_purchases > 1 ? `<br><span style="color:var(--muted2);font-size:.73em;">${r.client_purchases}x</span>` : '')
+        : '<span style="color:var(--muted);">—</span>';
+
+      const meta = r.meta_ok
+        ? `${metaIcon} <span class="badge" style="background:rgba(16,185,129,.1);color:var(--green);padding:2px 6px;">✓</span>`
+        : `<span style="color:var(--muted);">—</span>`;
+
+      const upBtn   = (!isAgent && r.event_name === 'Contact')
+        ? `<button class="btn-row btn-row-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>` : '';
+      const editBtn = !isAgent
+        ? `<button class="btn-row btn-row-edit" onclick='openEditModal(${JSON.stringify(r)})' title="Editar">✏️</button>` : '';
 
       const fonteCell = showFonte
-        ? `<td style="white-space:nowrap;">${isAgent ? '<span style="color:#a78bfa;font-size:.75em;">🤖 IA</span>' : '<span style="color:var(--muted);font-size:.75em;">📋</span>'}</td>`
-        : '';
+        ? `<td><span class="badge ${isAgent?'badge-ia':'badge-manual'}">${isAgent?'🤖 IA':'📋'}</span></td>` : '';
 
-      return `<tr${isAgent ? ' style="opacity:.92;"' : ''}>
-        <td class="td-date">${r.event_date || '—'}</td>
+      return `<tr>
+        <td class="td-date" style="color:var(--muted2);font-size:.78rem;">${r.event_date||'—'}</td>
         <td class="td-cli">${cli}</td>
         <td class="td-badge">${badge}</td>
         <td class="td-val">${val}</td>
@@ -1011,75 +892,57 @@ async function loadHist() {
 }
 
 function esc(s) {
-  return (s || '').replace(/[&<>"']/g,
-    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-// Formatação automática de CPF: 000.000.000-00
 function fmtCpf(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 11);
-  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
-  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,        '$1.$2.$3');
-  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/,                '$1.$2');
-  el.value = v;
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if (v.length>9)      v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+  else if (v.length>6) v=v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+  else if (v.length>3) v=v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+  el.value=v;
 }
-
-// Formatação automática de CEP: 00000-000
 function fmtCep(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 8);
-  if (v.length > 5) v = v.replace(/(\d{5})(\d{0,3})/, '$1-$2');
-  el.value = v;
+  let v = el.value.replace(/\D/g,'').slice(0,8);
+  if (v.length>5) v=v.replace(/(\d{5})(\d{0,3})/,'$1-$2');
+  el.value=v;
 }
 
 // ── Modal Editar ──────────────────────────────────────
-let editingRow = null;
-
 function openEditModal(r) {
   editingRow = r;
-  document.getElementById('edit-sub').textContent = `ID #${r.id}`;
-  document.getElementById('edit-name').value      = r.display_name || '';
-  document.getElementById('edit-date').value      = r.event_date   || '';
-  document.getElementById('edit-type').value      = r.event_name   || 'Contact';
-  document.getElementById('edit-origem').value    = r.origem        || 'ad';
-  document.getElementById('edit-produto').value   = r.produto       || '';
-  document.getElementById('edit-observacao').value = r.observacao   || '';
+  document.getElementById('edit-sub').textContent     = `ID #${r.id}`;
+  document.getElementById('edit-name').value          = r.display_name || '';
+  document.getElementById('edit-date').value          = r.event_date   || '';
+  document.getElementById('edit-type').value          = r.event_name   || 'Contact';
+  document.getElementById('edit-origem').value        = r.origem       || 'ad';
+  document.getElementById('edit-produto').value       = r.produto      || '';
+  document.getElementById('edit-observacao').value    = r.observacao   || '';
   const vc = r.value_cents || 0;
-  document.getElementById('edit-value').value = vc > 0
-    ? (vc / 100).toFixed(2).replace('.', ',') : '';
+  document.getElementById('edit-value').value = vc > 0 ? (vc/100).toFixed(2).replace('.',',') : '';
   toggleEditValue();
   document.getElementById('edit-overlay').classList.add('open');
   setTimeout(() => document.getElementById('edit-name').focus(), 80);
 }
-
 function toggleEditValue() {
-  const isPurchase = document.getElementById('edit-type').value === 'Purchase';
-  document.getElementById('edit-value-row').style.display = isPurchase ? '' : 'none';
+  document.getElementById('edit-value-row').style.display =
+    document.getElementById('edit-type').value === 'Purchase' ? '' : 'none';
 }
-
 function closeEditModal() {
   document.getElementById('edit-overlay').classList.remove('open');
   editingRow = null;
 }
-
 async function confirmEdit() {
   if (!editingRow) return;
-  const body = { id: editingRow.id };
-  const name    = document.getElementById('edit-name').value.trim();
-  const date    = document.getElementById('edit-date').value;
-  const type    = document.getElementById('edit-type').value;
-  const origem  = document.getElementById('edit-origem').value;
-  const produto = document.getElementById('edit-produto').value.trim();
-  const obs     = document.getElementById('edit-observacao').value.trim();
-  const val     = document.getElementById('edit-value').value.trim();
-
-  body.display_name = name;
-  body.event_date   = date;
-  body.event_name   = type;
-  body.origem       = origem;
-  body.produto      = produto;
-  body.observacao   = obs;
-  if (type === 'Purchase') body.value = val;
-
+  const body = {
+    id:           editingRow.id,
+    display_name: document.getElementById('edit-name').value.trim(),
+    event_date:   document.getElementById('edit-date').value,
+    event_name:   document.getElementById('edit-type').value,
+    origem:       document.getElementById('edit-origem').value,
+    produto:      document.getElementById('edit-produto').value.trim(),
+    observacao:   document.getElementById('edit-observacao').value.trim(),
+  };
+  if (body.event_name === 'Purchase') body.value = document.getElementById('edit-value').value.trim();
   try {
     const resp = await fetch('/api/update-conversion', {
       method: 'POST',
@@ -1091,12 +954,11 @@ async function confirmEdit() {
     else alert('Erro: ' + (data.error || 'inesperado'));
   } catch { alert('Erro de conexão.'); }
 }
-
 document.getElementById('edit-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeEditModal();
 });
 
-// ── Modal ─────────────────────────────────────────────
+// ── Modal Promover ────────────────────────────────────
 function openModal(id, name) {
   editingId = id;
   document.getElementById('modal-sub').textContent = name ? `Cliente: ${name}` : 'Informe o valor da compra.';
@@ -1104,12 +966,10 @@ function openModal(id, name) {
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(() => document.getElementById('modal-value').focus(), 80);
 }
-
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
   editingId = null;
 }
-
 async function confirmUpdate() {
   const value = document.getElementById('modal-value').value.trim();
   if (!value) { alert('Informe o valor.'); return; }
@@ -1125,16 +985,10 @@ async function confirmUpdate() {
     else alert('Erro: ' + (data.error || 'inesperado'));
   } catch { alert('Erro de conexão.'); }
 }
-
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
 </script>
 
-<nav class="bottom-nav">
-  <a href="/acesso/?key=fortpopular2026"><span class="bn-icon">⌂</span> Início</a>
-  <a href="/relatorio/?key=fortpopular2026"><span class="bn-icon">📊</span> Relatório</a>
-  <a href="/clientes/?key=fortpopular2026"><span class="bn-icon">👥</span> Clientes</a>
-</nav>
 </body>
 </html>
