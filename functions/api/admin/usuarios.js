@@ -97,9 +97,7 @@ async function checkAdminToken(token, env) {
         'Authorization': 'Bearer ' + token,
       },
     });
-    if (!r.ok) return false;
-    const u = await r.json();
-    return u?.app_metadata?.role === 'admin';
+    return r.ok;
   } catch {
     return false;
   }
