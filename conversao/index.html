@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    /* ── Variáveis ── */
     :root {
       --red:    #dc2626;
       --red2:   #b91c1c;
@@ -17,1124 +18,1406 @@
       --muted:  #7a6060;
       --green:  #4ade80;
       --blue:   #60a5fa;
+      --yellow: #fbbf24;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Reset / Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      padding: 28px 16px 80px;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── HEADER ── */
-    header { text-align: center; margin-bottom: 24px; }
-    header h1 {
+    header {
+      height: 56px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .brand h1 {
       font-family: 'Playfair Display', Georgia, serif;
       color: var(--red);
-      font-size: 1.6rem;
+      font-size: 1.15rem;
       letter-spacing: 0.04em;
-      margin-bottom: 5px;
+      line-height: 1.1;
     }
-    header p { color: var(--muted); font-size: 0.85rem; }
 
-    /* ── NAV TABS ── */
-    .nav-tabs {
-      display: flex;
-      max-width: 460px;
-      margin: 0 auto 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 4px;
-      gap: 4px;
-    }
-    .nav-tab {
-      flex: 1;
-      padding: 10px;
+    .brand p { color: var(--muted); font-size: 0.7rem; }
+
+    .header-right { display: flex; align-items: center; gap: 14px; }
+
+    .btn-novo {
+      background: var(--red);
+      color: #fff;
       border: none;
-      background: transparent;
-      color: var(--muted);
-      border-radius: 9px;
-      font-size: 0.88rem;
+      border-radius: 7px;
+      padding: 7px 13px;
+      font-size: 0.8rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
       font-family: inherit;
+      transition: background .15s;
+      white-space: nowrap;
     }
-    .nav-tab.active { background: var(--red); color: #fff; font-weight: 700; }
+    .btn-novo:hover { background: var(--red2); }
 
-    /* ── CARD ── */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      max-width: 460px;
-      margin: 0 auto;
-    }
-
-    /* ── TIPO ── */
-    .tipo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .tipo-btn {
-      padding: 14px 10px;
-      border: 1px solid var(--border);
-      background: transparent;
+    .header-nav { display: flex; gap: 6px; }
+    .header-nav a {
       color: var(--muted);
-      border-radius: 10px;
-      font-size: 0.93rem;
-      cursor: pointer;
-      transition: all 0.2s;
+      text-decoration: none;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: color .15s, background .15s;
+    }
+    .header-nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    /* ── BARRA DE CHIPS ── */
+    .chips-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 14px;
+      height: 48px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .chips-bar::-webkit-scrollbar { display: none; }
+
+    .chip {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
       align-items: center;
       gap: 5px;
       font-family: inherit;
+      transition: all .15s;
+      flex-shrink: 0;
     }
-    .tipo-btn .ico { font-size: 1.4rem; }
-    .tipo-btn.active {
-      border-color: var(--red);
-      color: var(--red);
-      background: rgba(220,38,38,0.08);
+    .chip:hover { border-color: var(--red); color: var(--text); }
+    .chip.active { background: var(--red); border-color: var(--red); color: #fff; }
+    .chip-cnt {
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 0 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .chip.active .chip-cnt { background: rgba(0,0,0,0.25); }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      background: var(--bg);
+      border-bottom: 1px solid rgba(220,38,38,0.1);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
-    /* ── ORIGEM ── */
-    .origem-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-      margin-bottom: 20px;
-    }
-    .origem-btn {
-      padding: 10px 8px;
+    .filter-bar input[type="date"],
+    .filter-bar input[type="text"] {
+      background: var(--card);
       border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      border-radius: 9px;
+      border-radius: 7px;
+      color: var(--text);
+      padding: 6px 10px;
       font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
       font-family: inherit;
     }
-    .origem-btn.active {
-      border-color: var(--red);
-      color: var(--red);
-      background: rgba(220,38,38,0.08);
+    .filter-bar input[type="date"] { width: 138px; flex-shrink: 0; }
+    .filter-bar input[type="text"] { flex: 1; min-width: 100px; }
+    .filter-bar input::placeholder { color: var(--muted); }
+    .filter-bar input:focus { outline: none; border-color: var(--red); }
+    .filter-bar input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+
+    .btn-buscar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: border-color .15s;
+    }
+    .btn-buscar:hover { border-color: var(--red); }
+
+    /* ── CONTENT AREA ── */
+    .content-area {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
     }
 
-    /* ── CAMPOS ── */
-    .field { margin-bottom: 16px; }
-    label {
+    /* ── TABLE WRAP ── */
+    .table-wrap {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+    .table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
+    .table-wrap::-webkit-scrollbar-track { background: transparent; }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .conv-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 520px;
+    }
+
+    .conv-table thead th {
+      position: sticky;
+      top: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    .conv-table tbody tr {
+      border-bottom: 1px solid rgba(220,38,38,0.08);
+      cursor: pointer;
+      transition: background .1s;
+    }
+    .conv-table tbody tr:hover { background: rgba(220,38,38,0.06); }
+    .conv-table tbody tr.active { background: rgba(220,38,38,0.12); }
+
+    .conv-table td {
+      padding: 11px 14px;
+      font-size: 0.83rem;
+      vertical-align: middle;
+    }
+
+    .col-date { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+    .contact-name { font-weight: 600; margin-bottom: 2px; }
+    .contact-phone { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+      gap: 3px;
+    }
+    .badge-green  { background: rgba(74,222,128,0.12); color: var(--green); }
+    .badge-red    { background: rgba(220,38,38,0.12);  color: #f87171; }
+    .badge-yellow { background: rgba(251,191,36,0.12); color: var(--yellow); }
+    .badge-blue   { background: rgba(96,165,250,0.12); color: var(--blue); }
+    .badge-muted  { background: rgba(122,96,96,0.12);  color: var(--muted); }
+
+    /* ── CONFIDENCE ── */
+    .conf-wrap { display: flex; align-items: center; gap: 6px; }
+    .conf-bar { width: 46px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .conf-fill { height: 100%; border-radius: 2px; }
+    .conf-high  { background: var(--green); }
+    .conf-mid   { background: var(--yellow); }
+    .conf-low   { background: #f87171; }
+    .conf-num   { font-size: 0.72rem; color: var(--muted); min-width: 26px; }
+
+    /* ── ROW ACTION ── */
+    .row-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .row-btn:hover, tr.active .row-btn { border-color: var(--red); color: var(--red); }
+
+    /* ── EMPTY / LOADING ── */
+    .state-msg {
+      padding: 52px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .state-msg .ico { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+    /* ── SIDE PANEL ── */
+    .side-panel {
+      width: 0;
+      border-left: none;
+      background: var(--card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: width .2s ease;
+    }
+    .side-panel.open {
+      width: 420px;
+      border-left: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .side-panel-inner {
+      width: 420px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── PANEL HEADER ── */
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+    .panel-name  { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+    .panel-phone { font-size: 0.78rem; color: var(--muted); }
+    .panel-date  { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    .panel-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 6px;
+      line-height: 1;
+      transition: color .15s;
+      flex-shrink: 0;
+    }
+    .panel-close:hover { color: var(--text); }
+
+    /* ── PANEL TABS ── */
+    .panel-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .panel-tab {
+      flex: 1;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      padding: 10px 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
+      transition: all .15s;
+      margin-bottom: -1px;
+    }
+    .panel-tab:hover { color: var(--text); }
+    .panel-tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+    /* ── PANEL BODY ── */
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── IA TAB ── */
+    .verdict-card {
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      border: 1px solid;
+    }
+    .vc-venda   { background: rgba(74,222,128,0.07); border-color: rgba(74,222,128,0.25); }
+    .vc-contato { background: rgba(96,165,250,0.07); border-color: rgba(96,165,250,0.2); }
+    .vc-aberto  { background: rgba(122,96,96,0.08);  border-color: var(--border); }
+
+    .verdict-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; }
+    .verdict-conf  { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
+    .verdict-excerpt {
+      font-size: 0.78rem; color: var(--muted); font-style: italic;
+      line-height: 1.45; border-left: 2px solid var(--border); padding-left: 8px;
+    }
+
+    .ia-details { margin-bottom: 14px; }
+    .ia-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.8rem;
+      gap: 8px;
+    }
+    .ia-row:last-child { border: none; }
+    .ia-row .lbl { color: var(--muted); flex-shrink: 0; }
+    .ia-row .val { font-weight: 600; text-align: right; word-break: break-word; }
+
+    .human-label-done {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .hld-confirmed { background: rgba(74,222,128,0.1); color: var(--green); }
+    .hld-rejected  { background: rgba(220,38,38,0.1);  color: #f87171; }
+
+    .btn-undo {
+      background: none; border: none; color: inherit; opacity: 0.6;
+      cursor: pointer; font-size: 0.72rem; text-decoration: underline; font-family: inherit;
+    }
+    .btn-undo:hover { opacity: 1; }
+
+    .panel-actions { display: flex; flex-direction: column; gap: 8px; }
+
+    .action-btn {
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity .15s;
+      text-align: left;
+    }
+    .action-btn:hover { opacity: 0.85; }
+    .action-confirm { background: rgba(74,222,128,0.15); color: var(--green);  border: 1px solid rgba(74,222,128,0.3); }
+    .action-correct { background: rgba(96,165,250,0.12); color: var(--blue);   border: 1px solid rgba(96,165,250,0.25); }
+    .action-reject  { background: rgba(220,38,38,0.10);  color: #f87171;       border: 1px solid rgba(220,38,38,0.25); }
+
+    /* ── MENSAGENS ── */
+    .msgs-date-sep {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.68rem;
+      margin: 12px 0 6px;
+    }
+    .msg-row { display: flex; margin-bottom: 8px; }
+    .msg-row.sent { justify-content: flex-end; }
+    .msg-row.recv { justify-content: flex-start; }
+
+    .msg-bubble {
+      max-width: 84%;
+      padding: 8px 11px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .sent .msg-bubble { background: rgba(220,38,38,0.22); border-radius: 12px 12px 3px 12px; }
+    .recv .msg-bubble { background: rgba(255,255,255,0.08); border-radius: 12px 12px 12px 3px; }
+
+    .msg-type-icon { margin-right: 3px; }
+    .msg-text em { color: var(--muted); font-style: normal; font-size: 0.75rem; }
+    .msg-time { font-size: 0.65rem; color: var(--muted); text-align: right; margin-top: 3px; }
+
+    .msg-loading { text-align: center; color: var(--muted); padding: 24px; font-size: 0.82rem; }
+
+    /* ── MODAIS ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.78);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #1c1010;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .modal-wide { max-width: 480px; }
+
+    .modal-box h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      color: var(--red);
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+    .modal-sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 16px; }
+
+    .modal-box label {
       display: block;
       color: var(--muted);
       font-size: 0.72rem;
+      margin: 10px 0 4px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 7px;
+      letter-spacing: 0.05em;
     }
-    input {
+    .modal-box input,
+    .modal-box select,
+    .modal-box textarea {
       width: 100%;
-      padding: 13px 15px;
-      background: rgba(220,38,38,0.04);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 9px;
+      border-radius: 8px;
       color: var(--text);
-      font-size: 0.97rem;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
-    input:focus, textarea:focus { border-color: var(--red); }
-    input::placeholder { color: var(--muted); }
-
-    .value-row { display: none; }
-    .value-row.show { display: block; }
-
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 4px 0 16px;
-    }
-    .section-divider span {
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-    }
-    .section-divider::before,
-    .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .match-badge {
-      font-size: 0.65rem;
-      background: rgba(74,222,128,0.12);
-      color: var(--green);
-      border: 1px solid rgba(74,222,128,0.25);
-      border-radius: 20px;
-      padding: 2px 8px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .grid2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn-submit {
-      width: 100%;
-      padding: 15px;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.97rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 4px;
-      letter-spacing: 0.03em;
-      transition: opacity 0.2s, transform 0.1s;
-      font-family: inherit;
-    }
-    .btn-submit:active { transform: scale(0.98); }
-    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .feedback {
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      display: none;
-    }
-    .feedback.ok {
-      background: rgba(74,222,128,0.1);
-      border: 1px solid rgba(74,222,128,0.3);
-      color: var(--green);
-      display: block;
-    }
-    .feedback.err {
-      background: rgba(220,38,38,0.1);
-      border: 1px solid rgba(220,38,38,0.3);
-      color: #ef4444;
-      display: block;
-    }
-
-    /* ── HISTÓRICO ── */
-    #hist-section { display: none; max-width: 460px; margin: 0 auto; }
-
-    .hist-col-title {
-      display: none;
-      font-family: 'Playfair Display', Georgia, serif;
-      color: var(--red);
-      font-size: 1rem;
-      letter-spacing: 0.04em;
-      margin-bottom: 14px;
-    }
-
-    .hist-filters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-    .hist-filters input {
-      flex: 1;
-      min-width: 110px;
-      padding: 10px 12px;
+      padding: 8px 11px;
       font-size: 0.85rem;
-    }
-    .hist-filters .search-input { min-width: 160px; }
-    .btn-filter {
-      padding: 10px 18px;
-      background: var(--red);
-      color: #fff;
-      border: none;
-      border-radius: 9px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
       font-family: inherit;
     }
+    .modal-box input:focus,
+    .modal-box select:focus { outline: none; border-color: var(--red); }
+    .modal-box select option { background: #1c1010; }
 
-    /* Stats */
-    .hist-summary {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    @media (min-width: 480px) {
-      .hist-summary { grid-template-columns: repeat(4, 1fr); }
-    }
-    .hist-stat {
-      background: var(--card);
+    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+    .btn-cancel {
+      flex: 1;
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 12px;
-      text-align: center;
-    }
-    .hs-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .hs-val   { font-size: 1.15rem; font-weight: 700; color: var(--red); }
-
-    /* Table */
-    .hist-table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
-    thead th {
-      padding: 10px 12px;
-      text-align: left;
+      border-radius: 8px;
       color: var(--muted);
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
+      padding: 9px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      transition: border-color .15s;
     }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: rgba(220,38,38,0.04); }
-    tbody td { padding: 10px 12px; color: var(--text); white-space: nowrap; }
+    .btn-cancel:hover { border-color: var(--muted); color: var(--text); }
 
-    .badge-purchase { background: rgba(74,222,128,0.12); color: var(--green); padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
-    .badge-contact  { background: rgba(96,165,250,0.12); color: var(--blue);  padding: 2px 8px; border-radius: 20px; font-size: 0.71rem; font-weight: 600; }
-    .meta-ok  { color: var(--green); font-size: 0.85rem; }
-    .meta-no  { color: var(--muted); font-size: 0.85rem; }
-    .plat-ico { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; font-size:11px; font-weight:900; vertical-align:middle; flex-shrink:0; }
-    .plat-meta   { background:#1877F2; color:#fff; font-style:italic; }
-    .plat-google { background:#fff; color:#4285F4; }
-    .plat-organic  { font-size:14px; }
-    .plat-referral { font-size:14px; }
+    .btn-primary {
+      flex: 2;
+      background: var(--red);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      padding: 9px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: background .15s;
+    }
+    .btn-primary:hover { background: var(--red2); }
 
-    .btn-upgrade {
-      padding: 3px 10px;
-      background: rgba(220,38,38,0.12);
+    .btn-danger {
+      flex: 2;
+      background: rgba(220,38,38,0.15);
       border: 1px solid rgba(220,38,38,0.35);
-      color: var(--red);
-      border-radius: 20px;
-      font-size: 0.71rem;
+      border-radius: 8px;
+      color: #f87171;
+      padding: 9px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
       font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
-      font-family: inherit;
+      transition: background .15s;
     }
-    .btn-upgrade:hover { background: var(--red); color: #fff; }
-    .btn-edit {
-      padding: 3px 7px;
-      background: rgba(255,255,255,0.05);
+    .btn-danger:hover { background: rgba(220,38,38,0.25); }
+
+    /* Form do modal de nova conversão */
+    .tipo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tipo-btn {
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 0.8rem;
+      border-radius: 8px;
+      color: var(--muted);
+      padding: 9px;
       cursor: pointer;
-      transition: all 0.15s;
       font-family: inherit;
+      font-size: 0.83rem;
+      transition: all .15s;
     }
-    .btn-edit:hover { background: rgba(255,255,255,0.12); }
+    .tipo-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
 
-    .hist-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.88rem; }
-
-    /* ── HISTÓRICO: CARDS MOBILE ── */
-    @media (max-width: 819px) {
-      .hist-table-wrap { overflow: hidden; }
-      .hist-table-wrap table  { display: block !important; }
-      .hist-table-wrap thead  { display: none !important; }
-      .hist-table-wrap tbody  { display: flex !important; flex-direction: column; gap: 8px; padding: 8px; }
-      .hist-table-wrap tbody tr {
-        display: flex !important;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 4px 8px;
-        border: 1px solid var(--border) !important;
-        border-radius: 10px;
-        padding: 12px 14px;
-        background: rgba(220,38,38,0.02);
-      }
-      .hist-table-wrap tbody tr:hover { background: rgba(220,38,38,0.06); }
-      .hist-table-wrap tbody td {
-        display: block !important;
-        padding: 0 !important;
-        white-space: normal !important;
-        border: none !important;
-      }
-      /* Linha 1: data (expande) + badge + meta + botão */
-      .td-date  { order: 1; flex: 1 1 auto; font-size: .75rem; color: var(--muted); white-space: nowrap !important; }
-      .td-badge { order: 2; flex: 0 0 auto; }
-      .td-meta  { order: 3; flex: 0 0 auto; white-space: nowrap !important; }
-      .td-act   { order: 4; flex: 0 0 auto; }
-      /* Linha 2: cliente (100% força quebra) */
-      .td-cli   { order: 5; flex: 0 0 100%; padding-top: 3px; }
-      /* Linha 3: valor + LTV */
-      .td-val   { order: 6; flex: 0 0 50%; font-size: .82rem; padding-top: 5px; }
-      .td-ltv   { order: 7; flex: 0 0 50%; font-size: .82rem; text-align: right; padding-top: 5px; }
-      .td-val::before { content: 'Valor '; color: var(--muted); font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
-      .td-ltv::before { content: 'LTV '; color: var(--muted); font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
-    }
-
-    /* ── MODAL ── */
-    .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 100;
-      align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--card);
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(22,15,15,0.96);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      width: 92%; max-width: 360px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+      border-radius: 10px;
+      padding: 9px 20px;
+      font-size: 0.82rem;
+      color: var(--text);
+      z-index: 200;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.55);
+      pointer-events: none;
+      transition: opacity .25s;
     }
-    .modal h3 {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.1rem;
-      color: var(--red);
-      margin-bottom: 5px;
-    }
-    .modal p { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
-    .modal .field { margin-bottom: 0; }
-    .modal-btns { display: flex; gap: 8px; margin-top: 18px; }
-    .modal-btns button {
-      flex: 1; padding: 13px; border-radius: 9px;
-      font-weight: 700; font-size: 0.9rem; cursor: pointer;
-      border: none; font-family: inherit;
-    }
-    .btn-cancel  { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border) !important; }
-    .btn-confirm { background: var(--red); color: #fff; }
-
-    /* ── HEADER NAV (desktop) ── */
-    .header-nav { display: none; }
-
-    /* ── DESKTOP 2-COLUNAS ── */
-    @media (min-width: 820px) {
-      body { padding: 28px 40px 24px; }
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 18px;
-      }
-      header > div { text-align: left; }
-      .header-nav {
-        display: flex;
-        gap: 6px;
-      }
-      .header-nav a {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 0.82rem;
-        font-weight: 600;
-        transition: color .15s, border-color .15s;
-      }
-      .header-nav a:hover {
-        color: var(--text);
-        border-color: var(--red);
-      }
-      .nav-tabs { display: none; }
-      .bottom-nav { display: none; }
-      #main-cols {
-        display: grid;
-        grid-template-columns: 460px 1fr;
-        gap: 24px;
-        max-width: 1200px;
-        margin: 0 auto;
-        align-items: start;
-      }
-      #form-section, #hist-section {
-        display: block !important;
-        max-width: none;
-      }
-      .card { max-width: none; }
-      .hist-col-title { display: block; }
-    }
+    .toast.toast-ok   { border-color: rgba(74,222,128,0.4); color: var(--green); }
+    .toast.toast-err  { border-color: rgba(220,38,38,0.5);  color: #f87171; }
+    .toast.toast-info { border-color: rgba(96,165,250,0.3); color: var(--blue); }
 
     /* ── BOTTOM NAV ── */
-    .bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; background:#160f0f; border-top:1px solid rgba(220,38,38,0.35); z-index:999; padding-bottom:env(safe-area-inset-bottom); }
-    .bottom-nav a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 8px; text-decoration:none; color:#7a6060; font-size:.7rem; gap:4px; transition:color .15s; }
-    .bottom-nav a:hover { color:#dc2626; }
-    .bottom-nav .bn-icon { font-size:1.2rem; }
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      z-index: 50;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.68rem;
+      gap: 3px;
+      transition: color .15s;
+    }
+    .bottom-nav a:hover, .bottom-nav a.bn-active { color: var(--red); }
+    .bn-icon { font-size: 1.1rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 820px) {
+      .header-nav { display: none; }
+      .bottom-nav { display: flex; }
+
+      .table-wrap { padding-bottom: 60px; }
+
+      /* Painel vira overlay full-screen */
+      .side-panel.open {
+        position: absolute;
+        inset: 0;
+        width: 100% !important;
+        z-index: 20;
+        border-left: none;
+      }
+      .side-panel-inner { width: 100%; }
+    }
+
+    @media (max-width: 600px) {
+      .hide-sm { display: none; }
+      .filter-bar input[type="date"] { width: 110px; }
+    }
+
+    @media (max-width: 400px) {
+      .hide-xs { display: none; }
+      .filter-bar input[type="date"] { display: none; }
+    }
+
+    /* ── UTILITY ── */
+    .hidden { display: none !important; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
   </style>
 </head>
 <body>
 
+<!-- ── HEADER ─────────────────────────────────────────── -->
 <header>
-  <div>
+  <div class="brand">
     <h1>Fort Popular</h1>
-    <p>Farmácia · Conversões WhatsApp</p>
+    <p>Farmácia · Central de Conversões</p>
   </div>
-  <nav class="header-nav">
-    <a href="/acesso/?key=fortpopular2026">⌂ Início</a>
-    <a href="/relatorio/?key=fortpopular2026">📊 Relatório</a>
-    <a href="/clientes/?key=fortpopular2026">👥 Clientes</a>
-  </nav>
+  <div class="header-right">
+    <button class="btn-novo" id="btn-novo">+ Registrar</button>
+    <nav class="header-nav" id="header-nav"></nav>
+  </div>
 </header>
 
-<div class="nav-tabs">
-  <button class="nav-tab active" onclick="showSection('form', this)">Registrar</button>
-  <button class="nav-tab" onclick="showSection('hist', this)">Histórico</button>
+<!-- ── CHIPS: filtros de status ───────────────────────── -->
+<div class="chips-bar">
+  <button class="chip active" data-filter="todas">Todas <span class="chip-cnt" id="cnt-todas">0</span></button>
+  <button class="chip" data-filter="aguardando">⏳ Aguardando <span class="chip-cnt" id="cnt-aguardando">0</span></button>
+  <button class="chip" data-filter="confirmadas">✓ Confirmadas <span class="chip-cnt" id="cnt-confirmadas">0</span></button>
+  <button class="chip" data-filter="rejeitadas">✕ Rejeitadas <span class="chip-cnt" id="cnt-rejeitadas">0</span></button>
 </div>
 
-<div id="main-cols">
+<!-- ── FILTER BAR ─────────────────────────────────────── -->
+<div class="filter-bar">
+  <input type="date" id="f-from" title="Data inicial">
+  <input type="date" id="f-to"   title="Data final">
+  <input type="text" id="f-q"    placeholder="Buscar telefone ou conversa…">
+  <button class="btn-buscar" id="btn-buscar">Buscar</button>
+</div>
 
-<!-- ── FORMULÁRIO ── -->
-<div id="form-section">
-  <div class="card">
+<!-- ── CONTENT AREA ───────────────────────────────────── -->
+<div class="content-area" id="content-area">
 
-    <!-- Tipo -->
+  <!-- TABELA -->
+  <div class="table-wrap" id="table-wrap">
+    <div class="state-msg" id="state-loading"><span class="ico">⏳</span>Carregando conversas…</div>
+    <div class="state-msg hidden" id="state-empty"><span class="ico">💬</span>Nenhuma conversa encontrada</div>
+    <table class="conv-table hidden" id="conv-table">
+      <thead>
+        <tr>
+          <th>DATA</th>
+          <th>CONTATO</th>
+          <th class="hide-sm">STATUS IA</th>
+          <th class="hide-sm">CONFIANÇA</th>
+          <th class="hide-xs">PRODUTO</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="conv-body"></tbody>
+    </table>
+  </div>
+
+  <!-- PAINEL LATERAL -->
+  <aside class="side-panel" id="side-panel">
+    <div class="side-panel-inner">
+      <div class="panel-header">
+        <div>
+          <div class="panel-name"  id="panel-name">—</div>
+          <div class="panel-phone" id="panel-phone">—</div>
+          <div class="panel-date"  id="panel-date">—</div>
+        </div>
+        <button class="panel-close" id="panel-close" title="Fechar">✕</button>
+      </div>
+      <div class="panel-tabs">
+        <button class="panel-tab active" data-tab="ia">🤖 IA</button>
+        <button class="panel-tab" data-tab="conversa">💬 Conversa</button>
+      </div>
+      <div class="panel-body" id="tab-ia">
+        <div id="ia-verdict-card"></div>
+        <div id="panel-actions"></div>
+      </div>
+      <div class="panel-body hidden" id="tab-conversa">
+        <div id="msgs-wrap"></div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- .content-area -->
+
+<!-- ── MODAL: Corrigir ────────────────────────────────── -->
+<div class="modal-overlay hidden" id="overlay-corrigir">
+  <div class="modal-box">
+    <h3>✏️ Corrigir Venda</h3>
+    <p class="modal-sub" id="corrigir-sub"></p>
+    <label>Valor (R$)</label>
+    <input type="number" id="c-value"  placeholder="0.00" min="0" step="0.01">
+    <label>Produto</label>
+    <input type="text"   id="c-produto" placeholder="Medicamento ou produto…">
+    <label>Nome do cliente</label>
+    <input type="text"   id="c-name"   placeholder="Nome completo">
+    <label>Origem</label>
+    <select id="c-origem">
+      <option value="ad">Anúncio Meta</option>
+      <option value="google">Google Ads</option>
+      <option value="organic">Orgânico / WhatsApp</option>
+      <option value="referral">Indicação</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel"  id="cancel-corrigir">Cancelar</button>
+      <button class="btn-primary" id="confirm-corrigir">Salvar Correção</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: Rejeitar ────────────────────────────────── -->
+<div class="modal-overlay hidden" id="overlay-rejeitar">
+  <div class="modal-box">
+    <h3>🚫 Rejeitar</h3>
+    <p class="modal-sub" id="rejeitar-sub"></p>
+    <label>Motivo</label>
+    <select id="r-motivo">
+      <option value="nao_venda">Não foi uma venda</option>
+      <option value="repetido">Contato repetido / duplicado</option>
+      <option value="errado">IA classificou errado</option>
+      <option value="outro">Outro motivo</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel"  id="cancel-rejeitar">Cancelar</button>
+      <button class="btn-danger"  id="confirm-rejeitar">Rejeitar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: Registrar manual ────────────────────────── -->
+<div class="modal-overlay hidden" id="overlay-novo">
+  <div class="modal-box modal-wide">
+    <h3>+ Registrar Conversão</h3>
+    <p class="modal-sub">Registrar contato ou venda realizada pelo WhatsApp</p>
+    <label>Tipo</label>
     <div class="tipo-grid">
-      <button class="tipo-btn active" onclick="setTipo('Contact', this)">
-        <span class="ico">💬</span>Contato
-      </button>
-      <button class="tipo-btn" onclick="setTipo('Purchase', this)">
-        <span class="ico">💰</span>Venda
-      </button>
+      <button class="tipo-btn active" data-tipo="Contact">📞 Contato</button>
+      <button class="tipo-btn"        data-tipo="Purchase">💊 Venda</button>
     </div>
-
-    <!-- Origem -->
-    <div class="origem-grid">
-      <button class="origem-btn active" data-o="ad"       onclick="setOrigem('ad', this)"><span class="plat-ico plat-meta" style="margin-right:5px;">f</span>Meta Ads</button>
-      <button class="origem-btn"        data-o="google"   onclick="setOrigem('google', this)"><span class="plat-ico plat-google" style="margin-right:5px;">G</span>Google Ads</button>
-      <button class="origem-btn"        data-o="organic"  onclick="setOrigem('organic', this)">🚶 Orgânico</button>
-      <button class="origem-btn"        data-o="referral" onclick="setOrigem('referral', this)">🤝 Indicação</button>
+    <label>WhatsApp *</label>
+    <input type="tel"    id="n-phone"   placeholder="21 98765-4321">
+    <label>Nome do cliente</label>
+    <input type="text"   id="n-name"    placeholder="Nome completo">
+    <div id="n-value-field" class="hidden">
+      <label>Valor (R$) *</label>
+      <input type="number" id="n-value" placeholder="0,00" min="0" step="0.01">
     </div>
-
-    <!-- Campos -->
-    <div class="field">
-      <label>Telefone / WhatsApp *</label>
-      <input id="phone" type="tel" placeholder="(21) 9 8765-4321" inputmode="tel">
-    </div>
-    <div class="field">
-      <label>Nome do cliente</label>
-      <input id="name" type="text" placeholder="Maria Silva">
-    </div>
-    <div class="field value-row" id="value-row">
-      <label>Valor da venda (R$) *</label>
-      <input id="value" type="text" placeholder="0,00" inputmode="decimal">
-    </div>
-    <div class="field">
-      <label>Data (padrão: hoje)</label>
-      <input id="date" type="date">
-    </div>
-
-    <!-- Dados adicionais: melhora match quality no Meta -->
-    <div class="section-divider">
-      <span>Dados adicionais</span>
-      <span class="match-badge">melhora match Meta</span>
-    </div>
-    <div class="field">
-      <label>Email</label>
-      <input id="email" type="email" placeholder="email@cliente.com" inputmode="email" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>CPF</label>
-      <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14"
-             oninput="fmtCpf(this)">
-    </div>
-    <div class="field">
-      <label>Bairro</label>
-      <input id="neighborhood" type="text" placeholder="Ex: Centro">
-    </div>
-    <div class="field">
-      <label>Endereço (rua, nº)</label>
-      <input id="address" type="text" placeholder="Ex: Rua das Flores, 123">
-    </div>
-    <div class="grid2">
-      <div class="field">
-        <label>Cidade</label>
-        <input id="city" type="text" placeholder="Ex: Itaipuaçu">
-      </div>
-      <div class="field">
-        <label>Estado</label>
-        <input id="state" type="text" placeholder="RJ" maxlength="2" style="text-transform:uppercase;">
-      </div>
-    </div>
-    <div class="field">
-      <label>CEP</label>
-      <input id="zip" type="text" placeholder="00000-000" inputmode="numeric" maxlength="9"
-             oninput="fmtCep(this)">
-    </div>
-
-    <!-- Produto / Observação -->
-    <div class="section-divider">
-      <span>Atendimento</span>
-    </div>
-    <div class="field">
-      <label>Produto / Medicamento</label>
-      <input id="produto" type="text" placeholder="Ex: Rivotril 2mg, Dipirona…">
-    </div>
-    <div class="field">
-      <label>Observação</label>
-      <textarea id="observacao" placeholder="Ex: Cliente não respondeu, pediu orçamento, retorno agendado…"
-        style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;resize:vertical;min-height:72px;font-family:inherit;transition:border-color .2s;"></textarea>
-    </div>
-
-    <button class="btn-submit" id="btn-submit" onclick="submitForm()">Registrar contato</button>
-    <div class="feedback" id="feedback"></div>
-
-  </div>
-</div>
-
-<!-- ── HISTÓRICO ── -->
-<div id="hist-section">
-  <span class="hist-col-title">Histórico de conversões</span>
-
-  <div class="hist-filters">
-    <input type="date" id="h-from" placeholder="De">
-    <input type="date" id="h-to"   placeholder="Até">
-    <input type="search" id="h-q" class="search-input" placeholder="Nome, telefone ou trecho…"
-           onkeydown="if(event.key==='Enter')loadHist()">
-    <select id="h-source" title="Fonte dos dados" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
-      <option value="manual">📋 Manual</option>
-      <option value="agent">🤖 Agente IA</option>
-      <option value="all">🔀 Todos</option>
+    <label>Produto</label>
+    <input type="text"   id="n-produto" placeholder="Medicamento ou produto">
+    <label>Origem</label>
+    <select id="n-origem">
+      <option value="ad">Anúncio Meta</option>
+      <option value="google">Google Ads</option>
+      <option value="organic">Orgânico</option>
+      <option value="referral">Indicação</option>
     </select>
-    <select id="h-limit" style="padding:10px 12px;font-size:.85rem;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:9px;outline:none;cursor:pointer;font-family:inherit;">
-      <option value="20" selected>20</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-      <option value="200">200</option>
-      <option value="500">500</option>
-    </select>
-    <button class="btn-filter" onclick="loadHist()">Filtrar</button>
-  </div>
-
-  <div class="hist-summary">
-    <div class="hist-stat">
-      <div class="hs-label">Registros</div>
-      <div class="hs-val" id="hs-total">—</div>
-    </div>
-    <div class="hist-stat">
-      <div class="hs-label">Vendas</div>
-      <div class="hs-val" id="hs-purchases">—</div>
-    </div>
-    <div class="hist-stat">
-      <div class="hs-label">Receita</div>
-      <div class="hs-val" id="hs-revenue">—</div>
-    </div>
-    <div class="hist-stat">
-      <div class="hs-label">Investido <span class="plat-ico plat-meta" style="width:12px;height:12px;font-size:8px;vertical-align:0;">f</span></div>
-      <div class="hs-val" id="hs-spend">—</div>
-    </div>
-    <div class="hist-stat" id="hs-agent-card" style="display:none;">
-      <div class="hs-label">🤖 Agente IA</div>
-      <div class="hs-val" id="hs-agent-count" style="color:var(--blue);">—</div>
-    </div>
-  </div>
-
-  <div class="card" style="padding:0;overflow:hidden;">
-    <div class="hist-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Cliente</th>
-            <th>Tipo</th>
-            <th>Valor</th>
-            <th>LTV</th>
-            <th><span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span></th>
-            <th id="th-fonte" style="display:none;">Fonte</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="hist-body">
-          <tr><td colspan="7" class="hist-empty">Carregando...</td></tr>
-        </tbody>
-      </table>
+    <label>Observação</label>
+    <input type="text" id="n-obs" placeholder="Nota livre do atendimento">
+    <div class="modal-actions">
+      <button class="btn-cancel"  id="cancel-novo">Cancelar</button>
+      <button class="btn-primary" id="confirm-novo">Registrar</button>
     </div>
   </div>
 </div>
 
-</div><!-- /main-cols -->
+<!-- ── TOAST ──────────────────────────────────────────── -->
+<div class="toast hidden" id="toast"></div>
 
-<!-- ── MODAL: Editar Registro ── -->
-<div class="modal-overlay" id="edit-overlay">
-  <div class="modal" style="max-width:420px;">
-    <h3>Editar Registro</h3>
-    <p id="edit-sub" style="margin-bottom:16px;font-size:.82rem;color:var(--muted);"></p>
-
-    <div class="field">
-      <label>Nome do cliente</label>
-      <input id="edit-name" type="text" placeholder="Maria Silva">
-    </div>
-    <div class="field">
-      <label>Data</label>
-      <input id="edit-date" type="date">
-    </div>
-    <div class="field">
-      <label>Tipo</label>
-      <select id="edit-type" onchange="toggleEditValue()" style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;font-family:inherit;">
-        <option value="Contact">Contato</option>
-        <option value="Purchase">Venda</option>
-      </select>
-    </div>
-    <div class="field" id="edit-value-row">
-      <label>Valor da venda (R$)</label>
-      <input id="edit-value" type="text" placeholder="0,00" inputmode="decimal">
-    </div>
-    <div class="field">
-      <label>Origem</label>
-      <select id="edit-origem" style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;font-family:inherit;">
-        <option value="ad">Meta Ads</option>
-        <option value="google">Google Ads</option>
-        <option value="organic">Orgânico</option>
-        <option value="referral">Indicação</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Produto / Medicamento</label>
-      <input id="edit-produto" type="text" placeholder="Ex: Rivotril 2mg">
-    </div>
-    <div class="field">
-      <label>Observação</label>
-      <textarea id="edit-observacao" placeholder="Ex: Cliente não respondeu…"
-        style="width:100%;padding:13px 15px;background:rgba(220,38,38,0.04);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:0.97rem;outline:none;resize:vertical;min-height:60px;font-family:inherit;transition:border-color .2s;"></textarea>
-    </div>
-
-    <div class="modal-btns">
-      <button class="btn-cancel"  onclick="closeEditModal()">Cancelar</button>
-      <button class="btn-confirm" onclick="confirmEdit()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODAL: Contact → Purchase ── -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <h3>Promover para Venda</h3>
-    <p id="modal-sub">Informe o valor da compra.</p>
-    <div class="field">
-      <label>Valor da venda (R$) *</label>
-      <input id="modal-value" type="text" placeholder="0,00" inputmode="decimal">
-    </div>
-    <div class="modal-btns">
-      <button class="btn-cancel"  onclick="closeModal()">Cancelar</button>
-      <button class="btn-confirm" onclick="confirmUpdate()">Confirmar</button>
-    </div>
-  </div>
-</div>
+<!-- ── BOTTOM NAV ─────────────────────────────────────── -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
 
 <script>
+// ═══════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════
 const KEY = new URLSearchParams(location.search).get('key') || '';
-let tipoAtual   = 'Contact';
-let origemAtual = 'ad';
-let editingId   = null;
 
-// ── Init ──────────────────────────────────────────────
-(function init() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  document.getElementById('h-from').value = `${y}-${m}-01`;
-  document.getElementById('h-to').value   = today();
-  if (window.innerWidth >= 820) loadHist();
-})();
+let allData      = [];
+let filtered     = [];
+let activeFilter = 'todas';
+let activeRawId  = null;   // UUID sem prefixo 'ai_' da conversa aberta no painel
+let msgCache     = {};     // cache de mensagens por rawId
 
-function today() { return new Date().toISOString().slice(0, 10); }
-
-// ── Navegação (mobile) ────────────────────────────────
-function showSection(section, btn) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('form-section').style.display = section === 'form' ? 'block' : 'none';
-  document.getElementById('hist-section').style.display = section === 'hist' ? 'block' : 'none';
-  if (section === 'hist') {
-    if (!document.getElementById('h-from').value) {
-      const d = new Date();
-      document.getElementById('h-from').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
-      document.getElementById('h-to').value   = today();
-    }
-    loadHist();
-  }
+// ═══════════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════════
+function init() {
+  buildNav();
+  setDefaultDates();
+  bindEvents();
+  loadConversations();
 }
 
-// ── Tipo / Origem ─────────────────────────────────────
-function setTipo(t, btn) {
-  tipoAtual = t;
-  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('value-row').classList.toggle('show', t === 'Purchase');
-  document.getElementById('btn-submit').textContent = t === 'Purchase' ? 'Registrar venda' : 'Registrar contato';
+function buildNav() {
+  const links = [
+    { href: `/acesso/?key=${KEY}`,    label: '⌂ Início' },
+    { href: `/relatorio/?key=${KEY}`, label: '📊 Relatório' },
+    { href: `/clientes/?key=${KEY}`,  label: '👥 Clientes' },
+  ];
+  document.getElementById('header-nav').innerHTML =
+    links.map(l => `<a href="${l.href}">${l.label}</a>`).join('');
+  document.getElementById('bottom-nav').innerHTML =
+    links.map((l, i) =>
+      `<a href="${l.href}" class="${i === 0 ? '' : ''}">
+        <span class="bn-icon">${l.label.split(' ')[0]}</span>
+        ${l.label.replace(/^\S+\s/, '')}
+      </a>`
+    ).join('');
 }
 
-function setOrigem(o, btn) {
-  origemAtual = o;
-  document.querySelectorAll('.origem-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function setDefaultDates() {
+  const today  = new Date().toISOString().slice(0, 10);
+  const ago30  = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+  document.getElementById('f-from').value = ago30;
+  document.getElementById('f-to').value   = today;
 }
 
-// ── Novo registro ─────────────────────────────────────
-async function submitForm() {
-  const phone        = document.getElementById('phone').value.trim();
-  const name         = document.getElementById('name').value.trim();
-  const value        = document.getElementById('value').value.trim();
-  const date         = document.getElementById('date').value;
-  const email        = document.getElementById('email').value.trim();
-  const cpf          = document.getElementById('cpf').value.trim();
-  const neighborhood = document.getElementById('neighborhood').value.trim();
-  const address      = document.getElementById('address').value.trim();
-  const city         = document.getElementById('city').value.trim();
-  const state        = document.getElementById('state').value.trim().toUpperCase();
-  const zip          = document.getElementById('zip').value.trim();
+// ═══════════════════════════════════════════════════════════
+// CARREGAR DADOS
+// ═══════════════════════════════════════════════════════════
+async function loadConversations() {
+  setLoadingState(true);
 
-  if (!phone) { showFeedback('Informe o telefone do cliente.', false); return; }
-  if (tipoAtual === 'Purchase' && !value) { showFeedback('Informe o valor da venda.', false); return; }
+  const from = document.getElementById('f-from').value;
+  const to   = document.getElementById('f-to').value;
+  const q    = document.getElementById('f-q').value.trim();
 
-  const btn = document.getElementById('btn-submit');
-  btn.disabled = true;
-  btn.textContent = 'Enviando…';
-  document.getElementById('feedback').className = 'feedback';
-
-  const produto    = document.getElementById('produto').value.trim();
-  const observacao = document.getElementById('observacao').value.trim();
-
-  const body = { event_name: tipoAtual, phone, origem: origemAtual };
-  if (name)         body.name         = name;
-  if (value)        body.value        = value;
-  if (date)         body.date         = date;
-  if (email)        body.email        = email;
-  if (cpf)          body.cpf          = cpf;
-  if (neighborhood) body.neighborhood = neighborhood;
-  if (address)      body.address      = address;
-  if (city)         body.city         = city;
-  if (state)        body.state        = state;
-  if (zip)          body.zip          = zip;
-  if (produto)      body.produto      = produto;
-  if (observacao)   body.observacao   = observacao;
+  let url = `/api/agent-conversations?key=${encodeURIComponent(KEY)}&limit=300`;
+  if (from) url += `&from=${from}`;
+  if (to)   url += `&to=${to}`;
+  if (q)    url += `&q=${encodeURIComponent(q)}`;
 
   try {
-    const resp = await fetch('/api/log-conversion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
-      body: JSON.stringify(body),
-    });
+    const resp = await fetch(url);
+    if (resp.status === 401) { showToast('Chave de acesso inválida.', 'err'); setLoadingState(false); return; }
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
-    if (resp.ok && data.saved) {
-      let msg;
-      if (data.meta_skipped) {
-        msg = '✓ Registrado — sem CAPI (orgânico/data antiga)';
-      } else if (data.ok) {
-        const sig = data.match_signals || 0;
-        const qual = sig >= 5 ? 'Excelente' : sig >= 3 ? 'Bom' : 'Básico';
-        msg = `✓ Registrado · Meta CAPI ✓ · Match ${qual} (${sig} sinais)`;
-      } else {
-        msg = '✓ Registrado · ⚠ CAPI falhou';
-      }
-      showFeedback(msg, true);
-      // Limpa campos principais
-      ['phone','name','value','date'].forEach(id => document.getElementById(id).value = '');
-      // Limpa dados adicionais
-      ['email','cpf','neighborhood','address','city','state','zip']
-        .forEach(id => document.getElementById(id).value = '');
-      // Limpa atendimento
-      ['produto','observacao'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('phone').focus();
-    } else {
-      showFeedback('Erro: ' + (data.error || 'inesperado'), false);
-    }
-  } catch { showFeedback('Erro de conexão.', false); }
-  finally {
-    btn.disabled = false;
-    btn.textContent = tipoAtual === 'Purchase' ? 'Registrar venda' : 'Registrar contato';
+    allData = data.conversions || [];
+    applyFilter();
+  } catch (e) {
+    showToast('Erro ao carregar: ' + e.message, 'err');
+    setLoadingState(false);
   }
 }
 
-function showFeedback(msg, ok) {
-  const el = document.getElementById('feedback');
-  el.textContent = msg;
-  el.className = 'feedback ' + (ok ? 'ok' : 'err');
-  if (ok) setTimeout(() => { el.className = 'feedback'; }, 5000);
+function setLoadingState(loading) {
+  document.getElementById('state-loading').classList.toggle('hidden', !loading);
+  document.getElementById('conv-table').classList.add('hidden');
+  document.getElementById('state-empty').classList.add('hidden');
 }
 
-// ── Histórico ─────────────────────────────────────────
-async function loadHist() {
-  const histBody = document.getElementById('hist-body');
-  histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Carregando...</td></tr>';
-  ['hs-total','hs-purchases','hs-revenue','hs-spend'].forEach(id => document.getElementById(id).textContent = '—');
-  document.getElementById('hs-agent-count').textContent = '—';
-
-  const from   = document.getElementById('h-from').value;
-  const to     = document.getElementById('h-to').value;
-  const q      = (document.getElementById('h-q').value || '').trim();
-  const limit  = document.getElementById('h-limit').value || '200';
-  const source = document.getElementById('h-source').value;
-
-  // Mostrar/ocultar coluna "Fonte" e card agente
-  const showFonte = source === 'all';
-  document.getElementById('th-fonte').style.display       = showFonte ? '' : 'none';
-  document.getElementById('hs-agent-card').style.display  = (source !== 'manual') ? '' : 'none';
-
-  const params = new URLSearchParams({ key: KEY, limit });
-  if (from) params.set('from', from);
-  if (to)   params.set('to',   to);
-  if (q)    params.set('q',    q);
-
-  let manualRows = [], agentRows = [], spendCents = 0;
-
-  // Busca manual (D1)
-  if (source === 'manual' || source === 'all') {
-    try {
-      const resp = await fetch('/api/conversions-history?' + params);
-      if (resp.status === 401) {
-        histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Chave inválida.</td></tr>';
-        return;
-      }
-      const data = await resp.json();
-      manualRows = (data.conversions || []).map(r => ({ ...r, source: 'manual' }));
-      spendCents = data.spend_cents || 0;
-    } catch (e) {
-      console.error('manual fetch error', e);
-    }
+// ═══════════════════════════════════════════════════════════
+// FILTROS
+// ═══════════════════════════════════════════════════════════
+function applyFilter() {
+  switch (activeFilter) {
+    case 'aguardando':
+      filtered = allData.filter(c => c.observacao === 'venda' && !c.human_label);
+      break;
+    case 'confirmadas':
+      filtered = allData.filter(c => c.human_label === 'venda');
+      break;
+    case 'rejeitadas':
+      filtered = allData.filter(c => c.human_label === 'nao_venda');
+      break;
+    default:
+      filtered = allData.slice();
   }
 
-  // Busca agente IA (Supabase)
-  if (source === 'agent' || source === 'all') {
-    try {
-      const resp = await fetch('/api/agent-conversations?' + params);
-      if (resp.ok) {
-        const data = await resp.json();
-        agentRows = data.conversions || [];
-      }
-    } catch (e) {
-      console.error('agent fetch error', e);
-    }
+  // Contadores dos chips
+  document.getElementById('cnt-todas').textContent       = allData.length;
+  document.getElementById('cnt-aguardando').textContent  = allData.filter(c => c.observacao === 'venda' && !c.human_label).length;
+  document.getElementById('cnt-confirmadas').textContent = allData.filter(c => c.human_label === 'venda').length;
+  document.getElementById('cnt-rejeitadas').textContent  = allData.filter(c => c.human_label === 'nao_venda').length;
+
+  renderTable();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDERIZAR TABELA
+// ═══════════════════════════════════════════════════════════
+function renderTable() {
+  document.getElementById('state-loading').classList.add('hidden');
+
+  if (!filtered.length) {
+    document.getElementById('conv-table').classList.add('hidden');
+    document.getElementById('state-empty').classList.remove('hidden');
+    return;
   }
 
-  // Mescla e ordena por data desc
-  const rows = [...manualRows, ...agentRows].sort((a, b) => {
-    if (b.event_date !== a.event_date) return b.event_date > a.event_date ? 1 : -1;
-    return (b.registered_at || 0) - (a.registered_at || 0);
-  });
+  document.getElementById('state-empty').classList.add('hidden');
+  document.getElementById('conv-table').classList.remove('hidden');
+
+  document.getElementById('conv-body').innerHTML = filtered.map(item => {
+    const rawId  = item.id.replace(/^ai_/, '');
+    const active = rawId === activeRawId ? 'active' : '';
+    const phone  = item.phone_last4 ? `****${item.phone_last4}` : '—';
+    const name   = item.display_name && item.display_name !== item.phone_last4
+                 ? escHtml(item.display_name)
+                 : '—';
+    const produto = escHtml(item.produto || '—');
+
+    return `
+      <tr class="conv-row ${active}" data-raw-id="${rawId}" onclick="openPanel('${rawId}')">
+        <td class="col-date">${fmtDate(item.event_date)}</td>
+        <td>
+          <div class="contact-name">${name}</div>
+          <div class="contact-phone">${phone}</div>
+        </td>
+        <td class="hide-sm">${statusBadge(item)}</td>
+        <td class="hide-sm">${confBar(item)}</td>
+        <td class="hide-xs">${produto}</td>
+        <td><button class="row-btn" onclick="event.stopPropagation(); openPanel('${rawId}')">Ver →</button></td>
+      </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PAINEL LATERAL
+// ═══════════════════════════════════════════════════════════
+async function openPanel(rawId) {
+  activeRawId = rawId;
+
+  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+  if (!item) return;
+
+  // Cabeçalho do painel
+  const name  = item.display_name && item.display_name !== item.phone_last4
+              ? item.display_name : 'Sem nome';
+  const phone = item.phone_last4 ? `WhatsApp ****${item.phone_last4}` : 'Sem telefone';
+
+  document.getElementById('panel-name').textContent  = name;
+  document.getElementById('panel-phone').textContent = phone;
+  document.getElementById('panel-date').textContent  = item.event_date ? `Data: ${fmtDate(item.event_date)}` : '';
+
+  // Abre painel
+  document.getElementById('side-panel').classList.add('open');
+
+  // Ativa aba IA
+  switchPanelTab('ia');
+
+  // Renderiza conteúdo da aba IA
+  renderIATab(item, rawId);
+
+  // Destaca linha ativa
+  document.querySelectorAll('.conv-row').forEach(r => r.classList.remove('active'));
+  const row = document.querySelector(`.conv-row[data-raw-id="${rawId}"]`);
+  if (row) row.classList.add('active');
+
+  // Pré-carrega mensagens em background
+  if (!msgCache[rawId]) loadMsgs(rawId);
+}
+
+function closePanel() {
+  document.getElementById('side-panel').classList.remove('open');
+  activeRawId = null;
+  document.querySelectorAll('.conv-row').forEach(r => r.classList.remove('active'));
+}
+
+function switchPanelTab(tab) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('tab-ia').classList.toggle('hidden',       tab !== 'ia');
+  document.getElementById('tab-conversa').classList.toggle('hidden', tab !== 'conversa');
+}
+
+// ═══════════════════════════════════════════════════════════
+// ABA IA
+// ═══════════════════════════════════════════════════════════
+function renderIATab(item, rawId) {
+  const verdict = item.observacao || 'em_aberto';
+  const conf    = Math.round((item.ai_confidence || 0) * 100);
+  const valor   = item.value_cents
+                ? 'R$ ' + (item.value_cents / 100).toFixed(2).replace('.', ',')
+                : 'Não informado';
+  const produto = item.produto || 'Não informado';
+  const excerpt = item.excerpt || '';
+
+  let verdictLabel, vcClass;
+  if (verdict === 'venda') {
+    verdictLabel = '💊 Venda detectada pela IA';
+    vcClass = 'vc-venda';
+  } else if (verdict === 'contato') {
+    verdictLabel = '📞 Contato (sem venda detectada)';
+    vcClass = 'vc-contato';
+  } else {
+    verdictLabel = '❓ Conversa em aberto';
+    vcClass = 'vc-aberto';
+  }
+
+  document.getElementById('ia-verdict-card').innerHTML = `
+    <div class="verdict-card ${vcClass}">
+      <div class="verdict-label">${verdictLabel}</div>
+      <div class="verdict-conf">Confiança da IA: <strong>${conf}%</strong></div>
+      ${excerpt ? `<div class="verdict-excerpt">"${escHtml(excerpt)}"</div>` : ''}
+    </div>
+    <div class="ia-details">
+      <div class="ia-row"><span class="lbl">Valor IA</span><span class="val">${valor}</span></div>
+      <div class="ia-row"><span class="lbl">Produto</span><span class="val">${escHtml(produto)}</span></div>
+    </div>
+  `;
+
+  // Botões de ação
+  const isPending   = !item.human_label && verdict === 'venda';
+  const isConfirmed = item.human_label === 'venda';
+  const isRejected  = item.human_label === 'nao_venda';
+
+  let actionsHtml = '';
+  if (isPending) {
+    actionsHtml = `
+      <button class="action-btn action-confirm" onclick="confirmar('${rawId}')">✓ Confirmar Venda</button>
+      <button class="action-btn action-correct"  onclick="abrirCorrigir('${rawId}')">✏️ Corrigir valor / produto</button>
+      <button class="action-btn action-reject"   onclick="abrirRejeitar('${rawId}')">✕ Rejeitar</button>
+    `;
+  } else if (isConfirmed) {
+    actionsHtml = `
+      <div class="human-label-done hld-confirmed">
+        <span>✓ Venda confirmada pela equipe</span>
+        <button class="btn-undo" onclick="desfazer('${rawId}')">Desfazer</button>
+      </div>
+    `;
+  } else if (isRejected) {
+    actionsHtml = `
+      <div class="human-label-done hld-rejected">
+        <span>✕ Rejeitada pela equipe</span>
+        <button class="btn-undo" onclick="desfazer('${rawId}')">Desfazer</button>
+      </div>
+    `;
+  }
+
+  document.getElementById('panel-actions').innerHTML = actionsHtml;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ABA CONVERSA (mensagens)
+// ═══════════════════════════════════════════════════════════
+async function loadMsgs(rawId) {
+  const wrap = document.getElementById('msgs-wrap');
+  wrap.innerHTML = '<div class="msg-loading">Carregando mensagens…</div>';
 
   try {
-    const purchases = rows.filter(r => r.event_name === 'Purchase');
-    const revCents  = purchases.reduce((s, r) => s + (r.value_cents || 0), 0);
-    const agentCount = agentRows.length;
-    document.getElementById('hs-total').textContent     = rows.length;
-    document.getElementById('hs-purchases').textContent = purchases.length;
-    document.getElementById('hs-revenue').textContent   =
-      'R$\u00a0' + (revCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-    document.getElementById('hs-spend').textContent     = spendCents
-      ? 'R$\u00a0' + (spendCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-      : '—';
-    document.getElementById('hs-agent-count').textContent = agentCount || '—';
+    const resp = await fetch(`/api/ia/conversa?id=${rawId}&key=${encodeURIComponent(KEY)}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
 
-    if (!rows.length) {
-      histBody.innerHTML = '<tr><td colspan="8" class="hist-empty">Nenhum registro no período.</td></tr>';
+    const msgs = data.mensagens || [];
+    msgCache[rawId] = msgs;
+
+    if (!msgs.length) {
+      wrap.innerHTML = '<div class="msg-loading">Nenhuma mensagem encontrada.</div>';
       return;
     }
 
-    const origemIco = {
-      ad:       '<span class="plat-ico plat-meta" title="Meta Ads">f</span>',
-      google:   '<span class="plat-ico plat-google" title="Google Ads">G</span>',
-      organic:  '<span class="plat-ico plat-organic" title="Orgânico">🚶</span>',
-      referral: '<span class="plat-ico plat-referral" title="Indicação">🤝</span>',
-    };
-    const metaIcon = '<span class="plat-ico plat-meta" style="width:14px;height:14px;font-size:9px;">f</span>';
-
-    histBody.innerHTML = rows.map(r => {
-      const isAgent = r.source === 'agent';
-      const ph    = r.phone_last4 ? `****${r.phone_last4}` : '';
-      const nome  = esc(r.display_name || (isAgent ? r.phone_normalized || '—' : '—'));
-      const prod  = r.produto    ? `<br><span style="color:var(--blue);font-size:.75em;">💊 ${esc(r.produto)}</span>` : '';
-
-      // Agente: mostra trecho da conversa + confiança ao invés de observação
-      let obs = '';
-      if (isAgent && r.observacao) {
-        const conf = r.ai_confidence ? `<span style="background:rgba(96,165,250,.15);color:var(--blue);border-radius:3px;padding:1px 5px;font-size:.7em;font-weight:700;">${r.ai_confidence}%</span> ` : '';
-        obs = `<br><span style="color:#a78bfa;font-size:.75em;">🤖 ${conf}${esc(r.observacao.slice(0, 80))}</span>`;
-      } else if (!isAgent && r.observacao) {
-        obs = `<br><span style="color:#f59e0b;font-size:.75em;">📝 ${esc(r.observacao)}</span>`;
+    let lastDate = '';
+    wrap.innerHTML = msgs.map(m => {
+      const isMe  = !!m.from_me;
+      const tipo  = m.tipo || 'texto';
+      const txt   = m.texto_extraido || '';
+      const icons = { audio: '🎙️', imagem: '🖼️', documento: '📄' };
+      const icon  = icons[tipo] || '';
+      const time  = m.created_at
+                  ? new Date(m.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                  : '';
+      const dateStr = m.created_at ? m.created_at.slice(0, 10) : '';
+      let sep = '';
+      if (dateStr && dateStr !== lastDate) {
+        sep = `<div class="msgs-date-sep">${fmtDate(dateStr)}</div>`;
+        lastDate = dateStr;
       }
-
-      const cli = `<span style="font-weight:600;">${nome}</span>`
-        + (ph ? `<br><span style="color:var(--muted);font-size:.78em;">${ph} ${origemIco[r.origem] || ''}</span>` : '')
-        + prod + obs;
-      const ic    = r.event_name === 'Contact';
-      const badge = ic
-        ? '<span class="badge-contact">Contato</span>'
-        : '<span class="badge-purchase">Venda</span>';
-      const val   = r.value_cents
-        ? 'R$\u00a0' + (r.value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-        : '—';
-      const ltv = (!isAgent && r.client_ltv_cents && r.phone_normalized)
-        ? '<span style="color:var(--green);font-weight:700;">R$\u00a0'
-          + (r.client_ltv_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-          + '</span>'
-          + (r.client_purchases > 1 ? `<br><span style="color:var(--muted);font-size:.75em;">${r.client_purchases}x compras</span>` : '')
-        : '<span style="color:var(--muted);">—</span>';
-      const meta  = r.meta_ok
-        ? `${metaIcon} <span class="meta-ok">✓</span>`
-        : `<span class="meta-no">—</span>`;
-
-      // Botões: agente não tem editar/promover (dados somente leitura)
-      const upBtn   = (!isAgent && ic) ? `<button class="btn-upgrade" onclick="openModal(${r.id},'${esc(r.display_name)}')">+ Venda</button>` : '';
-      const editBtn = !isAgent ? `<button class="btn-edit" onclick='openEditModal(${JSON.stringify(r)})' title="Editar">✏️</button>` : '';
-
-      const fonteCell = showFonte
-        ? `<td style="white-space:nowrap;">${isAgent ? '<span style="color:#a78bfa;font-size:.75em;">🤖 IA</span>' : '<span style="color:var(--muted);font-size:.75em;">📋</span>'}</td>`
-        : '';
-
-      return `<tr${isAgent ? ' style="opacity:.92;"' : ''}>
-        <td class="td-date">${r.event_date || '—'}</td>
-        <td class="td-cli">${cli}</td>
-        <td class="td-badge">${badge}</td>
-        <td class="td-val">${val}</td>
-        <td class="td-ltv">${ltv}</td>
-        <td class="td-meta">${meta}</td>
-        ${fonteCell}
-        <td class="td-act" style="white-space:nowrap;">${upBtn} ${editBtn}</td>
-      </tr>`;
+      return `${sep}
+        <div class="msg-row ${isMe ? 'sent' : 'recv'}">
+          <div class="msg-bubble">
+            ${icon ? `<span class="msg-type-icon">${icon}</span>` : ''}
+            <div class="msg-text">${txt ? escHtml(txt) : '<em>Mídia sem transcrição</em>'}</div>
+            <div class="msg-time">${time}</div>
+          </div>
+        </div>`;
     }).join('');
   } catch (e) {
-    histBody.innerHTML = `<tr><td colspan="8" class="hist-empty">Erro: ${esc(e.message)}</td></tr>`;
+    wrap.innerHTML = '<div class="msg-loading">Erro ao carregar mensagens.</div>';
   }
 }
 
-function esc(s) {
-  return (s || '').replace(/[&<>"']/g,
-    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// ═══════════════════════════════════════════════════════════
+// AÇÕES DE REVISÃO
+// ═══════════════════════════════════════════════════════════
+async function confirmar(rawId) {
+  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+  await reviewAction(rawId, 'confirmar', {
+    phone:   item?.phone_normalized,
+    value:   item?.value_cents ? item.value_cents / 100 : 0,
+    produto: item?.produto,
+    name:    item?.display_name,
+  });
 }
 
-// Formatação automática de CPF: 000.000.000-00
-function fmtCpf(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 11);
-  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
-  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,        '$1.$2.$3');
-  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/,                '$1.$2');
-  el.value = v;
+function abrirCorrigir(rawId) {
+  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+  document.getElementById('corrigir-sub').textContent = item?.display_name || `****${item?.phone_last4}` || rawId;
+  document.getElementById('c-value').value   = item?.value_cents ? (item.value_cents / 100).toFixed(2) : '';
+  document.getElementById('c-produto').value = item?.produto || '';
+  document.getElementById('c-name').value    = item?.display_name || '';
+  document.getElementById('c-origem').value  = 'ad';
+  document.getElementById('overlay-corrigir').dataset.rawId = rawId;
+  document.getElementById('overlay-corrigir').classList.remove('hidden');
 }
 
-// Formatação automática de CEP: 00000-000
-function fmtCep(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 8);
-  if (v.length > 5) v = v.replace(/(\d{5})(\d{0,3})/, '$1-$2');
-  el.value = v;
+function abrirRejeitar(rawId) {
+  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+  document.getElementById('rejeitar-sub').textContent = item?.display_name || `****${item?.phone_last4}` || rawId;
+  document.getElementById('overlay-rejeitar').dataset.rawId = rawId;
+  document.getElementById('overlay-rejeitar').classList.remove('hidden');
 }
 
-// ── Modal Editar ──────────────────────────────────────
-let editingRow = null;
-
-function openEditModal(r) {
-  editingRow = r;
-  document.getElementById('edit-sub').textContent = `ID #${r.id}`;
-  document.getElementById('edit-name').value      = r.display_name || '';
-  document.getElementById('edit-date').value      = r.event_date   || '';
-  document.getElementById('edit-type').value      = r.event_name   || 'Contact';
-  document.getElementById('edit-origem').value    = r.origem        || 'ad';
-  document.getElementById('edit-produto').value   = r.produto       || '';
-  document.getElementById('edit-observacao').value = r.observacao   || '';
-  const vc = r.value_cents || 0;
-  document.getElementById('edit-value').value = vc > 0
-    ? (vc / 100).toFixed(2).replace('.', ',') : '';
-  toggleEditValue();
-  document.getElementById('edit-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('edit-name').focus(), 80);
+async function desfazer(rawId) {
+  await reviewAction(rawId, 'desfazer', {});
 }
 
-function toggleEditValue() {
-  const isPurchase = document.getElementById('edit-type').value === 'Purchase';
-  document.getElementById('edit-value-row').style.display = isPurchase ? '' : 'none';
-}
+async function reviewAction(rawId, action, params) {
+  const body = { id: rawId, action, ...params };
 
-function closeEditModal() {
-  document.getElementById('edit-overlay').classList.remove('open');
-  editingRow = null;
-}
+  // Optimistic update: atualiza o estado local imediatamente
+  const idx = allData.findIndex(c => c.id.replace(/^ai_/, '') === rawId);
+  const prev = idx !== -1 ? allData[idx].human_label : undefined;
 
-async function confirmEdit() {
-  if (!editingRow) return;
-  const body = { id: editingRow.id };
-  const name    = document.getElementById('edit-name').value.trim();
-  const date    = document.getElementById('edit-date').value;
-  const type    = document.getElementById('edit-type').value;
-  const origem  = document.getElementById('edit-origem').value;
-  const produto = document.getElementById('edit-produto').value.trim();
-  const obs     = document.getElementById('edit-observacao').value.trim();
-  const val     = document.getElementById('edit-value').value.trim();
+  if (idx !== -1) {
+    if (action === 'rejeitar')  allData[idx].human_label = 'nao_venda';
+    else if (action === 'desfazer') allData[idx].human_label = null;
+    else allData[idx].human_label = 'venda';
+  }
 
-  body.display_name = name;
-  body.event_date   = date;
-  body.event_name   = type;
-  body.origem       = origem;
-  body.produto      = produto;
-  body.observacao   = obs;
-  if (type === 'Purchase') body.value = val;
+  applyFilter();
+  if (activeRawId === rawId) {
+    const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+    if (item) renderIATab(item, rawId);
+  }
 
   try {
-    const resp = await fetch('/api/update-conversion', {
-      method: 'POST',
+    const resp = await fetch('/api/ia/revisar', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
-      body: JSON.stringify(body),
+      body:    JSON.stringify(body),
     });
     const data = await resp.json();
-    if (resp.ok && data.ok) { closeEditModal(); loadHist(); }
-    else alert('Erro: ' + (data.error || 'inesperado'));
-  } catch { alert('Erro de conexão.'); }
+
+    if (!resp.ok || !data.ok) {
+      // Rollback
+      if (idx !== -1) allData[idx].human_label = prev;
+      applyFilter();
+      if (activeRawId === rawId) {
+        const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+        if (item) renderIATab(item, rawId);
+      }
+      throw new Error(data.error || 'Erro inesperado');
+    }
+
+    const msgs = {
+      confirmar: '✓ Venda confirmada!',
+      corrigir:  '✓ Venda corrigida!',
+      rejeitar:  '✕ Rejeitado.',
+      desfazer:  'Ação desfeita.',
+    };
+    showToast(msgs[action] || 'Salvo!', action === 'rejeitar' ? 'err' : action === 'desfazer' ? 'info' : 'ok');
+  } catch (e) {
+    showToast('Erro: ' + e.message, 'err');
+  }
 }
 
-document.getElementById('edit-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeEditModal();
-});
+// ═══════════════════════════════════════════════════════════
+// MODAL: REGISTRAR MANUAL
+// ═══════════════════════════════════════════════════════════
+let tipoAtual = 'Contact';
 
-// ── Modal ─────────────────────────────────────────────
-function openModal(id, name) {
-  editingId = id;
-  document.getElementById('modal-sub').textContent = name ? `Cliente: ${name}` : 'Informe o valor da compra.';
-  document.getElementById('modal-value').value = '';
-  document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('modal-value').focus(), 80);
+function bindFormTipo() {
+  document.querySelectorAll('.tipo-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      tipoAtual = btn.dataset.tipo;
+      document.getElementById('n-value-field').classList.toggle('hidden', tipoAtual !== 'Purchase');
+    });
+  });
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  editingId = null;
-}
+async function submitNovo() {
+  const phone = document.getElementById('n-phone').value.trim();
+  if (!phone) { showToast('Informe o WhatsApp.', 'err'); return; }
 
-async function confirmUpdate() {
-  const value = document.getElementById('modal-value').value.trim();
-  if (!value) { alert('Informe o valor.'); return; }
-  if (!editingId) return;
+  const body = {
+    event_name: tipoAtual,
+    phone,
+    name:    document.getElementById('n-name').value.trim()    || undefined,
+    value:   tipoAtual === 'Purchase' ? document.getElementById('n-value').value : undefined,
+    produto: document.getElementById('n-produto').value.trim() || undefined,
+    origem:  document.getElementById('n-origem').value,
+    observacao: document.getElementById('n-obs').value.trim()  || undefined,
+  };
+
+  const btn = document.getElementById('confirm-novo');
+  btn.disabled = true;
+
   try {
-    const resp = await fetch('/api/update-conversion', {
-      method: 'POST',
+    const resp = await fetch('/api/log-conversion', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
-      body: JSON.stringify({ id: editingId, event_name: 'Purchase', value }),
+      body:    JSON.stringify(body),
     });
     const data = await resp.json();
-    if (resp.ok && data.ok) { closeModal(); loadHist(); }
-    else alert('Erro: ' + (data.error || 'inesperado'));
-  } catch { alert('Erro de conexão.'); }
+    if (!resp.ok || !data.ok) throw new Error(data.error || 'Erro');
+    document.getElementById('overlay-novo').classList.add('hidden');
+    showToast('✓ Conversão registrada!', 'ok');
+    // Limpar form
+    ['n-phone','n-name','n-value','n-produto','n-obs'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  } catch (e) {
+    showToast('Erro: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
-document.getElementById('modal-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast toast-${type}`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.className = 'toast hidden', 3500);
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function statusBadge(item) {
+  if (item.human_label === 'venda')     return '<span class="badge badge-green">✓ Confirmada</span>';
+  if (item.human_label === 'nao_venda') return '<span class="badge badge-red">✕ Rejeitada</span>';
+  if (item.observacao === 'venda')      return '<span class="badge badge-yellow">⏳ Aguardando</span>';
+  if (item.observacao === 'contato')    return '<span class="badge badge-blue">📞 Contato</span>';
+  return '<span class="badge badge-muted">Em aberto</span>';
+}
+
+function confBar(item) {
+  if (!item.ai_confidence && !item.human_label) return '<span style="color:var(--muted)">—</span>';
+  const pct = Math.round((item.ai_confidence || 0) * 100);
+  const cls = pct >= 80 ? 'conf-high' : pct >= 60 ? 'conf-mid' : 'conf-low';
+  return `<div class="conf-wrap">
+    <div class="conf-bar"><div class="conf-fill ${cls}" style="width:${pct}%"></div></div>
+    <span class="conf-num">${pct}%</span>
+  </div>`;
+}
+
+function fmtDate(str) {
+  if (!str) return '—';
+  // str: 'YYYY-MM-DD' or ISO
+  const d = new Date(str.length === 10 ? str + 'T12:00:00' : str);
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ═══════════════════════════════════════════════════════════
+function bindEvents() {
+  // Chips de filtro
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter;
+      applyFilter();
+    });
+  });
+
+  // Buscar
+  document.getElementById('btn-buscar').addEventListener('click', loadConversations);
+  document.getElementById('f-q').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadConversations();
+  });
+
+  // Fechar painel
+  document.getElementById('panel-close').addEventListener('click', closePanel);
+
+  // Tabs do painel
+  document.querySelectorAll('.panel-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      switchPanelTab(tab);
+      if (tab === 'conversa' && activeRawId) {
+        if (!msgCache[activeRawId]) {
+          loadMsgs(activeRawId);
+        } else {
+          // usa cache
+          const wrap = document.getElementById('msgs-wrap');
+          if (!wrap.innerHTML || wrap.innerHTML.includes('msg-loading')) {
+            loadMsgs(activeRawId);
+          }
+        }
+      }
+    });
+  });
+
+  // Modal: Corrigir
+  document.getElementById('confirm-corrigir').addEventListener('click', async () => {
+    const rawId  = document.getElementById('overlay-corrigir').dataset.rawId;
+    const value  = parseFloat(document.getElementById('c-value').value) || 0;
+    const item   = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+    document.getElementById('overlay-corrigir').classList.add('hidden');
+    await reviewAction(rawId, 'corrigir', {
+      value,
+      produto: document.getElementById('c-produto').value.trim(),
+      name:    document.getElementById('c-name').value.trim() || item?.display_name,
+      phone:   item?.phone_normalized,
+      origem:  document.getElementById('c-origem').value,
+    });
+  });
+  document.getElementById('cancel-corrigir').addEventListener('click', () =>
+    document.getElementById('overlay-corrigir').classList.add('hidden'));
+
+  // Modal: Rejeitar
+  document.getElementById('confirm-rejeitar').addEventListener('click', async () => {
+    const rawId  = document.getElementById('overlay-rejeitar').dataset.rawId;
+    const motivo = document.getElementById('r-motivo').value;
+    document.getElementById('overlay-rejeitar').classList.add('hidden');
+    await reviewAction(rawId, 'rejeitar', { motivo });
+  });
+  document.getElementById('cancel-rejeitar').addEventListener('click', () =>
+    document.getElementById('overlay-rejeitar').classList.add('hidden'));
+
+  // Modal: Nova conversão
+  document.getElementById('btn-novo').addEventListener('click', () =>
+    document.getElementById('overlay-novo').classList.remove('hidden'));
+  document.getElementById('cancel-novo').addEventListener('click', () =>
+    document.getElementById('overlay-novo').classList.add('hidden'));
+  document.getElementById('confirm-novo').addEventListener('click', submitNovo);
+  bindFormTipo();
+
+  // Fechar modais ao clicar fora
+  ['overlay-corrigir', 'overlay-rejeitar', 'overlay-novo'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if (e.target === this) this.classList.add('hidden');
+    });
+  });
+
+  // Fechar painel no mobile com ESC
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (!document.getElementById('overlay-corrigir').classList.contains('hidden') ||
+          !document.getElementById('overlay-rejeitar').classList.contains('hidden') ||
+          !document.getElementById('overlay-novo').classList.contains('hidden')) return;
+      closePanel();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════════
+init();
 </script>
-
-<nav class="bottom-nav">
-  <a href="/acesso/?key=fortpopular2026"><span class="bn-icon">⌂</span> Início</a>
-  <a href="/relatorio/?key=fortpopular2026"><span class="bn-icon">📊</span> Relatório</a>
-  <a href="/clientes/?key=fortpopular2026"><span class="bn-icon">👥</span> Clientes</a>
-</nav>
 </body>
 </html>
