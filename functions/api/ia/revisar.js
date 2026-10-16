@@ -176,6 +176,7 @@ export async function onRequestPost(context) {
         vendida_em:  vendidaEm,
         origem:      contato.origem || 'desconhecido',
         ad_id:       contato.ctwa_clid || contato.gclid || null,
+        revisao:     'confirmada',
       };
       const r = await fetch(
         `${SB_URL}/rest/v1/vendas`,
