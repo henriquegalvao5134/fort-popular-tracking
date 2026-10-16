@@ -831,18 +831,18 @@ function renderInstagram(ig) {
       type: 'line',
       data: {
         labels,
-        datasets: [{ data: values, borderColor: '#FFD700', backgroundColor: 'rgba(255,215,0,0.08)',
+        datasets: [{ data: values, borderColor: '#FFD700', backgroundColor: 'rgba(255,215,0,0.06)',
           borderWidth: 2, pointRadius: 2, pointHoverRadius: 4, fill: true, tension: 0.3, label: 'Seguidores' }]
       },
       options: {
         plugins: { legend: { display: false }, tooltip: {
-          backgroundColor: '#1e0d0d', titleColor: '#FFD700', bodyColor: '#f5f0f0',
+          backgroundColor: '#1e1e1e', titleColor: '#FFD700', bodyColor: '#f2f2f2',
           borderColor: 'rgba(255,215,0,0.25)', borderWidth: 1,
           callbacks: { label: ctx => fmtN(ctx.parsed.y) + ' seguidores' }
         }},
         scales: {
-          y: { grid: { color: 'rgba(255,215,0,0.08)' }, ticks: { color: '#8a7070', callback: v => fmtN(v) } },
-          x: { grid: { display: false }, ticks: { color: '#8a7070', maxTicksLimit: 12 } }
+          y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#888', callback: v => fmtN(v) } },
+          x: { grid: { display: false }, ticks: { color: '#888', maxTicksLimit: 12 } }
         }
       }
     });
@@ -947,19 +947,19 @@ function renderAuctionChart(dailyCampaign) {
       plugins: {
         legend: {
           display: camps.length > 1,
-          labels: { color: '#8a7070', font: { size: 11 }, boxWidth: 12,
+          labels: { color: '#888', font: { size: 11 }, boxWidth: 12,
                     filter: item => item.text !== '__avg__' }
         },
         tooltip: {
-          backgroundColor: '#1e0d0d', titleColor: '#FFD700', bodyColor: '#f5f0f0',
+          backgroundColor: '#1e1e1e', titleColor: '#FFD700', bodyColor: '#f2f2f2',
           borderColor: 'rgba(255,215,0,0.25)', borderWidth: 1,
           filter: item => item.dataset.label !== '__avg__',
           callbacks: { label: ctx => ctx.dataset.label + ': R$ ' + (ctx.parsed.y || 0).toFixed(2) }
         }
       },
       scales: {
-        y: { grid: { color: 'rgba(255,215,0,0.08)' }, ticks: { color: '#8a7070', callback: v => 'R$' + v.toFixed(0) } },
-        x: { grid: { display: false }, ticks: { color: '#8a7070' } }
+        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#888', callback: v => 'R$' + v.toFixed(0) } },
+        x: { grid: { display: false }, ticks: { color: '#888' } }
       }
     }
   });
@@ -1064,13 +1064,13 @@ function renderChart(daily) {
     },
     options: {
       plugins: { legend: { display: false }, tooltip: {
-        backgroundColor: '#1e0d0d', titleColor: '#FFD700', bodyColor: '#f5f0f0',
+        backgroundColor: '#1e1e1e', titleColor: '#FFD700', bodyColor: '#f2f2f2',
         borderColor: 'rgba(255,215,0,0.25)', borderWidth: 1,
         callbacks: { label: ctx => 'R$ ' + ctx.parsed.y.toFixed(2) }
       }},
       scales: {
-        y: { grid: { color: 'rgba(255,215,0,0.08)' }, ticks: { color: '#8a7070', callback: v => 'R$'+v } },
-        x: { grid: { display: false }, ticks: { color: '#8a7070' } }
+        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#888', callback: v => 'R$'+v } },
+        x: { grid: { display: false }, ticks: { color: '#888' } }
       }
     }
   });
