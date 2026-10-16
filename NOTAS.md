@@ -1,19 +1,17 @@
 # Fort Popular Tracking — Notas do Projeto
 
 ## Links
-- **Relatório do cliente:** https://fort-popular-tracking.pages.dev/relatorio/?key=fortpopular2026
-- **Dashboard interno (você):** https://fort-popular-tracking.pages.dev/dash/?key=8b00fa11a0c0278a95bb68b536050b44b30ca7625840aadf676ae93380c93e85
+- **Relatório do cliente:** https://fort-popular-tracking.pages.dev/relatorio/?key=`<CLIENT_KEY>`
+- **Dashboard interno (você):** https://fort-popular-tracking.pages.dev/dash/?key=`<DASH_KEY>`
 - **GitHub:** https://github.com/henriquegalvao5134/fort-popular-tracking
 - **Cloudflare Pages:** https://dash.cloudflare.com → Workers & Pages → fort-popular-tracking
 
 ---
 
 ## Senhas e Chaves
-- **Senha do relatório do cliente:** `fortpopular2026`
-  _(variável CLIENT_KEY no Cloudflare — já configurada)_
-- **DASH_KEY:** `8b00fa11a0c0278a95bb68b536050b44b30ca7625840aadf676ae93380c93e85`
-  _(variável DASH_KEY no Cloudflare — já configurada)_
-- **SYNC_SECRET:** `dec5424b7ac81f7680e6244ac408060a519d2fd4438123c07b3690972369ce0e`
+- **Senha do relatório do cliente (CLIENT_KEY):** fica nas variáveis da Cloudflare
+- **DASH_KEY:** fica nas variáveis da Cloudflare
+- **SYNC_SECRET:** fica nas variáveis da Cloudflare
 
 ---
 
@@ -29,20 +27,16 @@ _(Configuradas em: Pages → fort-popular-tracking → Settings → Environment 
 
 | Variável | Status | Descrição |
 |---|---|---|
-| `CLIENT_KEY`             | ✅ Configurada | `fortpopular2026` — senha do relatório do cliente |
+| `CLIENT_KEY`             | ✅ Configurada | Senha do relatório do cliente |
 | `DASH_KEY`               | ✅ Configurada | Chave do dashboard interno |
 | `SYNC_SECRET`            | ✅ Configurada | Chave do cron de sincronização |
 | `TIMEZONE_OFFSET`        | ✅ Configurada | `-03:00` |
 | `META_ADS_ACCESS_TOKEN`  | ✅ Configurada | Token de acesso da conta Meta Ads do cliente |
 | `META_ADS_ACCOUNT_ID`    | ✅ Configurada | ID da conta de anúncios (act_XXXXXXX) |
+| `SUPABASE_URL`           | ✅ Configurada | URL do projeto Supabase |
+| `SUPABASE_SERVICE_KEY`   | ✅ Configurada | Chave service_role do Supabase |
 | `META_PIXEL_ID`          | ⏳ Pendente   | Pixel do Meta (opcional para relatório) |
 | `META_ACCESS_TOKEN`      | ⏳ Pendente   | Token do Pixel/CAPI (opcional) |
-
----
-
-## Tintim — Dados de Integração
-- **Código do Cliente:** `72387556-f1d2-4511-9f34-e28ed4d056ce`
-- **Token de Segurança:** `llLetSouyRwYo_wddcf8dAxCuxAyG74h4l0RXQwUsRM`
 
 ---
 
@@ -51,14 +45,15 @@ _(Configuradas em: Pages → fort-popular-tracking → Settings → Environment 
 |---|---|---|
 | Google Ads | `AW-18144522784` | ✅ Instalado |
 | Meta Pixel | `1673965483607621` | ✅ Instalado |
-| Tintim | `72387556-f1d2-4511-9f34-e28ed4d056ce` | ✅ Instalado |
+| Tintim | — | ❌ Removido |
 
 ---
 
 ## Pendente / Próximos Passos
 - [x] Adicionar META_ADS_ACCESS_TOKEN do cliente no Cloudflare
 - [x] Adicionar META_ADS_ACCOUNT_ID do cliente no Cloudflare
-- [ ] Testar relatório: https://fort-popular-tracking.pages.dev/relatorio/?key=fortpopular2026
+- [x] Adicionar SUPABASE_URL e SUPABASE_SERVICE_KEY no Cloudflare
+- [ ] Testar relatório: https://fort-popular-tracking.pages.dev/relatorio/?key=`<CLIENT_KEY>`
 
 ---
 

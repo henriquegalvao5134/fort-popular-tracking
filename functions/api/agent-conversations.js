@@ -8,11 +8,11 @@
 //   q      busca livre: telefone ou trecho da conversa
 //   limit  máx 500 (padrão: 200)
 
-const SB_URL = 'https://wjbtazzvazdrpajbimkb.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqYnRhenp2YXpkcnBhamJpbWtiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTkxNTg0NywiZXhwIjoyMTA3NDkxODQ3fQ.oK7ZeEOlOsKnoR6R_a0rNQpVsxruRxVJloeFiS1lmiQ';
-
 export async function onRequestGet(context) {
   const { request, env } = context;
+  const SB_URL = env.SUPABASE_URL;
+  const SB_KEY  = env.SUPABASE_SERVICE_KEY;
+  if (!SB_URL || !SB_KEY) return json({ error: 'Supabase não configurado' }, 500);
   const url    = new URL(request.url);
   const key    = url.searchParams.get('key')   || '';
   const from   = url.searchParams.get('from')  || '';

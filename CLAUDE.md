@@ -13,12 +13,12 @@ estes passos AUTOMATICAMENTE sem fazer perguntas:
 - Pages project: `fort-popular-tracking`
 - URL: `https://fort-popular-tracking.pages.dev`
 - Banco D1: `fort-popular-tracking-db`
-- SYNC_SECRET: `relatorio-2026`
+- SYNC_SECRET: (fica nas variáveis da Cloudflare)
 
 **Passo 1 — Sincronizar dados do Meta Ads (ultimos 30 dias):**
 ```bash
 curl -s -X POST "https://fort-popular-tracking.pages.dev/api/sync/meta-ads" \
-  -H "x-sync-secret: relatorio-2026" \
+  -H "x-sync-secret: <SYNC_SECRET>" \
   -H "Content-Type: application/json" \
   -d "{\"date_from\":\"$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)\",\"date_to\":\"$(date +%Y-%m-%d)\"}"
 ```
@@ -99,6 +99,56 @@ looked up to enrich the Meta/GA4/Google Ads conversion.
 
 Hop-by-hop debugging bible: `docs/data-flow.md`
 
+## Contexto do cliente — LER ANTES DE ANALISAR
+
+**O Fort Popular é uma farmácia.** O tracking captura o que acontece no site da farmácia.
+Não é e-commerce — não há `purchase_log` ativo. A conversão é o **clique no WhatsApp**.
+
+### O que cada tabela significa para este cliente
+
+| Tabela | O que representa |
+|---|---|
+| `sessions` | Todo visitante que abre o site. Disponível desde 01/08/2026. |
+| `event_log` (PageView) | Quem carregou a página completa (React useEffect → POST /tracker). Desde 11/08/2026. |
+| `event_log` (Contact) | Quem clicou no botão WhatsApp. Essa é a CONVERSÃO do cliente. Desde 11/08/2026. |
+| `manual_conversions` | Conversões inseridas manualmente (clientes reais confirmados). Desde 01/08/2026. |
+| `ad_spend` | Gasto e métricas Meta Ads (sync via cron). |
+
+### GA4 — não configurado, não usar
+
+Este cliente **não usa GA4**. As variáveis `GA4_MEASUREMENT_ID` e `GA4_API_SECRET` não existem
+intencionalmente. O campo `ga4_response_ok = 0` em todos os registros é normal — os eventos
+retornam `"skipped: missing ga4 env"`. Não investigar nem tentar consertar.
+
+### CRÍTICO — Timestamps em SEGUNDOS, não milliseconds
+
+Os timestamps neste banco estão em **SEGUNDOS** (Unix timestamp em segundos).
+
+```sql
+-- CORRETO
+date(created_at,'unixepoch')
+date(timestamp,'unixepoch')
+
+-- ERRADO — retorna datas de 1970
+date(created_at/1000,'unixepoch')
+```
+
+Aplica a: `sessions.created_at`, `sessions.updated_at`, `event_log.timestamp`.
+
+### Campanhas Meta Ads (situação em ago/2026)
+
+- **N1 [Rec Freq 10x1] Territory** — objetivo Reconhecimento, CTR ~0,12%
+- **N1 Engajamento-Whatsap** — objetivo Engajamento, CTR ~0,85%
+- Ambas são de topo de funil. Não são campanhas de conversão.
+- **Sem UTMs configurados nas URLs dos anúncios Meta** — 100% das sessões chegam sem `utm_source`.
+- Google Ads está ativo com auto-tagging (`gclid` presente em sessões do Google).
+
+### Google Ads e os números do Gerenciador
+
+O Google Ads mostra conversões contadas pelo próprio tag do Google no site — sistema separado
+do nosso D1. Não comparar diretamente. Para análise de conversões reais, usar `event_log`
+(Contact) e `manual_conversions`.
+
 ## Customizações Fort Popular (não reverter)
 
 - **Meta pixel browser-side bloqueado.** O Meta classificou o site como
@@ -106,12 +156,80 @@ Hop-by-hop debugging bible: `docs/data-flow.md`
   Solução: todos os eventos (`PageView` e `Contact`) são disparados via
   CAPI server-side (`/tracker`). O `fbq()` ainda é chamado com o mesmo
   `event_id` para deduplicação caso o bloqueio seja removido no futuro.
+- **LDU (Limited Data Use) em todos os eventos CAPI.** Por conta da
+  classificação de saúde, `tracker.js` e `log-conversion.js` incluem:
+  `data_processing_options: ['LDU'], data_processing_options_country: 0,
+  data_processing_options_state: 0`. Sem isso, Meta restringe otimização.
+  **Não remover.**
 - **PageView disparado no `App.tsx`.** Um `useEffect` na montagem do
   componente envia `POST /tracker` com `event_name: 'PageView'`.
   Arquivo: `farmácia-fort-popular---itaipuaçu/src/App.tsx`.
 - **PageView gravado no D1.** O filtro que bloqueava PageView no
   `event_log` foi removido (`functions/tracker.js`, `shouldLogEvent = true`).
   Para consultar visitas: `SELECT event_name, COUNT(*) FROM event_log GROUP BY event_name`.
+
+## Painel interno — equipe da farmácia
+
+Painel para a equipe registrar conversões WhatsApp e o gestor acompanhar.
+
+### Autenticação
+
+| Chave | Valor | Acesso |
+|---|---|---|
+| `DASH_KEY` | (variável Cloudflare) | `/relatorio/`, `/api/*` reads |
+| `CLIENT_KEY` | (variável Cloudflare) | `/conversao/`, `/api/log-conversion`, `/api/conversions-history`, `/api/update-conversion`, `/api/clients-report` |
+
+Ambas funcionam no header `x-dash-key`. CLIENT_KEY tem permissão mais restrita (não acessa relatório de campanhas).
+
+### Páginas do painel
+
+| Página | Arquivo | Função |
+|---|---|---|
+| `/acesso/` | `acesso/index.html` | Login com logo Fort Popular — redireciona para /relatorio/ (DASH_KEY) ou /conversao/ (CLIENT_KEY) |
+| `/relatorio/` | `relatorio/index.html` | Dashboard campanhas: ad_spend + manual_conversions. Apenas DASH_KEY. |
+| `/conversao/` | `conversao/index.html` | Painel da equipe: formulário + histórico + edição. CLIENT_KEY ou DASH_KEY. |
+| `/clientes/` | `clientes/index.html` | Listagem de clientes agregada com KPIs + CSV. Apenas DASH_KEY. |
+
+### APIs do painel de conversões
+
+| Arquivo | Endpoint | Descrição |
+|---|---|---|
+| `functions/api/log-conversion.js` | `POST /api/log-conversion` | Registra Contact ou Purchase; dispara Meta CAPI (se ad/google e ≤7 dias); salva no D1 |
+| `functions/api/conversions-history.js` | `GET /api/conversions-history` | Histórico paginado com filtros: since, until, event_name, origem, limit (padrão 20) |
+| `functions/api/update-conversion.js` | `POST /api/update-conversion` | Edita registro por `id`: event_name, value, display_name, produto, observacao, event_date, origem |
+| `functions/api/clients-report.js` | `GET /api/clients-report` | Agrega clientes por phone_normalized: contatos, compras, valor total, data último evento, CAC |
+
+### Tabela `manual_conversions` — schema completo
+
+```sql
+id INTEGER PRIMARY KEY AUTOINCREMENT
+event_id TEXT UNIQUE        -- UUID do evento
+event_name TEXT             -- 'Contact' | 'Purchase'
+display_name TEXT           -- nome do cliente (sem hash, apenas exibição)
+phone_last4 TEXT            -- últimos 4 dígitos do telefone
+phone_normalized TEXT       -- telefone com DDI (ex: 5521987654321)
+value_cents INTEGER         -- valor em centavos (0 para Contact)
+event_date TEXT             -- YYYY-MM-DD
+origem TEXT                 -- 'ad' | 'google' | 'organic' | 'referral'
+meta_ok INTEGER             -- 1 se CAPI retornou 200
+registered_at INTEGER       -- Unix timestamp em SEGUNDOS
+email TEXT
+cpf TEXT                    -- só dígitos
+city TEXT
+state TEXT                  -- UF maiúsculo (ex: RJ)
+zip TEXT                    -- só dígitos
+neighborhood TEXT
+address TEXT
+produto TEXT                -- medicamento/produto pedido (migration 0019)
+observacao TEXT             -- nota livre do atendimento (migration 0019)
+```
+
+Migration mais recente: `0019_manual_conversions_observacao.sql` — aplicada em 18/09/2026.
+
+### Navegação (desktop/mobile)
+
+- **Desktop (≥820px):** `header-nav` dentro do `<header>` com links ⌂ Início · 📊 Relatório · 👥 Clientes. `bottom-nav` oculto.
+- **Mobile (<820px):** `bottom-nav` fixo na base com 3 ícones. `header-nav` oculto.
 
 ## Hard rules (do not violate)
 
