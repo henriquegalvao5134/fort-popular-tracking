@@ -4,6 +4,9 @@
 // de rastreamento da sessão. Endpoint público (sem auth) — só grava
 // dados de clique, nenhum dado sensível.
 //
+// Dual-write: D1 (wa_clicks) + Supabase (cliques_site).
+// Se o Supabase falhar, NÃO trava a resposta (waitUntil, fire-and-forget).
+//
 // Body: {
 //   code:         string  — código curto gerado no front (ex.: G7K2Q)
 //   gclid:        string
@@ -52,6 +55,7 @@ export async function onRequestPost(context) {
 
   if (!code) return json({ error: 'code é obrigatório' }, 400);
 
+  // --- D1 write (blocking) ---
   if (env.DB) {
     try {
       await env.DB.prepare(`
@@ -69,6 +73,28 @@ export async function onRequestPost(context) {
       console.error('wa-click D1 error:', e.message);
       return json({ error: 'DB error: ' + e.message }, 500);
     }
+  }
+
+  // --- Supabase write (non-blocking — falha não trava o clique) ---
+  if (env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
+    context.waitUntil(
+      fetch(`${env.SUPABASE_URL}/rest/v1/cliques_site`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'apikey':        env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Prefer':        'return=minimal',
+        },
+        body: JSON.stringify({
+          client_slug:  'fort-popular',
+          codigo:       code,
+          gclid, gbraid, wbraid, fbclid,
+          utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+          session_id,
+        }),
+      }).catch(e => console.error('wa-click Supabase error:', e.message))
+    );
   }
 
   return json({ ok: true, code });

@@ -8,14 +8,23 @@ import { Phone, MapPin, Clock, CheckCircle2, ShoppingCart, MessageCircle, Truck,
 import { motion, AnimatePresence } from 'motion/react';
 
 // ── WhatsApp tracking ─────────────────────────────────────────────────────
-// Código único por page-load (G + 5 chars); gravado em D1 no clique.
-// Não aparece na mensagem — serve apenas para correlação interna.
-const _WA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sem I, O, 0, 1
-const _WA_CODE  = 'G' + Array.from({ length: 5 }, () =>
-  _WA_CHARS[Math.floor(Math.random() * _WA_CHARS.length)]).join('');
+// Código único por page-load (G + 5 chars); gravado em D1 + Supabase no clique.
+// Embutido invisível na mensagem (chars zero-width) — o n8n lê e casa com o D1.
+const _WA_ALF  = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // 32 chars, sem I O 0 1
+const _WA_CODE = 'G' + Array.from({ length: 5 }, () =>
+  _WA_ALF[Math.floor(Math.random() * _WA_ALF.length)]).join('');
 
-const _WA_TEXT  = 'Olá! Vim pelo Google. (Envie essa mensagem para atendimento prioritário!)';
-const _WA_LINK  = `https://wa.me/5521978859223?text=${encodeURIComponent(_WA_TEXT)}`;
+function _codigoInvisivel(code: string): string {
+  let s = '\uFEFF';
+  for (const ch of code) {
+    const n = _WA_ALF.indexOf(ch);
+    for (let b = 4; b >= 0; b--) s += ((n >> b) & 1) ? '\u2060' : '\u200C';
+  }
+  return s + '\uFEFF';
+}
+
+const _WA_TEXT = 'Olá! Vim pelo Google. (Envie essa me' + _codigoInvisivel(_WA_CODE) + 'nsagem para atendimento prioritário!)';
+const _WA_LINK = `https://wa.me/5521978859223?text=${encodeURIComponent(_WA_TEXT)}`;
 
 // Parâmetros de rastreamento da URL (lidos 1x, na carga da página)
 const _WA_P     = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
