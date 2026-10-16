@@ -388,17 +388,44 @@
       <span style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--card);padding:0 10px;font-size:10px;color:var(--muted);white-space:nowrap;">Do WhatsApp à venda · Registros manuais</span>
     </div>
 
-    <!-- BASE: Manual -->
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
-      <div class="roi-box" style="border-color:#64a0ff44;">
-        <div class="roi-label" style="color:#64a0ff;">Contatos</div>
-        <div class="roi-val" id="funil-contacts" style="color:#64a0ff;">—</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px;">entraram em contato</div>
+    <!-- BASE: Manual — 3 colunas Meta | Google | Total -->
+    <div style="margin-bottom:16px;">
+      <!-- Cabeçalhos de canal -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px;text-align:center;">
+        <div style="font-size:10px;font-weight:700;color:#64b5f6;letter-spacing:.08em;text-transform:uppercase;">Meta</div>
+        <div style="font-size:10px;font-weight:700;color:#fbbf24;letter-spacing:.08em;text-transform:uppercase;">Google</div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;">Total</div>
       </div>
-      <div class="roi-box" style="border-color:var(--gold)44;">
-        <div class="roi-label">Vendas</div>
-        <div class="roi-val" id="funil-purchases">—</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px;" id="funil-purch-rate">—</div>
+      <!-- Linha Contatos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+        <div class="roi-box" style="text-align:center;padding:10px 8px;border-color:#64b5f644;">
+          <div class="roi-label" style="color:#64b5f6;font-size:10px;">Contatos</div>
+          <div class="roi-val" id="funil-meta-contacts" style="color:#64b5f6;font-size:18px;">—</div>
+        </div>
+        <div class="roi-box" style="text-align:center;padding:10px 8px;border-color:#fbbf2444;">
+          <div class="roi-label" style="color:#fbbf24;font-size:10px;">Contatos</div>
+          <div class="roi-val" id="funil-google-contacts" style="color:#fbbf24;font-size:18px;">—</div>
+        </div>
+        <div class="roi-box" style="text-align:center;padding:10px 8px;border-color:#64a0ff44;">
+          <div class="roi-label" style="color:#64a0ff;font-size:10px;">Contatos</div>
+          <div class="roi-val" id="funil-contacts" style="color:#64a0ff;font-size:18px;">—</div>
+        </div>
+      </div>
+      <!-- Linha Vendas -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div class="roi-box" style="text-align:center;padding:10px 8px;border-color:#64b5f622;">
+          <div class="roi-label" style="color:#64b5f6;font-size:10px;">Vendas</div>
+          <div class="roi-val" id="funil-meta-purchases" style="color:#64b5f6;font-size:18px;">—</div>
+        </div>
+        <div class="roi-box" style="text-align:center;padding:10px 8px;border-color:#fbbf2422;">
+          <div class="roi-label" style="color:#fbbf24;font-size:10px;">Vendas</div>
+          <div class="roi-val" id="funil-google-purchases" style="color:#fbbf24;font-size:18px;">—</div>
+        </div>
+        <div class="roi-box" style="text-align:center;padding:10px 8px;border-color:var(--gold)44;">
+          <div class="roi-label" style="font-size:10px;">Vendas</div>
+          <div class="roi-val" id="funil-purchases" style="font-size:18px;">—</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;" id="funil-purch-rate">—</div>
+        </div>
       </div>
     </div>
 
@@ -1134,6 +1161,14 @@ function renderFunil(d) {
 
   document.getElementById('funil-contacts').textContent  = contacts  || '—';
   document.getElementById('funil-purchases').textContent = purchases || '—';
+
+  // Canal breakdown — Meta e Google (compatível: se ausente, mantém '—')
+  const m = d.meta   || {};
+  const g = d.google || {};
+  document.getElementById('funil-meta-contacts').textContent    = m.contacts  > 0 ? m.contacts  : '—';
+  document.getElementById('funil-meta-purchases').textContent   = m.purchases > 0 ? m.purchases : '—';
+  document.getElementById('funil-google-contacts').textContent  = g.contacts  > 0 ? g.contacts  : '—';
+  document.getElementById('funil-google-purchases').textContent = g.purchases > 0 ? g.purchases : '—';
 
   if (contacts > 0 && purchases > 0) {
     const r = (purchases / contacts * 100).toFixed(0);
