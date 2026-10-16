@@ -664,30 +664,41 @@ function buildNav() {
       return `<a class="nav-item ${active}" href="${dest}">
         <span class="nav-item-icon">${l.icon}</span>${l.label}
       </a>`;
-    }).join('');
+    }).join('') +
+    `<div style="flex:1"></div>
+     <div style="border-top:1px solid var(--border);padding:8px 0;">
+       <a class="nav-item" href="#" onclick="doLogout();return false;" style="color:#e05a5a;">
+         <span class="nav-item-icon">⏻</span>Sair
+       </a>
+     </div>`;
   // Bottom nav hrefs
-  const bLinks = [
-    { href: '/acesso/?key=', a: 'bn-acesso' },
-    { href: '/relatorio/?key=', a: 'bn-rel' },
-    { href: '/clientes/?key=', a: 'bn-cli' },
-    { href: '/conversao/?key=', a: 'bn-conv' },
-  ];
+  const hrefs = ['/acesso/?key=','/relatorio/?key=','/clientes/?key=','/conversao/?key='];
   document.querySelectorAll('#bottom-nav a').forEach((a, i) => {
-    if (bLinks[i]) a.href = bLinks[i].href + CLIENT_KEY;
+    if (hrefs[i]) a.href = hrefs[i] + CLIENT_KEY;
   });
 }
 
 // ---------- AUTH ----------
 function doLogin() {
   CLIENT_KEY = document.getElementById('keyInput').value.trim();
-  sessionStorage.setItem('rkey', CLIENT_KEY);
+  if (!CLIENT_KEY) return;
+  localStorage.setItem('fp_key', CLIENT_KEY);
   loadData();
+}
+
+function doLogout() {
+  localStorage.removeItem('fp_key');
+  CLIENT_KEY = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('keyInput').value = '';
+  document.getElementById('loginErr').style.display = 'none';
 }
 
 (function init() {
   const p = new URLSearchParams(location.search);
-  const k = p.get('key') || sessionStorage.getItem('rkey');
-  if (k) { CLIENT_KEY = k; loadData(); }
+  const k = p.get('key') || localStorage.getItem('fp_key');
+  if (k) { CLIENT_KEY = k; localStorage.setItem('fp_key', k); loadData(); }
 })();
 
 // ---------- DATES ----------

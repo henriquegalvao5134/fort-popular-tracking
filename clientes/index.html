@@ -354,8 +354,8 @@ function fmtDate(s) {
 
 function init() {
   const p = new URLSearchParams(location.search);
-  const k = p.get('key') || sessionStorage.getItem('fp_cli_key') || '';
-  if (k) { KEY = k; sessionStorage.setItem('fp_cli_key', k); show(); }
+  const k = p.get('key') || localStorage.getItem('fp_key') || '';
+  if (k) { KEY = k; localStorage.setItem('fp_key', k); show(); }
   else { document.getElementById('login').style.display = 'flex'; }
 }
 
@@ -363,9 +363,19 @@ function doLogin() {
   const k = document.getElementById('key-input').value.trim();
   if (!k) return;
   KEY = k;
-  sessionStorage.setItem('fp_cli_key', k);
+  localStorage.setItem('fp_key', k);
   document.getElementById('login').style.display = 'none';
   show();
+}
+
+function doLogout() {
+  localStorage.removeItem('fp_key');
+  KEY = '';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('app-header').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('key-input').value = '';
+  document.getElementById('login-err').style.display = 'none';
 }
 
 function show() {
@@ -393,7 +403,13 @@ function buildNav() {
       return `<a href="${l.href}/?key=${encodeURIComponent(KEY)}" class="nav-item ${active}">
         <span class="nav-item-icon">${l.icon}</span>${l.label}
       </a>`;
-    }).join('');
+    }).join('') +
+    `<div style="flex:1"></div>
+     <div style="border-top:1px solid var(--border);padding:8px 0;">
+       <a class="nav-item" href="#" onclick="doLogout();return false;" style="color:#e05a5a;">
+         <span class="nav-item-icon">⏻</span>Sair
+       </a>
+     </div>`;
   document.getElementById('bottom-nav').innerHTML =
     links.map(l => {
       const active = cur.startsWith(l.href) ? 'bn-active' : '';
