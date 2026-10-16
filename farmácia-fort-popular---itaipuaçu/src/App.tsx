@@ -7,16 +7,39 @@ import { useState, useEffect } from 'react';
 import { Phone, MapPin, Clock, CheckCircle2, ShoppingCart, MessageCircle, Truck, ExternalLink, Instagram, X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+// ── WhatsApp tracking ─────────────────────────────────────────────────────
+// Código único por page-load (G + 5 chars); gravado em D1 no clique.
+// Não aparece na mensagem — serve apenas para correlação interna.
+const _WA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sem I, O, 0, 1
+const _WA_CODE  = 'G' + Array.from({ length: 5 }, () =>
+  _WA_CHARS[Math.floor(Math.random() * _WA_CHARS.length)]).join('');
+
+const _WA_TEXT  = 'Olá! Vim pelo Google. (Envie essa mensagem para atendimento prioritário!)';
+const _WA_LINK  = `https://wa.me/5521978859223?text=${encodeURIComponent(_WA_TEXT)}`;
+
+// Parâmetros de rastreamento da URL (lidos 1x, na carga da página)
+const _WA_P     = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+const _WA_GCLID = _WA_P.get('gclid')        || '';
+const _WA_GBRAID= _WA_P.get('gbraid')       || '';
+const _WA_WBRAID= _WA_P.get('wbraid')       || '';
+const _WA_FBCLID= _WA_P.get('fbclid')       || '';
+const _WA_SRC   = _WA_P.get('utm_source')   || '';
+const _WA_MED   = _WA_P.get('utm_medium')   || '';
+const _WA_CMP   = _WA_P.get('utm_campaign') || '';
+const _WA_CNT   = _WA_P.get('utm_content')  || '';
+const _WA_TRM   = _WA_P.get('utm_term')     || '';
+// ─────────────────────────────────────────────────────────────────────────
+
 export default function App() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const whatsappLink = "https://tintim.link/whatsapp/72387556-f1d2-4511-9f34-e28ed4d056ce/2371f2fe-cdc9-4d7d-b4d0-6f752364679c";
+  const whatsappLink = _WA_LINK;
   const trackWhatsApp = () => {
     // Google Ads conversion
     if (typeof (window as any).gtag === 'function') {
       (window as any).gtag('event', 'conversion', { send_to: 'AW-18144522784/jajlCMqV8sQcEKDk_ctD' });
     }
     // Meta pixel browser-side (dedup com CAPI via event_id)
-    const eventId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+    const eventId = crypto.randomUUID();
     if (typeof (window as any).fbq === 'function') {
       (window as any).fbq('track', 'Contact', {}, { eventID: eventId });
     }
@@ -32,7 +55,27 @@ export default function App() {
         event_source_url: window.location.href,
         user_data: {},
       }),
-    }).catch(function () {});
+    }).catch(() => {});
+    // Registra clique no D1 com código + parâmetros de rastreamento
+    const sid = (document.cookie.match(/(?:^|; )_krob_sid=([^;]*)/) || [])[1] || '';
+    fetch('/api/wa-click', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        code:         _WA_CODE,
+        gclid:        _WA_GCLID,
+        gbraid:       _WA_GBRAID,
+        wbraid:       _WA_WBRAID,
+        fbclid:       _WA_FBCLID,
+        utm_source:   _WA_SRC,
+        utm_medium:   _WA_MED,
+        utm_campaign: _WA_CMP,
+        utm_content:  _WA_CNT,
+        utm_term:     _WA_TRM,
+        session_id:   sid,
+      }),
+    }).catch(() => {});
   };
   useEffect(() => {
     const pvEventId = crypto.randomUUID();
