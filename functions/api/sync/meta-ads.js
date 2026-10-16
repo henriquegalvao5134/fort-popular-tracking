@@ -1,10 +1,10 @@
 // POST /api/sync/meta-ads
 //
-// Pulls spend, impressions, and clicks from Meta Marketing API v22 for the
-// configured ad account and UPSERTs them into the `ad_spend` table. Called
-// on a schedule by an external cron (see docs/ad-spend-sync.md). The
-// dashboard reads ad_spend directly — it never hits this endpoint in the
-// request path.
+// Pulls spend, impressions, clicks, and actions (leads/purchases) from Meta
+// Marketing API v22 for the configured ad account and UPSERTs them into the
+// `ad_spend` table. Called on a schedule by an external cron (see
+// docs/ad-spend-sync.md). The dashboard reads ad_spend directly — it never
+// hits this endpoint in the request path.
 //
 // Auth:     header `x-sync-secret: <env.SYNC_SECRET>` — any request missing
 //           or mismatching the secret is rejected 401.
@@ -102,30 +102,61 @@ async function fetchAllPages(url) {
   return all;
 }
 
+// Extracts lead and purchase counts from Meta's 'actions' array.
+// Meta returns actions as [{ action_type: 'lead', value: '3' }, ...].
+// Lead types covered: standard lead form, pixel lead, onsite lead, WhatsApp conversation.
+function parseActions(actions) {
+  if (!Array.isArray(actions)) return { leads: 0, purchases: 0 };
+
+  const LEAD_TYPES = new Set([
+    'lead',
+    'offsite_conversion.fb_pixel_lead',
+    'onsite_conversion.lead_grouped',
+    'onsite_conversion.messaging_first_reply',
+    'messaging_conversation_started_7d',
+    'contact',
+  ]);
+
+  const PURCHASE_TYPES = new Set([
+    'purchase',
+    'offsite_conversion.fb_pixel_purchase',
+    'onsite_conversion.purchase',
+  ]);
+
+  let leads = 0;
+  let purchases = 0;
+
+  for (const action of actions) {
+    const val = parseInt(action.value || '0', 10) || 0;
+    if (LEAD_TYPES.has(action.action_type)) leads += val;
+    if (PURCHASE_TYPES.has(action.action_type)) purchases += val;
+  }
+
+  return { leads, purchases };
+}
+
 async function upsertAdSpend(db, rows) {
   if (!db || rows.length === 0) return 0;
   const now = Math.floor(Date.now() / 1000);
 
   const stmt = db.prepare(`
     INSERT INTO ad_spend
-      (platform, date, campaign_id, campaign_name, ad_id, ad_name, spend_cents, currency, impressions, clicks, messaging_conversations, synced_at)
-    VALUES ('meta', ?, ?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?)
+      (platform, date, campaign_id, campaign_name, ad_id, ad_name, spend_cents, currency, impressions, clicks, leads, purchases, synced_at)
+    VALUES ('meta', ?, ?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(platform, date, campaign_id, COALESCE(ad_id, ''))
     DO UPDATE SET
-      campaign_name             = excluded.campaign_name,
-      spend_cents               = excluded.spend_cents,
-      currency                  = excluded.currency,
-      impressions               = excluded.impressions,
-      clicks                    = excluded.clicks,
-      messaging_conversations   = excluded.messaging_conversations,
-      synced_at                 = excluded.synced_at
+      campaign_name = excluded.campaign_name,
+      spend_cents   = excluded.spend_cents,
+      currency      = excluded.currency,
+      impressions   = excluded.impressions,
+      clicks        = excluded.clicks,
+      leads         = excluded.leads,
+      purchases     = excluded.purchases,
+      synced_at     = excluded.synced_at
   `);
 
   const batch = rows.map(r => {
-    const actions = Array.isArray(r.actions) ? r.actions : [];
-    const msgConvAction = actions.find(a => a.action_type === 'onsite_conversion.messaging_conversation_started_7d');
-    const messagingConversations = msgConvAction ? (parseInt(msgConvAction.value, 10) || 0) : 0;
-
+    const { leads, purchases } = parseActions(r.actions);
     return stmt.bind(
       r.date_start,
       String(r.campaign_id || ''),
@@ -134,7 +165,8 @@ async function upsertAdSpend(db, rows) {
       r.account_currency || 'BRL',
       parseInt(r.impressions || '0', 10) || 0,
       parseInt(r.clicks || '0', 10) || 0,
-      messagingConversations,
+      leads,
+      purchases,
       now,
     );
   });
