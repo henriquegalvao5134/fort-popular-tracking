@@ -1604,6 +1604,11 @@ async function loadMsgs(id) {
 function confirmar() {
   if (!activeId) return;
   const item = allData.find(i => i.id === activeId);
+  // Se a IA não capturou valor, abre o modal para o usuário informar antes de confirmar
+  if (!item?.valor_estimado || parseFloat(item.valor_estimado) <= 0) {
+    abrirCorrigir();
+    return;
+  }
   reviewAction(activeId, item?.analise_id, 'confirmar', {
     value:   item?.valor_estimado,
     produto: item?.produto,
