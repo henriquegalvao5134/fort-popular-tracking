@@ -3,191 +3,876 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Fort Popular — Painel Interno</title>
+  <title>Visão Geral — Fort Popular</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --red:    #CC1B1B;
-      --red2:   #a81515;
-      --gold:   #FFD700;
-      --bg:     #0c0404;
-      --card:   #140808;
-      --border: rgba(204,27,27,0.25);
-      --text:   #f0e8e8;
-      --muted:  #8a7070;
+      --red:     #dc2626;
+      --gold:    #FFD700;
+      --bg:      #0d0d0d;
+      --card:    #161616;
+      --card2:   #1e1e1e;
+      --sidebar: #101010;
+      --border:  rgba(255,255,255,0.10);
+      --border2: rgba(255,255,255,0.06);
+      --text:    #f2f2f2;
+      --muted:   #888;
+      --green:   #4ade80;
+      --blue:    #60a5fa;
+      --yellow:  #fbbf24;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 20px;
     }
 
     /* ── HEADER ── */
-    .logo {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    .brand-box {
-      background: #CC1B1B;
-      padding: 14px 40px;
-      border-radius: 10px;
-      border: 3px solid #FFD700;
-      display: inline-block;
-      text-align: center;
-      margin-bottom: 14px;
-    }
-    .brand-top {
-      font-size: 10px;
-      color: #FFD700;
-      letter-spacing: 6px;
-      font-weight: 800;
-      font-family: Arial, sans-serif;
-      line-height: 1;
-      margin-bottom: 2px;
-    }
-    .brand-fort {
-      font-family: Impact, 'Arial Black', Arial, sans-serif;
-      font-size: 48px;
-      color: #fff;
-      letter-spacing: 3px;
-      font-weight: 900;
-      line-height: 1;
-    }
-    .brand-popular {
-      font-family: Impact, 'Arial Black', Arial, sans-serif;
-      font-size: 48px;
-      color: #FFD700;
-      letter-spacing: 3px;
-      font-weight: 900;
-      line-height: 1;
-    }
-    .logo p {
-      color: var(--muted);
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    /* ── CARDS ── */
-    .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-      max-width: 380px;
-    }
-
-    .nav-card {
+    header {
+      height: 52px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px 22px;
-      text-decoration: none;
-      color: var(--text);
-      transition: border-color 0.2s, background 0.2s, transform 0.15s;
-      cursor: pointer;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+      z-index: 10;
     }
-    .nav-card:hover {
-      border-color: var(--red);
-      background: rgba(204,27,27,0.06);
-      transform: translateY(-2px);
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(220,38,38,0.7);
     }
-    .nav-card:active { transform: translateY(0); }
+    .brand-text h1 { font-size: 1rem; font-weight: 700; }
+    .brand-text h1 em { color: var(--gold); font-style: normal; }
+    .brand-text p { font-size: 0.66rem; color: var(--muted); }
 
-    .card-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+    .hdr-right { display: flex; align-items: center; gap: 10px; }
+    .hdr-period {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .btn-sm {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--muted);
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: .15s;
+      white-space: nowrap;
+    }
+    .btn-sm:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+    /* ── PERIOD PICKER ── */
+    .period-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .period-chip {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: .15s;
+      white-space: nowrap;
+    }
+    .period-chip:hover { border-color: var(--gold); color: var(--gold); }
+    .period-chip.active { background: var(--gold); color: #111; border-color: var(--gold); font-weight: 600; }
+    .period-custom {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+    }
+    .period-custom input[type=date] {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      padding: 5px 9px;
+      font-size: 0.78rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .period-custom input:focus { border-color: var(--gold); }
+    .period-custom span { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── APP LAYOUT ── */
+    .app-layout { flex: 1; display: flex; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 180px;
+      flex-shrink: 0;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 12px 0;
+      overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { display: none; }
+    .sidebar-label {
+      padding: 6px 16px 4px;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(136,136,136,0.45);
+      margin-top: 8px;
+    }
+    .sidebar-label:first-child { margin-top: 0; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 12px;
+      margin: 1px 8px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: .15s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+    .nav-item.active {
+      background: rgba(220,38,38,0.15);
+      border-color: rgba(220,38,38,0.3);
+      color: #ff6b6b;
+      font-weight: 600;
+    }
+    .nav-item-icon { font-size: 1rem; flex-shrink: 0; line-height: 1; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .main-content::-webkit-scrollbar { width: 6px; }
+    .main-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 3px; }
+
+    /* ── LOADING / ERROR STATE ── */
+    .state-loading {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+      height: 200px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      gap: 10px;
+    }
+    .spin {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
       flex-shrink: 0;
     }
-    .icon-registrar {
-      background: rgba(204,27,27,0.15);
-      border: 1px solid rgba(204,27,27,0.3);
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── KPI GRID ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
     }
-    .icon-relatorio {
-      background: rgba(255,215,0,0.1);
-      border: 1px solid rgba(255,215,0,0.25);
+    .kpi-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
-    .card-text { flex: 1; }
-    .card-title {
-      font-size: 1rem;
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-label {
+      font-size: 0.64rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kpi-val {
+      font-size: 1.65rem;
       font-weight: 700;
-      margin-bottom: 4px;
+      line-height: 1;
+      letter-spacing: -0.03em;
     }
-    .card-desc {
-      font-size: 0.8rem;
+    .kpi-sub {
+      font-size: 0.7rem;
       color: var(--muted);
-      line-height: 1.4;
+      margin-top: 5px;
     }
-    .card-arrow {
-      color: var(--muted);
-      font-size: 1.1rem;
+    .kpi-green  { color: var(--green); }
+    .kpi-blue   { color: var(--blue); }
+    .kpi-yellow { color: var(--yellow); }
+    .kpi-gold   { color: var(--gold); }
+    .kpi-red    { color: #f87171; }
+    .kpi-white  { color: var(--text); }
+
+    .kpi-card-sm .kpi-val { font-size: 1.25rem; }
+
+    /* ── CHARTS GRID ── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
-    /* ── FOOTER ── */
-    footer {
-      margin-top: 48px;
-      text-align: center;
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .chart-title {
       font-size: 0.72rem;
+      font-weight: 600;
       color: var(--muted);
-      line-height: 1.8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
     }
-    footer .dot {
-      margin: 0 6px;
-      opacity: 0.4;
+    .chart-wrap { position: relative; width: 100%; }
+    .chart-wrap canvas { width: 100% !important; }
+
+    /* ── FUNIL ── */
+    .funil-rows { display: flex; flex-direction: column; gap: 8px; }
+    .funil-row  { display: flex; flex-direction: column; gap: 4px; }
+    .funil-top  { display: flex; justify-content: space-between; align-items: baseline; }
+    .funil-name { font-size: 0.78rem; font-weight: 600; }
+    .funil-cnt  { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .funil-pct  { font-size: 0.7rem; color: var(--muted); }
+    .funil-bar-wrap { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .funil-bar-fill { height: 100%; border-radius: 3px; }
+
+    /* ── HEATMAP ── */
+    .heatmap-grid {
+      display: grid;
+      grid-template-rows: auto repeat(7, 1fr);
+      gap: 2px;
     }
+    .heatmap-hours {
+      display: grid;
+      grid-template-columns: 44px repeat(24, 1fr);
+      gap: 2px;
+    }
+    .heatmap-hour-label {
+      font-size: 0.55rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1;
+      padding-top: 2px;
+    }
+    .heatmap-row {
+      display: grid;
+      grid-template-columns: 44px repeat(24, 1fr);
+      gap: 2px;
+    }
+    .heatmap-day-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      padding-right: 4px;
+    }
+    .heatmap-cell {
+      height: 14px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ── ORIGEM TABLE ── */
+    .origem-table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .origem-table-header {
+      padding: 14px 16px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+    }
+    table.orig-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    table.orig-tbl thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.63rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border2);
+    }
+    table.orig-tbl thead th:not(:first-child) { text-align: right; }
+    table.orig-tbl tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    table.orig-tbl tbody tr:last-child { border-bottom: none; }
+    table.orig-tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
+    table.orig-tbl tbody td { padding: 10px 14px; }
+    table.orig-tbl tbody td:not(:first-child) { text-align: right; color: var(--muted); font-size: 0.8rem; }
+
+    /* ── BOTTOM NAV (mobile) ── */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      z-index: 50;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottom-nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.68rem;
+      gap: 3px;
+      transition: color .15s;
+    }
+    .bottom-nav a.bn-active, .bottom-nav a:hover { color: var(--red); }
+    .bn-icon { font-size: 1.1rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .kpi-grid   { grid-template-columns: repeat(2, 1fr); }
+      .kpi-grid-2 { grid-template-columns: repeat(3, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .sidebar { display: none; }
+      .bottom-nav { display: flex; }
+      .main-content { padding: 12px 12px 72px; }
+      .kpi-grid   { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .kpi-grid-2 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .period-bar { padding: 6px 12px; gap: 5px; }
+    }
+    @media (max-width: 400px) {
+      .kpi-grid   { grid-template-columns: 1fr 1fr; }
+      .kpi-grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div class="logo">
-    <div class="brand-box">
-      <div class="brand-top">FARMÁCIAS</div>
-      <div class="brand-fort">FORT</div>
-      <div class="brand-popular">POPULAR</div>
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div class="brand-text">
+      <h1>Fort <em>Popular</em></h1>
+      <p id="hdr-period-label">Visão Geral</p>
     </div>
-    <p>Painel interno</p>
   </div>
-
-  <div class="cards">
-    <a class="nav-card" href="/conversao/?key=fortpopular2026">
-      <div class="card-icon icon-registrar">💬</div>
-      <div class="card-text">
-        <div class="card-title">Registrar Conversão</div>
-        <div class="card-desc">Registre contatos e vendas do atendimento</div>
-      </div>
-      <span class="card-arrow">›</span>
-    </a>
-
-    <a class="nav-card" href="/relatorio/?key=fortpopular2026">
-      <div class="card-icon icon-relatorio">📊</div>
-      <div class="card-text">
-        <div class="card-title">Relatório</div>
-        <div class="card-desc">Métricas de campanhas e resultados</div>
-      </div>
-      <span class="card-arrow">›</span>
-    </a>
+  <div class="hdr-right">
+    <span class="hdr-period" id="hdr-user"></span>
+    <button class="btn-sm" id="btn-reload">↻ Atualizar</button>
   </div>
+</header>
 
-  <footer>
-    Farmácias Fort Popular · Itaipuaçu
-    <span class="dot">·</span>
-    Acesso restrito
-  </footer>
+<!-- PERIOD BAR -->
+<div class="period-bar">
+  <button class="period-chip active" data-days="7">7 dias</button>
+  <button class="period-chip" data-days="30">30 dias</button>
+  <button class="period-chip" data-days="90">90 dias</button>
+  <div class="period-custom">
+    <span>De</span>
+    <input type="date" id="f-since">
+    <span>até</span>
+    <input type="date" id="f-until">
+    <button class="btn-sm" id="btn-apply">Aplicar</button>
+  </div>
+</div>
 
+<!-- APP LAYOUT -->
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar-nav"></nav>
+
+  <!-- MAIN -->
+  <div class="main-content" id="main-content">
+
+    <div id="state-loading" class="state-loading">
+      <div class="spin"></div> Carregando dados…
+    </div>
+
+    <div id="dashboard" class="hidden">
+
+      <!-- KPI Linha 1: Grandes -->
+      <div class="kpi-grid" id="kpi-row1">
+        <div class="kpi-card">
+          <div class="kpi-label">Leads</div>
+          <div class="kpi-val kpi-blue" id="k-leads">—</div>
+          <div class="kpi-sub">Novos contatos no período</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Vendas</div>
+          <div class="kpi-val kpi-green" id="k-vendas">—</div>
+          <div class="kpi-sub" id="k-vendas-sub">Confirmadas</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Receita</div>
+          <div class="kpi-val kpi-gold" id="k-receita">—</div>
+          <div class="kpi-sub" id="k-receita-sub">Período</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Tempo de Resposta</div>
+          <div class="kpi-val kpi-yellow" id="k-tempo">—</div>
+          <div class="kpi-sub">Média 1ª resposta</div>
+        </div>
+      </div>
+
+      <!-- KPI Linha 2: Menores -->
+      <div class="kpi-grid-2">
+        <div class="kpi-card kpi-card-sm">
+          <div class="kpi-label">Ticket Médio</div>
+          <div class="kpi-val kpi-white" id="k-ticket">—</div>
+        </div>
+        <div class="kpi-card kpi-card-sm">
+          <div class="kpi-label">Valor por Lead</div>
+          <div class="kpi-val kpi-white" id="k-vperlead">—</div>
+        </div>
+        <div class="kpi-card kpi-card-sm">
+          <div class="kpi-label">Conv. Leads → Vendas</div>
+          <div class="kpi-val kpi-white" id="k-conv">—</div>
+        </div>
+        <div class="kpi-card kpi-card-sm">
+          <div class="kpi-label">Oportunidades</div>
+          <div class="kpi-val kpi-blue" id="k-opor">—</div>
+        </div>
+        <div class="kpi-card kpi-card-sm">
+          <div class="kpi-label">Média/dia</div>
+          <div class="kpi-val kpi-white" id="k-media-dia">—</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+
+        <!-- Conversas por dia -->
+        <div class="chart-card">
+          <div class="chart-title">Leads por dia</div>
+          <div class="chart-wrap" style="height:180px">
+            <canvas id="chart-leads"></canvas>
+          </div>
+        </div>
+
+        <!-- Funil -->
+        <div class="chart-card">
+          <div class="chart-title">Funil de Conversão</div>
+          <div class="funil-rows" id="funil-rows"></div>
+        </div>
+
+      </div>
+
+      <!-- Heatmap -->
+      <div class="chart-card" style="margin-bottom:16px;">
+        <div class="chart-title">Horários de Atendimento (mensagens recebidas)</div>
+        <div class="heatmap-grid" id="heatmap-grid"></div>
+      </div>
+
+      <!-- Por Origem -->
+      <div class="origem-table-wrap">
+        <div class="origem-table-header">Performance por Origem</div>
+        <table class="orig-tbl">
+          <thead>
+            <tr>
+              <th>Origem</th>
+              <th>Leads</th>
+              <th>Vendas</th>
+              <th>Receita</th>
+              <th>Conv.</th>
+            </tr>
+          </thead>
+          <tbody id="orig-body"></tbody>
+        </table>
+      </div>
+
+    </div><!-- #dashboard -->
+
+  </div><!-- .main-content -->
+</div><!-- .app-layout -->
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottom-nav"></nav>
+
+<script>
+// ─── AUTH ──────────────────────────────────────────────────
+let TOKEN    = localStorage.getItem('fp_token') || '';
+let KEY_BACK = new URLSearchParams(location.search).get('key') || localStorage.getItem('fp_key') || '';
+
+// Se não tem token nem chave, vai para login
+if (!TOKEN && !KEY_BACK) {
+  window.location.href = '/login/?next=' + encodeURIComponent(location.pathname + location.search);
+}
+
+function authHeaders() {
+  if (TOKEN) return { 'Authorization': 'Bearer ' + TOKEN };
+  return {};
+}
+function authQuery() {
+  if (TOKEN) return '';
+  return '&key=' + encodeURIComponent(KEY_BACK);
+}
+function doLogout() {
+  localStorage.removeItem('fp_token');
+  localStorage.removeItem('fp_key');
+  localStorage.removeItem('fp_user_email');
+  window.location.href = '/login/';
+}
+
+// ─── SIDEBAR ───────────────────────────────────────────────
+function buildNav() {
+  const links = [
+    { href: '/acesso',    icon: '⌂',  label: 'Início' },
+    { href: '/relatorio', icon: '📊', label: 'Relatório' },
+    { href: '/clientes',  icon: '👥', label: 'Clientes' },
+    { href: '/conversao', icon: '💊', label: 'Conversões' },
+    { href: '/admin/usuarios', icon: '⚙️', label: 'Usuários' },
+  ];
+  const cur = location.pathname.replace(/\/$/, '');
+
+  document.getElementById('sidebar-nav').innerHTML =
+    `<span class="sidebar-label">Menu</span>` +
+    links.map(l => {
+      const active = cur.startsWith(l.href) ? 'active' : '';
+      return `<a class="nav-item ${active}" href="${l.href}/">
+        <span class="nav-item-icon">${l.icon}</span>${l.label}
+      </a>`;
+    }).join('') +
+    `<div style="flex:1"></div>
+     <div style="border-top:1px solid var(--border);padding:8px 0;">
+       <a class="nav-item" href="#" onclick="doLogout();return false;" style="color:#e05a5a;">
+         <span class="nav-item-icon">⏻</span>Sair
+       </a>
+     </div>`;
+
+  document.getElementById('bottom-nav').innerHTML =
+    links.slice(0,4).map(l => {
+      const active = cur.startsWith(l.href) ? 'bn-active' : '';
+      return `<a class="${active}" href="${l.href}/">
+        <span class="bn-icon">${l.icon}</span>${l.label}
+      </a>`;
+    }).join('');
+
+  const email = localStorage.getItem('fp_user_email') || '';
+  if (email) document.getElementById('hdr-user').textContent = email;
+}
+
+// ─── PERÍODO ───────────────────────────────────────────────
+const today = new Date().toISOString().slice(0, 10);
+let activeDays = 7;
+
+document.getElementById('f-until').value = today;
+document.getElementById('f-since').value = daysAgo(7);
+
+function daysAgo(n) {
+  return new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+}
+
+document.querySelectorAll('.period-chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.period-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const d = parseInt(btn.dataset.days, 10);
+    activeDays = d;
+    document.getElementById('f-since').value = daysAgo(d);
+    document.getElementById('f-until').value = today;
+    load();
+  });
+});
+document.getElementById('btn-apply').addEventListener('click', () => {
+  document.querySelectorAll('.period-chip').forEach(b => b.classList.remove('active'));
+  load();
+});
+document.getElementById('btn-reload').addEventListener('click', load);
+
+// ─── CARREGAR DADOS ────────────────────────────────────────
+let chartLeads = null;
+
+async function load() {
+  const since = document.getElementById('f-since').value;
+  const until = document.getElementById('f-until').value;
+
+  document.getElementById('state-loading').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+
+  try {
+    const r = await fetch(
+      `/api/ia/visao-geral?since=${since}&until=${until}${authQuery()}`,
+      { headers: authHeaders() }
+    );
+
+    if (r.status === 401) {
+      doLogout(); return;
+    }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+
+    render(d, since, until);
+  } catch (e) {
+    document.getElementById('state-loading').innerHTML =
+      `<span style="color:#f87171">Erro ao carregar: ${e.message}</span>`;
+  }
+}
+
+// ─── RENDER ────────────────────────────────────────────────
+function render(d, since, until) {
+  // Header
+  document.getElementById('hdr-period-label').textContent =
+    `${fmtDate(since)} – ${fmtDate(until)}`;
+
+  // KPI row 1
+  set('k-leads',  d.leads || '—');
+  set('k-vendas', d.vendas || '—');
+  set('k-vendas-sub', `${pct(d.vendas, d.leads)} de conversão`);
+  set('k-receita', d.receita_cents ? fmtMoney(d.receita_cents) : '—');
+  set('k-receita-sub', d.ticket_medio_cents ? `Ticket: ${fmtMoney(d.ticket_medio_cents)}` : '');
+  set('k-tempo',  d.tempo_1a_resposta_min != null ? `${d.tempo_1a_resposta_min}min` : '—');
+
+  // KPI row 2
+  set('k-ticket',    d.ticket_medio_cents   ? fmtMoney(d.ticket_medio_cents)   : '—');
+  set('k-vperlead',  d.valor_por_lead_cents  ? fmtMoney(d.valor_por_lead_cents) : '—');
+  set('k-conv',      pct(d.vendas, d.leads));
+  set('k-opor',      (d.funil?.find(f => f.label === 'Oportunidades')?.count) || '—');
+
+  const dias = d.conversas_por_dia?.length || 1;
+  set('k-media-dia', d.leads ? Math.round(d.leads / dias) : '—');
+
+  // Chart — Leads por dia
+  renderLeadsChart(d.conversas_por_dia || []);
+
+  // Funil
+  renderFunil(d.funil || []);
+
+  // Heatmap
+  renderHeatmap(d.heatmap || []);
+
+  // Por origem
+  renderOrigem(d.por_origem || []);
+
+  document.getElementById('state-loading').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+}
+
+function renderLeadsChart(dados) {
+  const labels = dados.map(d => {
+    const dt = new Date(d.date + 'T12:00:00');
+    return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  });
+  const values = dados.map(d => d.count);
+
+  if (chartLeads) { chartLeads.destroy(); chartLeads = null; }
+
+  const ctx = document.getElementById('chart-leads');
+  ctx.style.height = '160px';
+  chartLeads = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Leads',
+        data: values,
+        borderColor: '#60a5fa',
+        backgroundColor: 'rgba(96,165,250,0.10)',
+        tension: 0.35,
+        fill: true,
+        pointRadius: dados.length > 30 ? 0 : 3,
+        pointHoverRadius: 5,
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e1e1e',
+          borderColor: 'rgba(255,255,255,0.10)',
+          borderWidth: 1,
+          titleColor: '#f2f2f2',
+          bodyColor: '#888',
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#888', font: { size: 10 }, maxTicksLimit: 10 },
+          grid:  { color: 'rgba(255,255,255,0.04)' },
+        },
+        y: {
+          ticks: { color: '#888', font: { size: 10 } },
+          grid:  { color: 'rgba(255,255,255,0.04)' },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+}
+
+function renderFunil(funil) {
+  const max = funil.length > 0 ? funil[0].count : 1;
+  const colors = ['#60a5fa', '#4ade80', '#fbbf24', '#f87171'];
+  document.getElementById('funil-rows').innerHTML = funil.map((f, i) => {
+    const pctVal = max > 0 ? Math.round((f.count / max) * 100) : 0;
+    const taxa   = i > 0 && funil[i-1].count > 0
+      ? ` (${Math.round((f.count / funil[i-1].count) * 100)}% do anterior)`
+      : '';
+    return `
+      <div class="funil-row">
+        <div class="funil-top">
+          <span class="funil-name" style="color:${colors[i] || '#888'}">${f.label}</span>
+          <span class="funil-cnt">${f.count}</span>
+        </div>
+        <div class="funil-pct">${pctVal}% do total${taxa}</div>
+        <div class="funil-bar-wrap">
+          <div class="funil-bar-fill" style="width:${pctVal}%;background:${colors[i] || '#888'}"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderHeatmap(heatmap) {
+  const days  = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+
+  // Acha o máximo para normalizar cores
+  let maxVal = 1;
+  for (const row of heatmap) {
+    for (const v of row) { if (v > maxVal) maxVal = v; }
+  }
+
+  const grid = document.getElementById('heatmap-grid');
+
+  // Header de horas
+  const hRow = document.createElement('div');
+  hRow.className = 'heatmap-hours';
+  hRow.innerHTML = '<div></div>' + hours.map((h, i) =>
+    i % 3 === 0
+      ? `<div class="heatmap-hour-label">${h}</div>`
+      : `<div></div>`
+  ).join('');
+  grid.innerHTML = '';
+  grid.appendChild(hRow);
+
+  // Linhas por dia
+  days.forEach((day, dow) => {
+    const row = document.createElement('div');
+    row.className = 'heatmap-row';
+    row.innerHTML = `<div class="heatmap-day-label">${day}</div>` +
+      hours.map((_, h) => {
+        const v = (heatmap[dow] || [])[h] || 0;
+        const intensity = maxVal > 0 ? v / maxVal : 0;
+        const alpha = Math.round(intensity * 220);
+        const bg = v > 0
+          ? `rgba(96,165,250,${(intensity * 0.85 + 0.08).toFixed(2)})`
+          : 'rgba(255,255,255,0.04)';
+        return `<div class="heatmap-cell" style="background:${bg}" title="${day} ${h}h: ${v}"></div>`;
+      }).join('');
+    grid.appendChild(row);
+  });
+}
+
+function renderOrigem(origens) {
+  const origemLabel = {
+    'anuncio_meta':   '📘 Meta Ads',
+    'anuncio_google': '🔍 Google Ads',
+    'bio_instagram':  '📸 Instagram',
+    'site':           '🌐 Site',
+    'organico':       '💬 Orgânico',
+    'desconhecido':   '❓ Desconhecido',
+  };
+
+  document.getElementById('orig-body').innerHTML = origens.slice(0, 10).map(o => {
+    const label = origemLabel[o.origem] || o.origem || '—';
+    const convPct = o.leads > 0 ? Math.round((o.vendas / o.leads) * 100) + '%' : '—';
+    return `<tr>
+      <td><strong>${label}</strong></td>
+      <td style="text-align:right">${o.leads}</td>
+      <td style="text-align:right">${o.vendas}</td>
+      <td style="text-align:right">${o.receita_cents ? fmtMoney(o.receita_cents) : '—'}</td>
+      <td style="text-align:right">${convPct}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── HELPERS ───────────────────────────────────────────────
+function set(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function fmtMoney(cents) {
+  return 'R$ ' + (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function pct(num, den) {
+  if (!den || !num) return '0%';
+  return Math.round((num / den) * 100) + '%';
+}
+
+function fmtDate(str) {
+  if (!str) return '';
+  const d = new Date(str + 'T12:00:00');
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
+// ─── INÍCIO ────────────────────────────────────────────────
+buildNav();
+load();
+</script>
 </body>
 </html>

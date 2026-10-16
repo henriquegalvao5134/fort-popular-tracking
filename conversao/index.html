@@ -1106,7 +1106,32 @@
 // ═══════════════════════════════════════════════════════════
 // ESTADO GLOBAL
 // ═══════════════════════════════════════════════════════════
-const KEY = new URLSearchParams(location.search).get('key') || '';
+const _p  = new URLSearchParams(location.search);
+let TOKEN = localStorage.getItem('fp_token') || '';
+let KEY   = _p.get('key') || localStorage.getItem('fp_key') || '';
+
+// Persiste chave URL no localStorage
+if (_p.get('key')) localStorage.setItem('fp_key', _p.get('key'));
+
+// Se não tem nem token nem chave, redireciona para login
+if (!TOKEN && !KEY) {
+  window.location.href = '/login/?next=' + encodeURIComponent(location.pathname + location.search);
+}
+
+function authHeaders() {
+  if (TOKEN) return { 'Authorization': 'Bearer ' + TOKEN };
+  return {};
+}
+function authParam() {
+  if (TOKEN) return '';
+  return '&key=' + encodeURIComponent(KEY);
+}
+function doLogout() {
+  localStorage.removeItem('fp_token');
+  localStorage.removeItem('fp_key');
+  TOKEN = ''; KEY = '';
+  window.location.href = '/login/';
+}
 
 let allData      = [];   // todos os itens de /api/ia/pendentes?filter=todos
 let filtered     = [];   // itens exibidos na tabela (após filtro/busca)
@@ -1125,10 +1150,11 @@ function init() {
 
 function buildNav() {
   const links = [
-    { href: `/acesso`,    icon: '⌂',  label: 'Início' },
-    { href: `/relatorio`, icon: '📊', label: 'Relatório' },
-    { href: `/clientes`,  icon: '👥', label: 'Clientes' },
-    { href: `/conversao`, icon: '💊', label: 'Conversões' },
+    { href: '/acesso',         icon: '⌂',  label: 'Início' },
+    { href: '/relatorio',      icon: '📊', label: 'Relatório' },
+    { href: '/clientes',       icon: '👥', label: 'Clientes' },
+    { href: '/conversao',      icon: '💊', label: 'Conversões' },
+    { href: '/admin/usuarios', icon: '⚙️', label: 'Usuários' },
   ];
 
   const currentPath = location.pathname.replace(/\/$/, '');
@@ -1137,15 +1163,21 @@ function buildNav() {
     `<span class="sidebar-label">Menu</span>` +
     links.map(l => {
       const active = currentPath.startsWith(l.href) ? 'active' : '';
-      return `<a href="${l.href}/?key=${KEY}" class="nav-item ${active}">
+      return `<a href="${l.href}/" class="nav-item ${active}">
         <span class="nav-item-icon">${l.icon}</span>${l.label}
       </a>`;
-    }).join('');
+    }).join('') +
+    `<div style="flex:1"></div>
+     <div style="border-top:1px solid var(--border);padding:8px 0;">
+       <a class="nav-item" href="#" onclick="doLogout();return false;" style="color:#e05a5a;">
+         <span class="nav-item-icon">⏻</span>Sair
+       </a>
+     </div>`;
 
   document.getElementById('bottom-nav').innerHTML =
-    links.map(l => {
+    links.slice(0,4).map(l => {
       const active = currentPath.startsWith(l.href) ? 'bn-active' : '';
-      return `<a href="${l.href}/?key=${KEY}" class="${active}">
+      return `<a href="${l.href}/" class="${active}">
         <span class="bn-icon">${l.icon}</span>${l.label}
       </a>`;
     }).join('');
@@ -1159,8 +1191,8 @@ async function loadConversations() {
   const q = document.getElementById('f-q').value.trim();
 
   try {
-    const r = await fetch(`/api/ia/pendentes?key=${encodeURIComponent(KEY)}&filter=todos&limit=200`);
-    if (r.status === 401) { showToast('Chave de acesso inválida.', 'err'); setLoadingState(false); return; }
+    const r = await fetch(`/api/ia/pendentes?filter=todos&limit=200${authParam()}`, { headers: authHeaders() });
+    if (r.status === 401) { doLogout(); return; }
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
     allData = data.items || [];
@@ -1315,7 +1347,7 @@ async function updateEtapa(sel, id) {
   try {
     const r = await fetch('/api/ia/etapa', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY, ...authHeaders() },
       body:    JSON.stringify({ id, etapa }),
     });
     const d = await r.json();
@@ -1523,7 +1555,7 @@ async function loadMsgs(id) {
   wrap.innerHTML = '<div class="msg-loading">Carregando mensagens…</div>';
 
   try {
-    const r = await fetch(`/api/ia/conversa?id=${encodeURIComponent(id)}&key=${encodeURIComponent(KEY)}`);
+    const r = await fetch(`/api/ia/conversa?id=${encodeURIComponent(id)}${authParam()}`, { headers: authHeaders() });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
 
@@ -1624,7 +1656,7 @@ async function reviewAction(id, analise_id, action, params) {
   try {
     const r = await fetch('/api/ia/revisar', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY, ...authHeaders() },
       body:    JSON.stringify(body),
     });
     const data = await r.json();
@@ -1675,7 +1707,7 @@ async function salvarPhone() {
   try {
     const r = await fetch('/api/ia/contato', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY, ...authHeaders() },
       body:    JSON.stringify({ id: activeId, telefone: phone }),
     });
     const d = await r.json();

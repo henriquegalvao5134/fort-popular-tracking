@@ -335,7 +335,8 @@
 <nav class="bottom-nav" id="bottom-nav"></nav>
 
 <script>
-let KEY = '';
+let KEY   = '';
+let TOKEN = '';
 let _data = null;
 
 function today() { return new Date().toISOString().slice(0,10); }
@@ -352,11 +353,20 @@ function fmtDate(s) {
   return `${d}/${m}/${y}`;
 }
 
+function authHeaders() { return TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}; }
+function authParam()   { return TOKEN ? '' : (KEY ? '&key=' + encodeURIComponent(KEY) : ''); }
+
 function init() {
   const p = new URLSearchParams(location.search);
-  const k = p.get('key') || localStorage.getItem('fp_key') || '';
-  if (k) { KEY = k; localStorage.setItem('fp_key', k); show(); }
-  else { document.getElementById('login').style.display = 'flex'; }
+  const k = p.get('key') || '';
+  if (k) { KEY = k; localStorage.setItem('fp_key', k); }
+  TOKEN = localStorage.getItem('fp_token') || '';
+  KEY   = KEY || localStorage.getItem('fp_key') || '';
+  if (!TOKEN && !KEY) {
+    window.location.href = '/login/?next=' + encodeURIComponent(location.pathname);
+    return;
+  }
+  show();
 }
 
 function doLogin() {
@@ -370,12 +380,9 @@ function doLogin() {
 
 function doLogout() {
   localStorage.removeItem('fp_key');
-  KEY = '';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('app-header').style.display = 'none';
-  document.getElementById('login').style.display = 'flex';
-  document.getElementById('key-input').value = '';
-  document.getElementById('login-err').style.display = 'none';
+  localStorage.removeItem('fp_token');
+  localStorage.removeItem('fp_user_email');
+  window.location.href = '/login/';
 }
 
 function show() {
@@ -390,17 +397,18 @@ function show() {
 
 function buildNav() {
   const links = [
-    { href: '/acesso',    icon: '⌂',  label: 'Início' },
-    { href: '/relatorio', icon: '📊', label: 'Relatório' },
-    { href: '/clientes',  icon: '👥', label: 'Clientes' },
-    { href: '/conversao', icon: '💊', label: 'Conversões' },
+    { href: '/acesso',         icon: '⌂',  label: 'Início' },
+    { href: '/relatorio',      icon: '📊', label: 'Relatório' },
+    { href: '/clientes',       icon: '👥', label: 'Clientes' },
+    { href: '/conversao',      icon: '💊', label: 'Conversões' },
+    { href: '/admin/usuarios', icon: '⚙️', label: 'Usuários' },
   ];
   const cur = location.pathname.replace(/\/$/, '');
   document.getElementById('sidebar-nav').innerHTML =
     `<span class="sidebar-label">Menu</span>` +
     links.map(l => {
       const active = cur.startsWith(l.href) ? 'active' : '';
-      return `<a href="${l.href}/?key=${encodeURIComponent(KEY)}" class="nav-item ${active}">
+      return `<a href="${l.href}/" class="nav-item ${active}">
         <span class="nav-item-icon">${l.icon}</span>${l.label}
       </a>`;
     }).join('') +
@@ -413,7 +421,7 @@ function buildNav() {
   document.getElementById('bottom-nav').innerHTML =
     links.map(l => {
       const active = cur.startsWith(l.href) ? 'bn-active' : '';
-      return `<a href="${l.href}/?key=${encodeURIComponent(KEY)}" class="${active}">
+      return `<a href="${l.href}/" class="${active}">
         <span class="bn-icon">${l.icon}</span>${l.label}
       </a>`;
     }).join('');
@@ -425,12 +433,9 @@ async function load() {
   document.getElementById('cli-body').innerHTML =
     '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">Carregando…</td></tr>';
 
-  const r = await fetch(`/api/ia/clients-ltv?key=${encodeURIComponent(KEY)}&since=${since}&until=${until}`);
+  const r = await fetch(`/api/ia/clients-ltv?since=${since}&until=${until}${authParam()}`, { headers: authHeaders() });
   if (r.status === 401) {
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('app-header').style.display = 'none';
-    document.getElementById('login').style.display = 'flex';
-    document.getElementById('login-err').style.display = 'block';
+    window.location.href = '/login/?next=' + encodeURIComponent(location.pathname);
     return;
   }
   _data = await r.json();

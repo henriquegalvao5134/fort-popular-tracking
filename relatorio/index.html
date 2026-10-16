@@ -647,21 +647,32 @@ let cpmChartInstance = null;
 let campFilter = 'all';
 let since = '', until = '';
 
+// ---------- AUTH HELPERS ----------
+function authToken() { return localStorage.getItem('fp_token') || ''; }
+function authHeaders() {
+  const t = authToken();
+  return t ? { 'Authorization': 'Bearer ' + t } : {};
+}
+function authParam() {
+  const t = authToken();
+  return t ? '' : (CLIENT_KEY ? '&key=' + encodeURIComponent(CLIENT_KEY) : '');
+}
+
 // ---------- NAV ----------
 function buildNav() {
   const links = [
-    { href: '/acesso',    icon: '⌂',  label: 'Início'     },
-    { href: '/relatorio', icon: '📊', label: 'Relatório'  },
-    { href: '/clientes',  icon: '👥', label: 'Clientes'   },
-    { href: '/conversao', icon: '📋', label: 'Conversões' },
+    { href: '/acesso',         icon: '⌂',  label: 'Início'     },
+    { href: '/relatorio',      icon: '📊', label: 'Relatório'  },
+    { href: '/clientes',       icon: '👥', label: 'Clientes'   },
+    { href: '/conversao',      icon: '💊', label: 'Conversões' },
+    { href: '/admin/usuarios', icon: '⚙️', label: 'Usuários'   },
   ];
   const cur = location.pathname.replace(/\/$/, '');
   document.getElementById('sidebar-nav').innerHTML =
     `<span class="sidebar-label">Menu</span>` +
     links.map(l => {
       const active = cur.startsWith(l.href) ? 'active' : '';
-      const dest = l.href + '/?key=' + CLIENT_KEY;
-      return `<a class="nav-item ${active}" href="${dest}">
+      return `<a class="nav-item ${active}" href="${l.href}/">
         <span class="nav-item-icon">${l.icon}</span>${l.label}
       </a>`;
     }).join('') +
@@ -671,10 +682,10 @@ function buildNav() {
          <span class="nav-item-icon">⏻</span>Sair
        </a>
      </div>`;
-  // Bottom nav hrefs
-  const hrefs = ['/acesso/?key=','/relatorio/?key=','/clientes/?key=','/conversao/?key='];
+  // Bottom nav
+  const bnLinks = links.slice(0,4);
   document.querySelectorAll('#bottom-nav a').forEach((a, i) => {
-    if (hrefs[i]) a.href = hrefs[i] + CLIENT_KEY;
+    if (bnLinks[i]) a.href = bnLinks[i].href + '/';
   });
 }
 
@@ -687,6 +698,7 @@ function doLogin() {
 }
 
 function doLogout() {
+  localStorage.removeItem('fp_token');
   localStorage.removeItem('fp_key');
   CLIENT_KEY = '';
   document.getElementById('app').style.display = 'none';
@@ -698,7 +710,9 @@ function doLogout() {
 (function init() {
   const p = new URLSearchParams(location.search);
   const k = p.get('key') || localStorage.getItem('fp_key');
-  if (k) { CLIENT_KEY = k; localStorage.setItem('fp_key', k); loadData(); }
+  const t = localStorage.getItem('fp_token');
+  if (t) { CLIENT_KEY = ''; loadData(); }
+  else if (k) { CLIENT_KEY = k; localStorage.setItem('fp_key', k); loadData(); }
 })();
 
 // ---------- DATES ----------
@@ -787,7 +801,7 @@ async function loadData() {
 
 async function fetchData(s, u) {
   try {
-    const r = await fetch(`/api/client-report?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+    const r = await fetch(`/api/client-report?since=${s}&until=${u}${authParam()}`, { headers: authHeaders() });
     if (r.status === 401 || r.status === 403) {
       document.getElementById('loginErr').style.display = 'block';
       return null;
@@ -806,7 +820,7 @@ async function fetchData(s, u) {
 
 async function fetchInstagram(s, u) {
   try {
-    const r = await fetch(`/api/instagram-insights?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+    const r = await fetch(`/api/instagram-insights?since=${s}&until=${u}${authParam()}`, { headers: authHeaders() });
     const d = await r.json();
     return d.ok ? d : null;
   } catch { return null; }
@@ -998,7 +1012,7 @@ async function fetchPrev() {
   const ps = new Date(s); ps.setDate(ps.getDate()-diff);
   const pu = new Date(s); pu.setDate(pu.getDate()-1);
   try {
-    const r = await fetch(`/api/client-report?key=${CLIENT_KEY}&since=${ymd(ps)}&until=${ymd(pu)}&lite=1`);
+    const r = await fetch(`/api/client-report?since=${ymd(ps)}&until=${ymd(pu)}&lite=1${authParam()}`, { headers: authHeaders() });
     if (!r.ok) return null;
     const d = await r.json();
     return d.ok ? d : null;
@@ -1242,7 +1256,7 @@ function renderFunilMeta() {
 // ---------- FUNIL MANUAL ----------
 async function fetchConversionsSummary(s, u) {
   try {
-    const r = await fetch(`/api/conversions-summary?key=${CLIENT_KEY}&since=${s}&until=${u}`);
+    const r = await fetch(`/api/conversions-summary?since=${s}&until=${u}${authParam()}`, { headers: authHeaders() });
     if (!r.ok) return;
     const d = await r.json();
     renderFunil(d);
