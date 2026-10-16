@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Conversões — Farmácia Fort Popular</title>
+  <title>CRM — Farmácia Fort Popular</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
   <style>
@@ -68,23 +68,20 @@
 
     .header-right { display: flex; align-items: center; gap: 10px; }
 
-    .btn-novo {
-      background: var(--red);
-      color: #fff;
-      border: none;
+    .btn-reload {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 7px 14px;
+      color: var(--muted);
+      padding: 7px 12px;
       font-size: 0.8rem;
-      font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      transition: background .15s, box-shadow .15s;
-      white-space: nowrap;
-      box-shadow: 0 2px 10px rgba(220,38,38,0.45);
+      transition: all .15s;
     }
-    .btn-novo:hover { background: var(--red2); box-shadow: 0 2px 14px rgba(220,38,38,0.55); }
+    .btn-reload:hover { color: var(--text); background: rgba(255,255,255,0.10); }
 
-    /* ── APP LAYOUT (header embaixo) ── */
+    /* ── APP LAYOUT ── */
     .app-layout {
       flex: 1;
       display: flex;
@@ -181,8 +178,9 @@
     .stat-yellow { color: var(--yellow); }
     .stat-green  { color: var(--green); }
     .stat-red    { color: #f87171; }
+    .stat-blue   { color: var(--blue); }
 
-    /* ── BARRA DE TABS ── */
+    /* ── CHIPS BAR ── */
     .chips-bar {
       background: var(--bg);
       border-bottom: 1px solid var(--border);
@@ -234,8 +232,8 @@
     }
     .chip.active .chip-cnt { background: rgba(220,38,38,0.28); color: #ff6b6b; }
 
-    /* ── FILTER BAR ── */
-    .filter-bar {
+    /* ── SEARCH BAR ── */
+    .search-bar {
       background: var(--bg);
       border-bottom: 1px solid var(--border2);
       padding: 8px 16px;
@@ -245,34 +243,33 @@
       flex-shrink: 0;
     }
 
-    .filter-bar input[type="date"],
-    .filter-bar input[type="text"] {
+    .search-bar input[type="text"] {
+      flex: 1;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      padding: 6px 10px;
-      font-size: 0.8rem;
+      padding: 7px 12px;
+      font-size: 0.82rem;
       font-family: inherit;
       transition: border-color .15s;
+      min-width: 0;
     }
-    .filter-bar input[type="date"] { width: 138px; flex-shrink: 0; }
-    .filter-bar input[type="text"] { flex: 1; min-width: 100px; }
-    .filter-bar input::placeholder { color: var(--muted); }
-    .filter-bar input:focus { outline: none; border-color: rgba(220,38,38,0.5); }
-    .filter-bar input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+    .search-bar input::placeholder { color: var(--muted); }
+    .search-bar input:focus { outline: none; border-color: rgba(220,38,38,0.5); }
 
     .btn-buscar {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      padding: 6px 14px;
+      padding: 7px 14px;
       font-size: 0.8rem;
       cursor: pointer;
       font-family: inherit;
       white-space: nowrap;
       transition: all .15s;
+      flex-shrink: 0;
     }
     .btn-buscar:hover { border-color: var(--red); color: #ff6b6b; }
 
@@ -297,7 +294,7 @@
     .conv-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 520px;
+      min-width: 560px;
     }
 
     .conv-table thead th {
@@ -305,9 +302,9 @@
       top: 0;
       background: #141414;
       border-bottom: 1px solid var(--border);
-      padding: 10px 14px;
+      padding: 10px 12px;
       text-align: left;
-      font-size: 0.67rem;
+      font-size: 0.65rem;
       font-weight: 700;
       letter-spacing: 0.10em;
       color: var(--muted);
@@ -328,18 +325,35 @@
     .conv-table tbody tr.row-pending   { box-shadow: inset 3px 0 0 var(--yellow); }
     .conv-table tbody tr.row-confirmed { box-shadow: inset 3px 0 0 var(--green); }
     .conv-table tbody tr.row-rejected  { box-shadow: inset 3px 0 0 #f87171; }
-    .conv-table tbody tr.row-contact   { box-shadow: inset 3px 0 0 var(--blue); }
     .conv-table tbody tr.row-open      { box-shadow: inset 3px 0 0 rgba(255,255,255,0.12); }
 
     .conv-table td {
-      padding: 11px 14px;
-      font-size: 0.83rem;
+      padding: 10px 12px;
+      font-size: 0.82rem;
       vertical-align: middle;
     }
 
-    .col-date     { color: var(--muted); font-size: 0.75rem; white-space: nowrap; }
-    .contact-name  { font-weight: 600; margin-bottom: 2px; font-size: 0.85rem; }
+    .col-date     { color: var(--muted); font-size: 0.73rem; white-space: nowrap; }
+    .contact-name  { font-weight: 600; margin-bottom: 2px; font-size: 0.84rem; }
     .contact-phone { font-size: 0.7rem; color: var(--muted); }
+
+    /* ── ETAPA SELECT ── */
+    .etapa-select {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 7px;
+      color: var(--text);
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      width: 108px;
+    }
+    .etapa-select:hover  { border-color: rgba(255,255,255,0.28); }
+    .etapa-select:focus  { outline: none; border-color: rgba(220,38,38,0.5); }
+    .etapa-select:disabled { opacity: 0.45; cursor: not-allowed; }
+    .etapa-select option { background: #1c1c1c; color: var(--text); }
 
     /* ── BADGES ── */
     .badge {
@@ -357,8 +371,9 @@
     .badge-yellow { background: rgba(251,191,36,0.12);  color: var(--yellow); }
     .badge-blue   { background: rgba(96,165,250,0.12);  color: var(--blue); }
     .badge-muted  { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .badge-purple { background: rgba(167,139,250,0.12); color: #a78bfa; }
 
-    /* ── CONFIDENCE ── */
+    /* ── CONFIDENCE BAR ── */
     .conf-wrap { display: flex; align-items: center; gap: 6px; }
     .conf-bar  { width: 46px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
     .conf-fill { height: 100%; border-radius: 2px; }
@@ -368,19 +383,18 @@
     .conf-num  { font-size: 0.72rem; color: var(--muted); min-width: 26px; }
 
     /* ── ROW BUTTON ── */
-    .row-btn {
+    .row-btn-icon {
       background: rgba(255,255,255,0.05);
       border: 1px solid transparent;
       border-radius: 6px;
       color: var(--muted);
-      padding: 5px 11px;
-      font-size: 0.74rem;
+      padding: 6px 8px;
+      font-size: 0.95rem;
       cursor: pointer;
-      font-family: inherit;
       transition: all .15s;
-      white-space: nowrap;
+      line-height: 1;
     }
-    .row-btn:hover, tr.active .row-btn {
+    .row-btn-icon:hover, tr.active .row-btn-icon {
       background: rgba(220,38,38,0.12);
       border-color: rgba(220,38,38,0.3);
       color: #ff6b6b;
@@ -424,12 +438,21 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      gap: 10px;
       flex-shrink: 0;
       background: linear-gradient(180deg, #1e1e1e 0%, #161616 100%);
     }
     .panel-name  { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
     .panel-phone { font-size: 0.78rem; color: var(--muted); }
     .panel-date  { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+
+    .panel-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
 
     .panel-close {
       background: rgba(255,255,255,0.06);
@@ -441,9 +464,15 @@
       border-radius: 7px;
       line-height: 1;
       transition: all .15s;
-      flex-shrink: 0;
     }
     .panel-close:hover { color: var(--text); background: rgba(255,255,255,0.10); border-color: var(--border); }
+
+    #panel-etapa-sel {
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      width: auto;
+      min-width: 120px;
+    }
 
     /* ── PANEL TABS ── */
     .panel-tabs {
@@ -507,7 +536,7 @@
       border-color: rgba(74,222,128,0.40);
       box-shadow: 0 0 0 1px rgba(74,222,128,0.06) inset, 0 4px 16px rgba(74,222,128,0.10);
     }
-    .vc-contato {
+    .vc-perdida {
       background: linear-gradient(135deg, rgba(96,165,250,0.18) 0%, rgba(96,165,250,0.07) 100%);
       border-color: rgba(96,165,250,0.40);
       box-shadow: 0 0 0 1px rgba(96,165,250,0.06) inset, 0 4px 16px rgba(96,165,250,0.10);
@@ -547,6 +576,7 @@
     }
     .ia-kv .lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
     .ia-kv .val { font-size: 0.92rem; font-weight: 700; word-break: break-word; }
+    .ia-kv.full { grid-column: 1 / -1; }
 
     /* ── HUMAN LABEL STATUS ── */
     .human-label-done {
@@ -589,7 +619,7 @@
       background: linear-gradient(135deg, rgba(74,222,128,0.22) 0%, rgba(74,222,128,0.12) 100%);
       color: var(--green);
       border: 1px solid rgba(74,222,128,0.40);
-      box-shadow: 0 2px 10px rgba(74,222,128,0.12), 0 0 0 0 rgba(74,222,128,0);
+      box-shadow: 0 2px 10px rgba(74,222,128,0.12);
     }
     .action-confirm:hover {
       background: linear-gradient(135deg, rgba(74,222,128,0.30) 0%, rgba(74,222,128,0.18) 100%);
@@ -669,7 +699,6 @@
       overflow-y: auto;
       box-shadow: 0 24px 64px rgba(0,0,0,0.75);
     }
-    .modal-wide { max-width: 480px; }
 
     .modal-box h3 {
       font-family: 'Playfair Display', Georgia, serif;
@@ -688,8 +717,7 @@
       letter-spacing: 0.06em;
     }
     .modal-box input,
-    .modal-box select,
-    .modal-box textarea {
+    .modal-box select {
       width: 100%;
       background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
@@ -750,20 +778,6 @@
       transition: background .15s;
     }
     .btn-danger:hover { background: rgba(220,38,38,0.22); }
-
-    .tipo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .tipo-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      padding: 10px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.83rem;
-      transition: all .15s;
-    }
-    .tipo-btn.active { background: rgba(220,38,38,0.15); border-color: rgba(220,38,38,0.4); color: #ff6b6b; font-weight: 600; }
 
     /* ── TOAST ── */
     .toast {
@@ -830,14 +844,12 @@
       .side-panel-inner { width: 100%; }
     }
 
-    @media (max-width: 600px) {
-      .hide-sm { display: none; }
-      .filter-bar input[type="date"] { width: 110px; }
+    @media (max-width: 680px) {
+      .hide-sm { display: none !important; }
     }
 
-    @media (max-width: 400px) {
-      .hide-xs { display: none; }
-      .filter-bar input[type="date"] { display: none; }
+    @media (max-width: 480px) {
+      .hide-xs { display: none !important; }
     }
 
     /* ── UTILITY ── */
@@ -853,11 +865,11 @@
     <div class="brand-dot"></div>
     <div class="brand-text">
       <h1>Fort <em>Popular</em></h1>
-      <p>Central de Conversões</p>
+      <p>CRM de Conversões</p>
     </div>
   </div>
   <div class="header-right">
-    <button class="btn-novo" id="btn-novo">+ Registrar</button>
+    <button class="btn-reload" id="btn-reload" title="Recarregar">↻ Atualizar</button>
   </div>
 </header>
 
@@ -874,29 +886,29 @@
     <div class="stats-strip">
       <div class="stat-item">
         <span class="stat-val" id="stat-total">—</span>
-        <span class="stat-lbl">Total</span>
+        <span class="stat-lbl">Contatos</span>
       </div>
       <div class="stat-item">
         <span class="stat-val stat-yellow" id="stat-pending">—</span>
-        <span class="stat-lbl">Aguardando</span>
+        <span class="stat-lbl">Pendentes</span>
       </div>
       <div class="stat-item">
         <span class="stat-val stat-green" id="stat-confirmed">—</span>
         <span class="stat-lbl">Confirmadas</span>
       </div>
       <div class="stat-item">
-        <span class="stat-val stat-red" id="stat-rejected">—</span>
-        <span class="stat-lbl">Rejeitadas</span>
+        <span class="stat-val stat-blue" id="stat-ia-venda">—</span>
+        <span class="stat-lbl">IA detectou venda</span>
       </div>
     </div>
 
-    <!-- TABS -->
+    <!-- CHIPS -->
     <div class="chips-bar">
-      <button class="chip active" data-filter="todas">
-        <span class="chip-ico">☰</span> Todas <span class="chip-cnt" id="cnt-todas">0</span>
+      <button class="chip active" data-filter="todos">
+        <span class="chip-ico">☰</span> Todos <span class="chip-cnt" id="cnt-todos">0</span>
       </button>
-      <button class="chip" data-filter="aguardando">
-        <span class="chip-ico">⏳</span> Aguardando <span class="chip-cnt" id="cnt-aguardando">0</span>
+      <button class="chip" data-filter="pendentes">
+        <span class="chip-ico">⏳</span> Pendentes <span class="chip-cnt" id="cnt-pendentes">0</span>
       </button>
       <button class="chip" data-filter="confirmadas">
         <span class="chip-ico">✓</span> Confirmadas <span class="chip-cnt" id="cnt-confirmadas">0</span>
@@ -904,13 +916,14 @@
       <button class="chip" data-filter="rejeitadas">
         <span class="chip-ico">✕</span> Rejeitadas <span class="chip-cnt" id="cnt-rejeitadas">0</span>
       </button>
+      <button class="chip" data-filter="em_aberto">
+        <span class="chip-ico">💬</span> Em aberto <span class="chip-cnt" id="cnt-em_aberto">0</span>
+      </button>
     </div>
 
-    <!-- FILTER BAR -->
-    <div class="filter-bar">
-      <input type="date" id="f-from" title="Data inicial">
-      <input type="date" id="f-to"   title="Data final">
-      <input type="text" id="f-q"    placeholder="Buscar telefone ou conversa…">
+    <!-- SEARCH BAR -->
+    <div class="search-bar">
+      <input type="text" id="f-q" placeholder="Buscar nome ou telefone…">
       <button class="btn-buscar" id="btn-buscar">Buscar</button>
     </div>
 
@@ -919,16 +932,18 @@
 
       <!-- TABELA -->
       <div class="table-wrap" id="table-wrap">
-        <div class="state-msg" id="state-loading"><span class="ico">⏳</span>Carregando conversas…</div>
-        <div class="state-msg hidden" id="state-empty"><span class="ico">💬</span>Nenhuma conversa encontrada</div>
+        <div class="state-msg" id="state-loading"><span class="ico">⏳</span>Carregando contatos…</div>
+        <div class="state-msg hidden" id="state-empty"><span class="ico">💬</span>Nenhum contato encontrado</div>
         <table class="conv-table hidden" id="conv-table">
           <thead>
             <tr>
               <th>DATA</th>
-              <th>CONTATO</th>
+              <th>LEAD</th>
+              <th class="hide-sm">ORIGEM</th>
+              <th>ETAPA</th>
               <th class="hide-sm">STATUS IA</th>
-              <th class="hide-sm">CONFIANÇA</th>
-              <th class="hide-xs">PRODUTO</th>
+              <th class="hide-xs">REVISÃO</th>
+              <th class="hide-xs">ÚLT. ATEND.</th>
               <th></th>
             </tr>
           </thead>
@@ -946,7 +961,17 @@
               <div class="panel-phone" id="panel-phone">—</div>
               <div class="panel-date"  id="panel-date">—</div>
             </div>
-            <button class="panel-close" id="panel-close" title="Fechar">✕</button>
+            <div class="panel-header-right">
+              <button class="panel-close" id="panel-close" title="Fechar">✕</button>
+              <select class="etapa-select" id="panel-etapa-sel" data-id=""
+                      onchange="updateEtapa(this, this.dataset.id)">
+                <option value="lead">Lead</option>
+                <option value="oportunidade">Oportunidade</option>
+                <option value="vendido">Vendido</option>
+                <option value="perdido">Perdido</option>
+                <option value="recorrente">Recorrente</option>
+              </select>
+            </div>
           </div>
 
           <div class="panel-tabs">
@@ -956,7 +981,7 @@
 
           <div class="panel-body" id="tab-ia">
             <div class="panel-section">
-              <div class="section-title">Veredicto</div>
+              <div class="section-title">Veredicto IA</div>
               <div id="ia-verdict-card"></div>
             </div>
             <div class="panel-section">
@@ -991,6 +1016,8 @@
     <input type="text"   id="c-produto" placeholder="Medicamento ou produto…">
     <label>Nome do cliente</label>
     <input type="text"   id="c-name"    placeholder="Nome completo">
+    <label>Telefone (corrigido)</label>
+    <input type="tel"    id="c-phone"   placeholder="55219…">
     <label>Origem</label>
     <select id="c-origem">
       <option value="ad">Anúncio Meta</option>
@@ -1008,7 +1035,7 @@
 <!-- ── MODAL: Rejeitar ────────────────────────────────── -->
 <div class="modal-overlay hidden" id="overlay-rejeitar">
   <div class="modal-box">
-    <h3>🚫 Rejeitar</h3>
+    <h3>🚫 Rejeitar Análise</h3>
     <p class="modal-sub" id="rejeitar-sub"></p>
     <label>Motivo</label>
     <select id="r-motivo">
@@ -1020,42 +1047,6 @@
     <div class="modal-actions">
       <button class="btn-cancel" id="cancel-rejeitar">Cancelar</button>
       <button class="btn-danger" id="confirm-rejeitar">Rejeitar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── MODAL: Registrar manual ─────────────────────────── -->
-<div class="modal-overlay hidden" id="overlay-novo">
-  <div class="modal-box modal-wide">
-    <h3>+ Registrar Conversão</h3>
-    <p class="modal-sub">Registrar contato ou venda realizada pelo WhatsApp</p>
-    <label>Tipo</label>
-    <div class="tipo-grid">
-      <button class="tipo-btn active" data-tipo="Contact">📞 Contato</button>
-      <button class="tipo-btn"        data-tipo="Purchase">💊 Venda</button>
-    </div>
-    <label>WhatsApp *</label>
-    <input type="tel"    id="n-phone"   placeholder="21 98765-4321">
-    <label>Nome do cliente</label>
-    <input type="text"   id="n-name"    placeholder="Nome completo">
-    <div id="n-value-field" class="hidden">
-      <label>Valor (R$) *</label>
-      <input type="number" id="n-value" placeholder="0,00" min="0" step="0.01">
-    </div>
-    <label>Produto</label>
-    <input type="text"   id="n-produto" placeholder="Medicamento ou produto">
-    <label>Origem</label>
-    <select id="n-origem">
-      <option value="ad">Anúncio Meta</option>
-      <option value="google">Google Ads</option>
-      <option value="organic">Orgânico</option>
-      <option value="referral">Indicação</option>
-    </select>
-    <label>Observação</label>
-    <input type="text" id="n-obs" placeholder="Nota livre do atendimento">
-    <div class="modal-actions">
-      <button class="btn-cancel"  id="cancel-novo">Cancelar</button>
-      <button class="btn-primary" id="confirm-novo">Registrar</button>
     </div>
   </div>
 </div>
@@ -1072,18 +1063,17 @@
 // ═══════════════════════════════════════════════════════════
 const KEY = new URLSearchParams(location.search).get('key') || '';
 
-let allData      = [];
-let filtered     = [];
-let activeFilter = 'todas';
-let activeRawId  = null;
-let msgCache     = {};
+let allData      = [];   // todos os itens de /api/ia/pendentes?filter=todos
+let filtered     = [];   // itens exibidos na tabela (após filtro/busca)
+let activeFilter = 'todos';
+let activeId     = null; // UUID do contato no painel aberto
+let msgCache     = {};   // {uuid: mensagens[]}
 
 // ═══════════════════════════════════════════════════════════
 // INICIALIZAÇÃO
 // ═══════════════════════════════════════════════════════════
 function init() {
   buildNav();
-  setDefaultDates();
   bindEvents();
   loadConversations();
 }
@@ -1098,7 +1088,6 @@ function buildNav() {
 
   const currentPath = location.pathname.replace(/\/$/, '');
 
-  // Sidebar desktop
   document.getElementById('sidebar-nav').innerHTML =
     `<span class="sidebar-label">Menu</span>` +
     links.map(l => {
@@ -1108,7 +1097,6 @@ function buildNav() {
       </a>`;
     }).join('');
 
-  // Bottom nav mobile
   document.getElementById('bottom-nav').innerHTML =
     links.map(l => {
       const active = currentPath.startsWith(l.href) ? 'bn-active' : '';
@@ -1118,34 +1106,29 @@ function buildNav() {
     }).join('');
 }
 
-function setDefaultDates() {
-  const today = new Date().toISOString().slice(0, 10);
-  const ago30 = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
-  document.getElementById('f-from').value = ago30;
-  document.getElementById('f-to').value   = today;
-}
-
 // ═══════════════════════════════════════════════════════════
 // CARREGAR DADOS
 // ═══════════════════════════════════════════════════════════
 async function loadConversations() {
   setLoadingState(true);
-
-  const from = document.getElementById('f-from').value;
-  const to   = document.getElementById('f-to').value;
-  const q    = document.getElementById('f-q').value.trim();
-
-  let url = `/api/agent-conversations?key=${encodeURIComponent(KEY)}&limit=300`;
-  if (from) url += `&from=${from}`;
-  if (to)   url += `&to=${to}`;
-  if (q)    url += `&q=${encodeURIComponent(q)}`;
+  const q = document.getElementById('f-q').value.trim();
 
   try {
-    const resp = await fetch(url);
-    if (resp.status === 401) { showToast('Chave de acesso inválida.', 'err'); setLoadingState(false); return; }
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    allData = data.conversions || [];
+    const r = await fetch(`/api/ia/pendentes?key=${encodeURIComponent(KEY)}&filter=todos&limit=200`);
+    if (r.status === 401) { showToast('Chave de acesso inválida.', 'err'); setLoadingState(false); return; }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    allData = data.items || [];
+
+    // Busca local por nome/telefone
+    if (q) {
+      const ql = q.toLowerCase();
+      allData = allData.filter(i =>
+        (i.nome      || '').toLowerCase().includes(ql) ||
+        (i.telefone  || '').includes(q)
+      );
+    }
+
     applyFilter();
   } catch (e) {
     showToast('Erro ao carregar: ' + e.message, 'err');
@@ -1164,32 +1147,38 @@ function setLoadingState(loading) {
 // ═══════════════════════════════════════════════════════════
 function applyFilter() {
   switch (activeFilter) {
-    case 'aguardando':
-      filtered = allData.filter(c => c.observacao === 'venda' && !c.human_label);
+    case 'pendentes':
+      filtered = allData.filter(i => i.status_ia === 'venda' && i.revisao === 'pendente');
       break;
     case 'confirmadas':
-      filtered = allData.filter(c => c.human_label === 'venda');
+      filtered = allData.filter(i => i.revisao === 'confirmada' || i.revisao === 'automatica');
       break;
     case 'rejeitadas':
-      filtered = allData.filter(c => c.human_label === 'nao_venda');
+      filtered = allData.filter(i => i.revisao === 'rejeitada');
+      break;
+    case 'em_aberto':
+      filtered = allData.filter(i => !i.status_ia || i.status_ia === 'em_aberto');
       break;
     default:
       filtered = allData.slice();
   }
 
-  const nPending   = allData.filter(c => c.observacao === 'venda' && !c.human_label).length;
-  const nConfirmed = allData.filter(c => c.human_label === 'venda').length;
-  const nRejected  = allData.filter(c => c.human_label === 'nao_venda').length;
+  const nPendentes   = allData.filter(i => i.status_ia === 'venda' && i.revisao === 'pendente').length;
+  const nConfirmadas = allData.filter(i => i.revisao === 'confirmada' || i.revisao === 'automatica').length;
+  const nRejeitadas  = allData.filter(i => i.revisao === 'rejeitada').length;
+  const nEmAberto    = allData.filter(i => !i.status_ia || i.status_ia === 'em_aberto').length;
+  const nIaVenda     = allData.filter(i => i.status_ia === 'venda').length;
 
-  document.getElementById('cnt-todas').textContent       = allData.length;
-  document.getElementById('cnt-aguardando').textContent  = nPending;
-  document.getElementById('cnt-confirmadas').textContent = nConfirmed;
-  document.getElementById('cnt-rejeitadas').textContent  = nRejected;
+  document.getElementById('stat-total').textContent    = allData.length;
+  document.getElementById('stat-pending').textContent  = nPendentes;
+  document.getElementById('stat-confirmed').textContent= nConfirmadas;
+  document.getElementById('stat-ia-venda').textContent = nIaVenda;
 
-  document.getElementById('stat-total').textContent     = allData.length;
-  document.getElementById('stat-pending').textContent   = nPending;
-  document.getElementById('stat-confirmed').textContent = nConfirmed;
-  document.getElementById('stat-rejected').textContent  = nRejected;
+  document.getElementById('cnt-todos').textContent      = allData.length;
+  document.getElementById('cnt-pendentes').textContent  = nPendentes;
+  document.getElementById('cnt-confirmadas').textContent= nConfirmadas;
+  document.getElementById('cnt-rejeitadas').textContent = nRejeitadas;
+  document.getElementById('cnt-em_aberto').textContent  = nEmAberto;
 
   renderTable();
 }
@@ -1198,10 +1187,9 @@ function applyFilter() {
 // RENDERIZAR TABELA
 // ═══════════════════════════════════════════════════════════
 function rowStatusClass(item) {
-  if (item.human_label === 'venda')     return 'row-confirmed';
-  if (item.human_label === 'nao_venda') return 'row-rejected';
-  if (item.observacao  === 'venda')     return 'row-pending';
-  if (item.observacao  === 'contato')   return 'row-contact';
+  if (item.revisao === 'confirmada' || item.revisao === 'automatica') return 'row-confirmed';
+  if (item.revisao === 'rejeitada')                                    return 'row-rejected';
+  if (item.status_ia === 'venda' && item.revisao === 'pendente')       return 'row-pending';
   return 'row-open';
 }
 
@@ -1218,60 +1206,114 @@ function renderTable() {
   document.getElementById('conv-table').classList.remove('hidden');
 
   document.getElementById('conv-body').innerHTML = filtered.map(item => {
-    const rawId  = item.id.replace(/^ai_/, '');
-    const active = rawId === activeRawId ? 'active' : '';
-    const phone  = item.phone_last4 ? `****${item.phone_last4}` : '—';
-    const name   = item.display_name && item.display_name !== item.phone_last4
-                 ? escHtml(item.display_name) : '—';
-    const produto = escHtml(item.produto || '—');
+    const active  = item.id === activeId ? 'active' : '';
     const stCls   = rowStatusClass(item);
+    const nome    = escHtml(item.nome || '—');
+    const fone    = escHtml(item.telefone || '—');
+    const ultAte  = fmtDateTime(item.ultimo_contato_em);
 
     return `
-      <tr class="conv-row ${stCls} ${active}" data-raw-id="${rawId}" onclick="openPanel('${rawId}')">
-        <td class="col-date">${fmtDate(item.event_date)}</td>
+      <tr class="conv-row ${stCls} ${active}" data-id="${item.id}" onclick="openPanel('${item.id}')">
+        <td class="col-date">${fmtDate(item.primeiro_contato_em)}</td>
         <td>
-          <div class="contact-name">${name}</div>
-          <div class="contact-phone">${phone}</div>
+          <div class="contact-name">${nome}</div>
+          <div class="contact-phone">${fone}</div>
         </td>
-        <td class="hide-sm">${statusBadge(item)}</td>
-        <td class="hide-sm">${confBar(item)}</td>
-        <td class="hide-xs">${produto}</td>
-        <td><button class="row-btn" onclick="event.stopPropagation(); openPanel('${rawId}')">Ver →</button></td>
+        <td class="hide-sm">${origemBadge(item.origem)}</td>
+        <td onclick="event.stopPropagation()">${buildEtapaSelect(item)}</td>
+        <td class="hide-sm">${statusIaBadge(item)}</td>
+        <td class="hide-xs">${revisaoBadge(item)}</td>
+        <td class="hide-xs" style="color:var(--muted);font-size:0.73rem;white-space:nowrap">${ultAte}</td>
+        <td><button class="row-btn-icon" onclick="event.stopPropagation(); openPanel('${item.id}')" title="Ver detalhes">👁</button></td>
       </tr>`;
   }).join('');
+}
+
+function buildEtapaSelect(item) {
+  const opts = [
+    ['lead',        'Lead'],
+    ['oportunidade','Oportunidade'],
+    ['vendido',     'Vendido'],
+    ['perdido',     'Perdido'],
+    ['recorrente',  'Recorrente'],
+  ];
+  const optsHtml = opts.map(([v, l]) =>
+    `<option value="${v}"${v === (item.etapa || 'lead') ? ' selected' : ''}>${l}</option>`
+  ).join('');
+  return `<select class="etapa-select" data-id="${item.id}"
+    onchange="updateEtapa(this, '${item.id}')">${optsHtml}</select>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// ETAPA — atualização inline
+// ═══════════════════════════════════════════════════════════
+async function updateEtapa(sel, id) {
+  if (!id) return;
+  const etapa = sel.value;
+  sel.disabled = true;
+
+  try {
+    const r = await fetch('/api/ia/etapa', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      body:    JSON.stringify({ id, etapa }),
+    });
+    const d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.error || 'Erro');
+
+    // Atualiza allData
+    const idx = allData.findIndex(i => i.id === id);
+    if (idx !== -1) allData[idx].etapa = etapa;
+
+    // Sincroniza todos os selects com este data-id
+    document.querySelectorAll(`.etapa-select[data-id="${id}"]`).forEach(s => { s.value = etapa; });
+
+    showToast('Etapa: ' + etapa, 'ok');
+  } catch (e) {
+    // Reverte visualmente
+    const idx = allData.findIndex(i => i.id === id);
+    if (idx !== -1) sel.value = allData[idx].etapa || 'lead';
+    showToast('Erro: ' + e.message, 'err');
+  } finally {
+    sel.disabled = false;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
 // PAINEL LATERAL
 // ═══════════════════════════════════════════════════════════
-async function openPanel(rawId) {
-  activeRawId = rawId;
+async function openPanel(id) {
+  activeId = id;
 
-  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+  document.querySelectorAll('.conv-row').forEach(r => r.classList.remove('active'));
+  const row = document.querySelector(`.conv-row[data-id="${id}"]`);
+  if (row) row.classList.add('active');
+
+  const item = allData.find(i => i.id === id);
   if (!item) return;
 
-  const name  = item.display_name && item.display_name !== item.phone_last4
-              ? item.display_name : 'Sem nome';
-  const phone = item.phone_last4 ? `WhatsApp ****${item.phone_last4}` : 'Sem telefone';
+  // Header do painel
+  document.getElementById('panel-name').textContent  = item.nome    || 'Sem nome';
+  document.getElementById('panel-phone').textContent = item.telefone || 'Sem telefone';
+  document.getElementById('panel-date').textContent  =
+    item.primeiro_contato_em ? `Desde: ${fmtDate(item.primeiro_contato_em)}` : '';
 
-  document.getElementById('panel-name').textContent  = name;
-  document.getElementById('panel-phone').textContent = phone;
-  document.getElementById('panel-date').textContent  = item.event_date ? `Data: ${fmtDate(item.event_date)}` : '';
+  // Etapa no painel
+  const panelEtapaSel = document.getElementById('panel-etapa-sel');
+  panelEtapaSel.value       = item.etapa || 'lead';
+  panelEtapaSel.dataset.id  = id;
 
   document.getElementById('side-panel').classList.add('open');
   switchPanelTab('ia');
-  renderIATab(item, rawId);
+  renderIATab(item);
 
-  document.querySelectorAll('.conv-row').forEach(r => r.classList.remove('active'));
-  const row = document.querySelector(`.conv-row[data-raw-id="${rawId}"]`);
-  if (row) row.classList.add('active');
-
-  if (!msgCache[rawId]) loadMsgs(rawId);
+  // Pré-carrega mensagens em background
+  if (!msgCache[id]) loadMsgs(id);
 }
 
 function closePanel() {
   document.getElementById('side-panel').classList.remove('open');
-  activeRawId = null;
+  activeId = null;
   document.querySelectorAll('.conv-row').forEach(r => r.classList.remove('active'));
 }
 
@@ -1284,38 +1326,44 @@ function switchPanelTab(tab) {
 // ═══════════════════════════════════════════════════════════
 // ABA IA
 // ═══════════════════════════════════════════════════════════
-function renderIATab(item, rawId) {
-  const verdict = item.observacao || 'em_aberto';
-  const conf    = Math.round((item.ai_confidence || 0) * 100);
-  const valor   = item.value_cents
-                ? 'R$ ' + (item.value_cents / 100).toFixed(2).replace('.', ',')
+function renderIATab(item) {
+  const status  = item.status_ia || 'em_aberto';
+  const revisao = item.revisao   || null;
+  const conf    = item.ai_confidence != null ? Math.round(item.ai_confidence) : null; // 0–100
+  const valor   = item.valor_estimado
+                ? 'R$ ' + Number(item.valor_estimado).toFixed(2).replace('.', ',')
                 : '—';
   const produto = item.produto || '—';
-  const excerpt = item.excerpt || '';
+  const resumo  = item.conversation_excerpt || '';
 
-  let verdictLabel, vcClass, confLabel;
-  if (verdict === 'venda') {
+  // Verdict card
+  let verdictLabel, vcClass;
+  if (status === 'venda') {
     verdictLabel = '💊 Venda detectada pela IA';
-    vcClass      = 'vc-venda';
-    confLabel    = conf >= 80 ? 'Alta confiança' : conf >= 60 ? 'Confiança média' : 'Baixa confiança';
-  } else if (verdict === 'contato') {
-    verdictLabel = '📞 Contato — sem venda detectada';
-    vcClass      = 'vc-contato';
-    confLabel    = '';
+    vcClass = 'vc-venda';
+  } else if (status === 'perdida') {
+    verdictLabel = '📞 Atendimento — sem venda';
+    vcClass = 'vc-perdida';
+  } else if (status === 'nao_comercial') {
+    verdictLabel = '🔕 Não comercial';
+    vcClass = 'vc-aberto';
   } else {
     verdictLabel = '❓ Conversa em aberto';
-    vcClass      = 'vc-aberto';
-    confLabel    = '';
+    vcClass = 'vc-aberto';
   }
+
+  const confLabel = conf != null
+    ? (conf >= 80 ? 'Alta confiança' : conf >= 60 ? 'Confiança média' : 'Baixa confiança')
+    : '';
 
   document.getElementById('ia-verdict-card').innerHTML = `
     <div class="verdict-card ${vcClass}">
       <div class="verdict-top">
         <div class="verdict-label">${verdictLabel}</div>
-        ${conf ? `<div class="verdict-badge">${conf}%</div>` : ''}
+        ${conf != null ? `<div class="verdict-badge">${conf}%</div>` : ''}
       </div>
-      ${confLabel ? `<div class="verdict-conf">${confLabel} · Confiança da IA: <strong>${conf}%</strong></div>` : ''}
-      ${excerpt ? `<div class="verdict-excerpt">"${escHtml(excerpt)}"</div>` : ''}
+      ${confLabel ? `<div class="verdict-conf">${confLabel} · Confiança: <strong>${conf}%</strong></div>` : ''}
+      ${resumo ? `<div class="verdict-excerpt">"${escHtml(resumo)}"</div>` : ''}
     </div>
   `;
 
@@ -1328,30 +1376,45 @@ function renderIATab(item, rawId) {
       <div class="lbl">Produto</div>
       <div class="val">${escHtml(produto)}</div>
     </div>
+    ${conf != null ? `
+    <div class="ia-kv">
+      <div class="lbl">Confiança</div>
+      <div class="val">${confBar(conf)}</div>
+    </div>` : ''}
+    <div class="ia-kv">
+      <div class="lbl">Origem</div>
+      <div class="val" style="font-size:0.78rem">${origemBadge(item.origem)}</div>
+    </div>
+    ${item.evidencias ? `
+    <div class="ia-kv full">
+      <div class="lbl">Evidências</div>
+      <div class="val" style="font-size:0.78rem;font-weight:400">${escHtml(item.evidencias)}</div>
+    </div>` : ''}
   `;
 
-  const isPending   = !item.human_label && verdict === 'venda';
-  const isConfirmed = item.human_label === 'venda';
-  const isRejected  = item.human_label === 'nao_venda';
+  // Ações
+  const isPending   = status === 'venda' && (revisao === 'pendente' || !revisao);
+  const isConfirmed = revisao === 'confirmada' || revisao === 'automatica';
+  const isRejected  = revisao === 'rejeitada';
 
   let actionsHtml = '';
   if (isPending) {
     actionsHtml = `
-      <button class="action-btn action-confirm" onclick="confirmar('${rawId}')">
+      <button class="action-btn action-confirm" onclick="confirmar()">
         <span class="action-btn-icon">✓</span>
         <div class="action-btn-body">
           <div class="action-btn-title">Confirmar Venda</div>
           <div class="action-btn-sub">Envia para Meta CAPI e registra</div>
         </div>
       </button>
-      <button class="action-btn action-correct" onclick="abrirCorrigir('${rawId}')">
+      <button class="action-btn action-correct" onclick="abrirCorrigir()">
         <span class="action-btn-icon">✏️</span>
         <div class="action-btn-body">
           <div class="action-btn-title">Corrigir e Confirmar</div>
           <div class="action-btn-sub">Ajusta valor, produto ou nome</div>
         </div>
       </button>
-      <button class="action-btn action-reject" onclick="abrirRejeitar('${rawId}')">
+      <button class="action-btn action-reject" onclick="abrirRejeitar()">
         <span class="action-btn-icon">✕</span>
         <div class="action-btn-body">
           <div class="action-btn-title">Rejeitar</div>
@@ -1362,19 +1425,19 @@ function renderIATab(item, rawId) {
   } else if (isConfirmed) {
     actionsHtml = `
       <div class="human-label-done hld-confirmed">
-        <span>✓ Venda confirmada pela equipe</span>
-        <button class="btn-undo" onclick="desfazer('${rawId}')">Desfazer</button>
+        <span>✓ Venda confirmada</span>
+        <button class="btn-undo" onclick="desfazer()">Desfazer</button>
       </div>
     `;
   } else if (isRejected) {
     actionsHtml = `
       <div class="human-label-done hld-rejected">
         <span>✕ Rejeitada pela equipe</span>
-        <button class="btn-undo" onclick="desfazer('${rawId}')">Desfazer</button>
+        <button class="btn-undo" onclick="desfazer()">Desfazer</button>
       </div>
     `;
   } else {
-    actionsHtml = `<p style="color:var(--muted);font-size:0.8rem;">Sem ação disponível para este veredicto.</p>`;
+    actionsHtml = `<p style="color:var(--muted);font-size:0.8rem;">Nenhuma ação disponível para este status.</p>`;
   }
 
   document.getElementById('panel-actions').innerHTML = actionsHtml;
@@ -1383,34 +1446,35 @@ function renderIATab(item, rawId) {
 // ═══════════════════════════════════════════════════════════
 // ABA CONVERSA
 // ═══════════════════════════════════════════════════════════
-async function loadMsgs(rawId) {
+async function loadMsgs(id) {
   const wrap = document.getElementById('msgs-wrap');
   wrap.innerHTML = '<div class="msg-loading">Carregando mensagens…</div>';
 
   try {
-    const resp = await fetch(`/api/ia/conversa?id=${rawId}&key=${encodeURIComponent(KEY)}`);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
+    const r = await fetch(`/api/ia/conversa?id=${encodeURIComponent(id)}&key=${encodeURIComponent(KEY)}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
 
     const msgs = data.mensagens || [];
-    msgCache[rawId] = msgs;
+    msgCache[id] = msgs;
 
     if (!msgs.length) {
       wrap.innerHTML = '<div class="msg-loading">Nenhuma mensagem encontrada.</div>';
       return;
     }
 
+    const iconMap = { audio: '🎙️', imagem: '🖼️', documento: '📄', video: '🎬', figurinha: '😊' };
     let lastDate = '';
     wrap.innerHTML = msgs.map(m => {
-      const isMe  = !!m.from_me;
-      const tipo  = m.tipo || 'texto';
-      const txt   = m.texto_extraido || '';
-      const icons = { audio: '🎙️', imagem: '🖼️', documento: '📄' };
-      const icon  = icons[tipo] || '';
-      const time  = m.created_at
-                  ? new Date(m.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-                  : '';
-      const dateStr = m.created_at ? m.created_at.slice(0, 10) : '';
+      const isMe    = !!m.from_me;
+      const tipo    = m.tipo || 'texto';
+      const txt     = m.texto_extraido || '';
+      const icon    = iconMap[tipo] || '';
+      const ts      = m.created_at || '';
+      const time    = ts
+                    ? new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    : '';
+      const dateStr = ts.slice(0, 10);
       let sep = '';
       if (dateStr && dateStr !== lastDate) {
         sep = `<div class="msgs-date-sep">${fmtDate(dateStr)}</div>`;
@@ -1433,70 +1497,73 @@ async function loadMsgs(rawId) {
 // ═══════════════════════════════════════════════════════════
 // AÇÕES DE REVISÃO
 // ═══════════════════════════════════════════════════════════
-async function confirmar(rawId) {
-  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
-  await reviewAction(rawId, 'confirmar', {
-    phone:   item?.phone_normalized,
-    value:   item?.value_cents ? item.value_cents / 100 : 0,
+function confirmar() {
+  if (!activeId) return;
+  const item = allData.find(i => i.id === activeId);
+  reviewAction(activeId, item?.analise_id, 'confirmar', {
+    value:   item?.valor_estimado,
     produto: item?.produto,
-    name:    item?.display_name,
+    name:    item?.nome,
   });
 }
 
-function abrirCorrigir(rawId) {
-  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
-  document.getElementById('corrigir-sub').textContent = item?.display_name || `****${item?.phone_last4}` || rawId;
-  document.getElementById('c-value').value   = item?.value_cents ? (item.value_cents / 100).toFixed(2) : '';
+function abrirCorrigir() {
+  if (!activeId) return;
+  const item = allData.find(i => i.id === activeId);
+  document.getElementById('corrigir-sub').textContent = item?.nome || item?.telefone || activeId;
+  document.getElementById('c-value').value   = item?.valor_estimado || '';
   document.getElementById('c-produto').value = item?.produto || '';
-  document.getElementById('c-name').value    = item?.display_name || '';
+  document.getElementById('c-name').value    = item?.nome || '';
+  document.getElementById('c-phone').value   = item?.telefone || '';
   document.getElementById('c-origem').value  = 'ad';
-  document.getElementById('overlay-corrigir').dataset.rawId = rawId;
   document.getElementById('overlay-corrigir').classList.remove('hidden');
 }
 
-function abrirRejeitar(rawId) {
-  const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
-  document.getElementById('rejeitar-sub').textContent = item?.display_name || `****${item?.phone_last4}` || rawId;
-  document.getElementById('overlay-rejeitar').dataset.rawId = rawId;
+function abrirRejeitar() {
+  if (!activeId) return;
+  const item = allData.find(i => i.id === activeId);
+  document.getElementById('rejeitar-sub').textContent = item?.nome || item?.telefone || activeId;
   document.getElementById('overlay-rejeitar').classList.remove('hidden');
 }
 
-async function desfazer(rawId) {
-  await reviewAction(rawId, 'desfazer', {});
+async function desfazer() {
+  if (!activeId) return;
+  const item = allData.find(i => i.id === activeId);
+  await reviewAction(activeId, item?.analise_id, 'desfazer', {});
 }
 
-async function reviewAction(rawId, action, params) {
-  const body = { id: rawId, action, ...params };
+async function reviewAction(id, analise_id, action, params) {
+  const body = { id, analise_id, action, ...params };
 
-  const idx  = allData.findIndex(c => c.id.replace(/^ai_/, '') === rawId);
-  const prev = idx !== -1 ? allData[idx].human_label : undefined;
+  const idx        = allData.findIndex(i => i.id === id);
+  const prevRevisao = idx !== -1 ? allData[idx].revisao : undefined;
 
+  // Atualização otimista
   if (idx !== -1) {
-    if (action === 'rejeitar')      allData[idx].human_label = 'nao_venda';
-    else if (action === 'desfazer') allData[idx].human_label = null;
-    else                            allData[idx].human_label = 'venda';
+    const revisaoMap = { confirmar: 'confirmada', corrigir: 'confirmada', rejeitar: 'rejeitada', desfazer: 'pendente' };
+    allData[idx].revisao = revisaoMap[action];
   }
-
   applyFilter();
-  if (activeRawId === rawId) {
-    const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
-    if (item) renderIATab(item, rawId);
+  if (activeId === id) {
+    const item = allData.find(i => i.id === id);
+    if (item) renderIATab(item);
   }
 
   try {
-    const resp = await fetch('/api/ia/revisar', {
+    const r = await fetch('/api/ia/revisar', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
       body:    JSON.stringify(body),
     });
-    const data = await resp.json();
+    const data = await r.json();
 
-    if (!resp.ok || !data.ok) {
-      if (idx !== -1) allData[idx].human_label = prev;
+    if (!r.ok || !data.ok) {
+      // Reverte
+      if (idx !== -1) allData[idx].revisao = prevRevisao;
       applyFilter();
-      if (activeRawId === rawId) {
-        const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
-        if (item) renderIATab(item, rawId);
+      if (activeId === id) {
+        const item = allData.find(i => i.id === id);
+        if (item) renderIATab(item);
       }
       throw new Error(data.error || 'Erro inesperado');
     }
@@ -1507,62 +1574,10 @@ async function reviewAction(rawId, action, params) {
       rejeitar:  '✕ Rejeitado.',
       desfazer:  'Ação desfeita.',
     };
-    showToast(msgs[action] || 'Salvo!', action === 'rejeitar' ? 'err' : action === 'desfazer' ? 'info' : 'ok');
+    showToast(msgs[action] || 'Salvo!',
+      action === 'rejeitar' ? 'err' : action === 'desfazer' ? 'info' : 'ok');
   } catch (e) {
     showToast('Erro: ' + e.message, 'err');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// MODAL: REGISTRAR MANUAL
-// ═══════════════════════════════════════════════════════════
-let tipoAtual = 'Contact';
-
-function bindFormTipo() {
-  document.querySelectorAll('.tipo-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      tipoAtual = btn.dataset.tipo;
-      document.getElementById('n-value-field').classList.toggle('hidden', tipoAtual !== 'Purchase');
-    });
-  });
-}
-
-async function submitNovo() {
-  const phone = document.getElementById('n-phone').value.trim();
-  if (!phone) { showToast('Informe o WhatsApp.', 'err'); return; }
-
-  const body = {
-    event_name: tipoAtual,
-    phone,
-    name:    document.getElementById('n-name').value.trim()    || undefined,
-    value:   tipoAtual === 'Purchase' ? document.getElementById('n-value').value : undefined,
-    produto: document.getElementById('n-produto').value.trim() || undefined,
-    origem:  document.getElementById('n-origem').value,
-    observacao: document.getElementById('n-obs').value.trim()  || undefined,
-  };
-
-  const btn = document.getElementById('confirm-novo');
-  btn.disabled = true;
-
-  try {
-    const resp = await fetch('/api/log-conversion', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
-      body:    JSON.stringify(body),
-    });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) throw new Error(data.error || 'Erro');
-    document.getElementById('overlay-novo').classList.add('hidden');
-    showToast('✓ Conversão registrada!', 'ok');
-    ['n-phone','n-name','n-value','n-produto','n-obs'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-  } catch (e) {
-    showToast('Erro: ' + e.message, 'err');
-  } finally {
-    btn.disabled = false;
   }
 }
 
@@ -1575,23 +1590,54 @@ function showToast(msg, type = 'ok') {
   t.textContent = msg;
   t.className = `toast toast-${type}`;
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => t.className = 'toast hidden', 3500);
+  _toastTimer = setTimeout(() => { t.className = 'toast hidden'; }, 3500);
 }
 
 // ═══════════════════════════════════════════════════════════
-// HELPERS
+// BADGES & HELPERS
 // ═══════════════════════════════════════════════════════════
-function statusBadge(item) {
-  if (item.human_label === 'venda')     return '<span class="badge badge-green">✓ Confirmada</span>';
-  if (item.human_label === 'nao_venda') return '<span class="badge badge-red">✕ Rejeitada</span>';
-  if (item.observacao  === 'venda')     return '<span class="badge badge-yellow">⏳ Aguardando</span>';
-  if (item.observacao  === 'contato')   return '<span class="badge badge-blue">📞 Contato</span>';
-  return '<span class="badge badge-muted">Em aberto</span>';
+function origemBadge(origem) {
+  const map = {
+    'anuncio_meta':   ['badge-red',    '📘 Meta'],
+    'anuncio_google': ['badge-blue',   '🔍 Google'],
+    'bio_instagram':  ['badge-purple', '📸 Insta'],
+    'site':           ['badge-muted',  '🌐 Site'],
+    'organico':       ['badge-green',  '💬 Orgânico'],
+    'desconhecido':   ['badge-muted',  '—'],
+  };
+  const [cls, label] = map[origem] || ['badge-muted', escHtml(origem || '—')];
+  return `<span class="badge ${cls}">${label}</span>`;
 }
 
-function confBar(item) {
-  if (!item.ai_confidence && !item.human_label) return '<span style="color:var(--muted)">—</span>';
-  const pct = Math.round((item.ai_confidence || 0) * 100);
+function statusIaBadge(item) {
+  const s = item.status_ia;
+  if (!s) return '<span class="badge badge-muted">—</span>';
+  const map = {
+    'venda':         ['badge-green',  '💊 Venda'],
+    'perdida':       ['badge-blue',   '📞 Perdida'],
+    'em_aberto':     ['badge-yellow', '❓ Em aberto'],
+    'nao_comercial': ['badge-muted',  '🔕 Não comerc.'],
+  };
+  const [cls, label] = map[s] || ['badge-muted', escHtml(s)];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function revisaoBadge(item) {
+  const r = item.revisao;
+  if (!r || r === 'pendente') {
+    if (item.status_ia === 'venda') return '<span class="badge badge-yellow">⏳ Pendente</span>';
+    return '<span class="badge badge-muted">—</span>';
+  }
+  const map = {
+    'confirmada': ['badge-green',  '✓ Confirmada'],
+    'rejeitada':  ['badge-red',    '✕ Rejeitada'],
+    'automatica': ['badge-green',  '⚡ Auto'],
+  };
+  const [cls, label] = map[r] || ['badge-muted', r];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function confBar(pct) {
   const cls = pct >= 80 ? 'conf-high' : pct >= 60 ? 'conf-mid' : 'conf-low';
   return `<div class="conf-wrap">
     <div class="conf-bar"><div class="conf-fill ${cls}" style="width:${pct}%"></div></div>
@@ -1603,6 +1649,13 @@ function fmtDate(str) {
   if (!str) return '—';
   const d = new Date(str.length === 10 ? str + 'T12:00:00' : str);
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
+function fmtDateTime(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+       + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
 function escHtml(s) {
@@ -1618,6 +1671,7 @@ function escHtml(s) {
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
 function bindEvents() {
+  // Chips de filtro
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -1627,73 +1681,77 @@ function bindEvents() {
     });
   });
 
+  // Busca
   document.getElementById('btn-buscar').addEventListener('click', loadConversations);
   document.getElementById('f-q').addEventListener('keydown', e => {
     if (e.key === 'Enter') loadConversations();
   });
 
+  // Reload
+  document.getElementById('btn-reload').addEventListener('click', () => {
+    msgCache = {};
+    loadConversations();
+  });
+
+  // Painel
   document.getElementById('panel-close').addEventListener('click', closePanel);
 
   document.querySelectorAll('.panel-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
       switchPanelTab(tab);
-      if (tab === 'conversa' && activeRawId) {
-        if (!msgCache[activeRawId]) {
-          loadMsgs(activeRawId);
+      if (tab === 'conversa' && activeId) {
+        if (!msgCache[activeId]) {
+          loadMsgs(activeId);
         } else {
           const wrap = document.getElementById('msgs-wrap');
           if (!wrap.innerHTML || wrap.innerHTML.includes('msg-loading')) {
-            loadMsgs(activeRawId);
+            loadMsgs(activeId);
           }
         }
       }
     });
   });
 
+  // Modal corrigir
   document.getElementById('confirm-corrigir').addEventListener('click', async () => {
-    const rawId  = document.getElementById('overlay-corrigir').dataset.rawId;
-    const value  = parseFloat(document.getElementById('c-value').value) || 0;
-    const item   = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
+    if (!activeId) return;
+    const item = allData.find(i => i.id === activeId);
     document.getElementById('overlay-corrigir').classList.add('hidden');
-    await reviewAction(rawId, 'corrigir', {
-      value,
-      produto: document.getElementById('c-produto').value.trim(),
-      name:    document.getElementById('c-name').value.trim() || item?.display_name,
-      phone:   item?.phone_normalized,
+    await reviewAction(activeId, item?.analise_id, 'corrigir', {
+      value:   parseFloat(document.getElementById('c-value').value) || undefined,
+      produto: document.getElementById('c-produto').value.trim() || undefined,
+      name:    document.getElementById('c-name').value.trim()    || undefined,
+      phone:   document.getElementById('c-phone').value.trim()   || undefined,
       origem:  document.getElementById('c-origem').value,
     });
   });
   document.getElementById('cancel-corrigir').addEventListener('click', () =>
     document.getElementById('overlay-corrigir').classList.add('hidden'));
 
+  // Modal rejeitar
   document.getElementById('confirm-rejeitar').addEventListener('click', async () => {
-    const rawId  = document.getElementById('overlay-rejeitar').dataset.rawId;
+    if (!activeId) return;
+    const item  = allData.find(i => i.id === activeId);
     const motivo = document.getElementById('r-motivo').value;
     document.getElementById('overlay-rejeitar').classList.add('hidden');
-    await reviewAction(rawId, 'rejeitar', { motivo });
+    await reviewAction(activeId, item?.analise_id, 'rejeitar', { motivo });
   });
   document.getElementById('cancel-rejeitar').addEventListener('click', () =>
     document.getElementById('overlay-rejeitar').classList.add('hidden'));
 
-  document.getElementById('btn-novo').addEventListener('click', () =>
-    document.getElementById('overlay-novo').classList.remove('hidden'));
-  document.getElementById('cancel-novo').addEventListener('click', () =>
-    document.getElementById('overlay-novo').classList.add('hidden'));
-  document.getElementById('confirm-novo').addEventListener('click', submitNovo);
-  bindFormTipo();
-
-  ['overlay-corrigir', 'overlay-rejeitar', 'overlay-novo'].forEach(id => {
+  // Fechar overlay ao clicar fora
+  ['overlay-corrigir', 'overlay-rejeitar'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e) {
       if (e.target === this) this.classList.add('hidden');
     });
   });
 
+  // ESC
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (!document.getElementById('overlay-corrigir').classList.contains('hidden') ||
-          !document.getElementById('overlay-rejeitar').classList.contains('hidden') ||
-          !document.getElementById('overlay-novo').classList.contains('hidden')) return;
+          !document.getElementById('overlay-rejeitar').classList.contains('hidden')) return;
       closePanel();
     }
   });

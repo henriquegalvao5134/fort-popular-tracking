@@ -1,22 +1,25 @@
 // POST /api/ia/revisar
 //
-// Registra a decisão da equipe sobre uma conversa classificada pelo agente IA.
+// Registra a decisão da equipe sobre uma análise IA.
+// Fonte real: tabelas analises + vendas + contatos (n8n escreve aqui desde out/2026).
+//
 // Actions:
-//   confirmar  → human_label = 'venda'  + insere D1 + dispara Meta CAPI
-//   corrigir   → human_label = 'venda'  + insere D1 com valores corrigidos + CAPI
-//   rejeitar   → human_label = 'nao_venda'  (sem D1, sem CAPI)
-//   desfazer   → human_label = null     (desfaz revisão anterior)
+//   confirmar  → analises.revisao = 'confirmada' + insere vendas + dispara Meta CAPI
+//   corrigir   → analises.revisao = 'confirmada' + insere vendas com valores corrigidos + CAPI
+//   rejeitar   → analises.revisao = 'rejeitada'
+//   desfazer   → analises.revisao = 'pendente'
 //
 // Auth: header x-dash-key: <DASH_KEY> ou <CLIENT_KEY>
 // Body: {
-//   id:       UUID do conversation_labels (sem prefixo 'ai_')  ← obrigatório
-//   action:   'confirmar' | 'corrigir' | 'rejeitar' | 'desfazer'  ← obrigatório
-//   value?:   valor corrigido em R$ (usado em 'corrigir')
-//   produto?: produto corrigido
-//   name?:    nome do cliente
-//   phone?:   sobrescreve o telefone do label
-//   origem?:  'ad' | 'google' | 'organic' | 'referral' (padrão: 'ad')
-//   motivo?:  texto livre de rejeição
+//   id:        UUID do contato (contatos.id)          ← obrigatório
+//   analise_id: UUID da análise (analises.id)         ← obrigatório se não for 'desfazer' com id de contato
+//   action:    'confirmar' | 'corrigir' | 'rejeitar' | 'desfazer'
+//   value?:    valor corrigido em R$
+//   produto?:  produto corrigido
+//   name?:     nome confirmado do cliente
+//   phone?:    sobrescreve o telefone
+//   origem?:   'ad' | 'google' | 'organic' | 'referral'
+//   motivo?:   texto livre de rejeição
 // }
 
 export async function onRequestOptions() {
@@ -43,9 +46,9 @@ export async function onRequestPost(context) {
   let body = {};
   try { body = await request.json(); } catch (_) { body = {}; }
 
-  const { id, action, value, produto, motivo, name, phone, origem } = body;
+  const { id, analise_id, action, value, produto, motivo, name, phone, origem } = body;
 
-  if (!id) return json({ error: 'id é obrigatório' }, 400);
+  if (!id) return json({ error: 'id (contato) é obrigatório' }, 400);
   if (!['confirmar', 'corrigir', 'rejeitar', 'desfazer'].includes(action)) {
     return json({ error: 'action inválido. Use: confirmar | corrigir | rejeitar | desfazer' }, 400);
   }
@@ -54,72 +57,99 @@ export async function onRequestPost(context) {
   const SB_KEY = env.SUPABASE_SERVICE_KEY;
   if (!SB_URL || !SB_KEY) return json({ error: 'Supabase não configurado' }, 500);
 
-  const sbHeaders = {
+  const sbH = {
     'apikey':        SB_KEY,
     'Authorization': 'Bearer ' + SB_KEY,
     'Content-Type':  'application/json',
   };
 
-  // ── Busca o label no Supabase ─────────────────────────────────────
-  let label;
+  // ── Busca contato ─────────────────────────────────────────────────
+  let contato;
   try {
-    const resp = await fetch(
-      `${SB_URL}/rest/v1/conversation_labels?id=eq.${id}&limit=1`,
-      { headers: sbHeaders }
+    const r = await fetch(
+      `${SB_URL}/rest/v1/contatos?id=eq.${id}&client_slug=eq.fort-popular&limit=1`,
+      { headers: sbH }
     );
-    if (!resp.ok) return json({ error: 'Supabase GET error', status: resp.status }, 502);
-    const rows = await resp.json();
-    if (!rows.length) return json({ error: 'Conversa não encontrada' }, 404);
-    label = rows[0];
+    if (!r.ok) return json({ error: 'Supabase GET contato error' }, 502);
+    const rows = await r.json();
+    if (!rows.length) return json({ error: 'Contato não encontrado' }, 404);
+    contato = rows[0];
   } catch (e) {
-    return json({ error: 'Erro ao buscar conversa: ' + e.message }, 502);
+    return json({ error: 'Erro ao buscar contato: ' + e.message }, 502);
   }
 
-  if (label.client_slug !== 'fort-popular') return json({ error: 'Acesso negado' }, 403);
-
-  // ── Determina novo human_label ────────────────────────────────────
-  const labelMap = { confirmar: 'venda', corrigir: 'venda', rejeitar: 'nao_venda', desfazer: null };
-  const newLabel = labelMap[action];
-
-  // ── PATCH Supabase ────────────────────────────────────────────────
+  // ── Busca análise (mais recente se analise_id não informado) ──────
+  let analise = null;
+  const aid = analise_id || null;
   try {
-    const patchResp = await fetch(
-      `${SB_URL}/rest/v1/conversation_labels?id=eq.${id}`,
-      {
-        method:  'PATCH',
-        headers: { ...sbHeaders, 'Prefer': 'return=minimal' },
-        body:    JSON.stringify({ human_label: newLabel }),
-      }
-    );
-    if (!patchResp.ok) {
-      const errText = await patchResp.text();
-      return json({ error: 'Supabase PATCH error: ' + errText }, 502);
+    const query = aid
+      ? `id=eq.${aid}&client_slug=eq.fort-popular&limit=1`
+      : `contato_id=eq.${id}&client_slug=eq.fort-popular&order=created_at.desc&limit=1`;
+    const r = await fetch(`${SB_URL}/rest/v1/analises?${query}`, { headers: sbH });
+    if (r.ok) {
+      const rows = await r.json();
+      analise = rows[0] || null;
     }
-  } catch (e) {
-    return json({ error: 'Erro ao atualizar: ' + e.message }, 502);
+  } catch (_) {}
+
+  // Para confirmar/corrigir, análise é necessária
+  if ((action === 'confirmar' || action === 'corrigir') && !analise) {
+    return json({ error: 'Nenhuma análise encontrada para este contato' }, 404);
   }
 
-  // ── Rejeitar / Desfazer: encerra aqui ────────────────────────────
+  // ── Determina nova revisao ─────────────────────────────────────────
+  const revisaoMap = {
+    confirmar: 'confirmada',
+    corrigir:  'confirmada',
+    rejeitar:  'rejeitada',
+    desfazer:  'pendente',
+  };
+  const newRevisao = revisaoMap[action];
+
+  // ── PATCH analises ────────────────────────────────────────────────
+  if (analise) {
+    try {
+      const patchBody = { revisao: newRevisao, revisado_por: 'equipe', revisado_em: new Date().toISOString() };
+      if (action === 'desfazer') {
+        patchBody.revisado_por = null;
+        patchBody.revisado_em  = null;
+      }
+      const r = await fetch(
+        `${SB_URL}/rest/v1/analises?id=eq.${analise.id}`,
+        { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' }, body: JSON.stringify(patchBody) }
+      );
+      if (!r.ok) return json({ error: 'Supabase PATCH analise error: ' + await r.text() }, 502);
+    } catch (e) {
+      return json({ error: 'Erro ao atualizar análise: ' + e.message }, 502);
+    }
+  }
+
+  // ── Rejeitar / Desfazer: encerra aqui ─────────────────────────────
   if (action === 'rejeitar' || action === 'desfazer') {
-    return json({ ok: true, action, human_label: newLabel });
+    return json({ ok: true, action, revisao: newRevisao });
   }
 
-  // ── Confirmar / Corrigir: prepara inserção D1 + CAPI ─────────────
+  // ── Confirmar / Corrigir: prepara dados para vendas + D1 + CAPI ──
   const nowTs   = Math.floor(Date.now() / 1000);
   const cc      = env.DEFAULT_COUNTRY_CODE || '55';
-  const rawPhone = phone || label.phone || '';
+  const rawPhone = phone || contato.telefone || '';
   const phNorm   = normalizePhone(rawPhone, cc);
 
   const finalValue   = value !== undefined ? parseBRFloat(value)
-                     : parseFloat(label.value_brl || '0') || 0;
-  const finalProduct = (produto || label.product || '').trim();
-  const finalName    = (name || '').trim();
-  const eventOrigem  = ['ad', 'google', 'organic', 'referral'].includes(origem) ? origem : 'ad';
-  const fonte        = action === 'corrigir' ? 'ia-corrigido' : 'ia';
+                     : parseFloat(analise?.valor_estimado || '0') || 0;
+  const finalProduct = (produto || analise?.produto || '').trim();
+  const finalName    = (name || contato.nome_validado || contato.nome_whatsapp || '').trim();
 
-  const parts    = finalName.split(/\s+/).filter(Boolean);
-  const fn       = parts[0] || '';
-  const ln       = parts.slice(1).join(' ');
+  // Mapeia origem para meta-compatível
+  const origemInput = origem || contato.origem || 'anuncio_meta';
+  const eventOrigem = origemInput.includes('google') ? 'google'
+                    : origemInput.includes('anuncio') ? 'ad'
+                    : origemInput.includes('organico') ? 'organic'
+                    : 'ad';
+
+  const parts  = finalName.split(/\s+/).filter(Boolean);
+  const fn     = parts[0] || '';
+  const ln     = parts.slice(1).join(' ');
 
   const hashedPh = await sha256(phNorm);
   const hashedFn = fn ? await sha256(fn.toLowerCase()) : '';
@@ -128,13 +158,37 @@ export async function onRequestPost(context) {
   const eventId    = crypto.randomUUID();
   const phoneLast4 = phNorm.slice(-4) || rawPhone.replace(/\D/g, '').slice(-4);
   const valueCents = Math.round(finalValue * 100);
-  const eventDate  = label.created_at ? label.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10);
-  const eventTime  = label.created_at
-    ? Math.floor(new Date(label.created_at).getTime() / 1000)
-    : nowTs;
+  const vendidaEm  = analise?.created_at || new Date().toISOString();
+  const eventDate  = vendidaEm.slice(0, 10);
+  const eventTime  = Math.floor(new Date(vendidaEm).getTime() / 1000);
+  const fonte      = action === 'corrigir' ? 'ia-corrigido' : 'ia';
 
-  // ── Insert D1 ─────────────────────────────────────────────────────
-  // INSERT OR IGNORE evita duplicata se o gestor confirmar a mesma conversa duas vezes
+  // ── Insert vendas (Supabase) ──────────────────────────────────────
+  let vendaId = null;
+  if (finalValue > 0) {
+    try {
+      const vendaBody = {
+        client_slug: 'fort-popular',
+        contato_id:  id,
+        analise_id:  analise?.id || null,
+        valor:       finalValue,
+        produto:     finalProduct || null,
+        vendida_em:  vendidaEm,
+        origem:      contato.origem || 'desconhecido',
+        ad_id:       contato.ctwa_clid || contato.gclid || null,
+      };
+      const r = await fetch(
+        `${SB_URL}/rest/v1/vendas`,
+        { method: 'POST', headers: { ...sbH, 'Prefer': 'return=representation' }, body: JSON.stringify(vendaBody) }
+      );
+      if (r.ok) {
+        const rows = await r.json();
+        vendaId = rows[0]?.id || null;
+      }
+    } catch (_) {}
+  }
+
+  // ── Insert D1 manual_conversions ──────────────────────────────────
   let d1Ok = false;
   if (env.DB) {
     try {
@@ -148,13 +202,13 @@ export async function onRequestPost(context) {
         eventId, 'Purchase', finalName, phoneLast4, phNorm,
         valueCents, eventDate, eventOrigem, 0, nowTs,
         finalProduct, motivo || '',
-        fonte, id,
+        fonte, analise?.id || null,
       ).run();
       d1Ok = (result.changes || 0) > 0;
-    } catch (_) { /* não bloqueia a resposta */ }
+    } catch (_) {}
   }
 
-  // ── Meta CAPI ─────────────────────────────────────────────────────
+  // ── Meta CAPI ──────────────────────────────────────────────────────
   const sevenDaysAgo = nowTs - 7 * 24 * 60 * 60;
   const metaToken    = env.META_ACCESS_TOKEN || env.META_ADS_ACCESS_TOKEN;
   const sendToMeta   = eventOrigem === 'ad' || eventOrigem === 'google';
@@ -188,22 +242,33 @@ export async function onRequestPost(context) {
     if (env.META_TEST_EVENT_CODE) payload.test_event_code = env.META_TEST_EVENT_CODE;
 
     try {
-      const resp = await fetch(
+      const r = await fetch(
         `https://graph.facebook.com/v25.0/${env.META_PIXEL_ID}/events?access_token=${metaToken}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
       );
-      metaStatus = resp.status;
-      metaOk     = resp.ok;
-      metaBody   = await resp.text();
-    } catch (err) { metaBody = err.message || 'fetch error'; }
+      metaStatus = r.status;
+      metaOk     = r.ok;
+      metaBody   = await r.text();
+    } catch (err) {
+      metaBody = err.message || 'fetch error';
+    }
 
-    // Atualiza meta_ok no D1
-    if (metaOk && env.DB) {
-      try {
-        await env.DB.prepare(
-          `UPDATE manual_conversions SET meta_ok = 1 WHERE supabase_venda_id = ?`
-        ).bind(id).run();
-      } catch (_) {}
+    // Atualiza meta_ok no D1 e Supabase
+    if (metaOk) {
+      if (env.DB) {
+        try {
+          await env.DB.prepare(`UPDATE manual_conversions SET meta_ok = 1 WHERE event_id = ?`).bind(eventId).run();
+        } catch (_) {}
+      }
+      if (vendaId) {
+        try {
+          await fetch(
+            `${SB_URL}/rest/v1/vendas?id=eq.${vendaId}`,
+            { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ meta_enviada: true, meta_enviada_em: new Date().toISOString(), meta_event_id: eventId }) }
+          );
+        } catch (_) {}
+      }
     }
   } else {
     if (!env.META_PIXEL_ID || !metaToken) metaBody = 'skipped: META_PIXEL_ID não configurado';
@@ -214,8 +279,9 @@ export async function onRequestPost(context) {
   return json({
     ok:            true,
     action,
-    human_label:   newLabel,
+    revisao:       newRevisao,
     event_id:      eventId,
+    venda_id:      vendaId,
     d1_ok:         d1Ok,
     meta_ok:       metaOk || metaSkipped,
     meta_skipped:  metaSkipped,
