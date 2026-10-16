@@ -9,20 +9,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0c0404; color: #f5f0f0; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+  body { background: #0d0d0d; color: #f2f2f2; font-family: 'Segoe UI', sans-serif; min-height: 100vh; display:flex; flex-direction:column; }
 
   /* CORES */
   :root {
-    --gold: #FFD700;
+    --gold:     #FFD700;
     --gold-light: #FFE44D;
     --gold-dim: rgba(255,215,0,0.12);
-    --card: #160808;
-    --card2: #1e0d0d;
-    --border: rgba(204,27,27,0.35);
-    --text: #f5f0f0;
-    --muted: #8a7070;
-    --bg: #0c0404;
-    --green: #5fd98a;
+    --sidebar:  #101010;
+    --card:     #161616;
+    --card2:    #1e1e1e;
+    --border:   rgba(255,255,255,0.10);
+    --border2:  rgba(255,255,255,0.06);
+    --text:     #f2f2f2;
+    --muted:    #888;
+    --bg:       #0d0d0d;
+    --green:    #4ade80;
+    --blue:     #60a5fa;
+    --yellow:   #fbbf24;
+    --red:      #dc2626;
   }
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
@@ -33,10 +38,10 @@
           border:1.5px solid var(--border); color:var(--muted); background:transparent;
           transition:.15s; white-space:nowrap; }
   .chip:hover { border-color: var(--gold); color: var(--gold); }
-  .chip.active { background: var(--gold); color: #0c0404; border-color: var(--gold); font-weight:600; }
+  .chip.active { background: var(--gold); color: #111; border-color: var(--gold); font-weight:600; }
 
   /* BADGES */
-  .badge-on  { background:rgba(204,27,27,0.15); color:var(--gold); padding:3px 11px; border-radius:20px; font-size:12px; border:1px solid rgba(255,215,0,0.25); }
+  .badge-on  { background:rgba(255,215,0,0.12); color:var(--gold); padding:3px 11px; border-radius:20px; font-size:12px; border:1px solid rgba(255,215,0,0.25); }
   .badge-off { background:rgba(255,255,255,0.05); color:var(--muted); padding:3px 11px; border-radius:20px; font-size:12px; }
 
   /* INPUTS */
@@ -79,7 +84,7 @@
   /* LOGIN */
   #login { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:50; }
   #login .box { width:100%; max-width:320px; text-align:center; }
-  .btn-gold { background:var(--gold); color:#0c0404; border:none; border-radius:10px;
+  .btn-gold { background:var(--gold); color:#111; border:none; border-radius:10px;
               padding:12px 24px; font-size:14px; font-weight:700; cursor:pointer; width:100%; transition:.15s; }
   .btn-gold:hover { background:var(--gold-light); }
 
@@ -97,7 +102,7 @@
   /* HELP MODAL */
   #help-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; display:none; align-items:flex-start; justify-content:center; padding:24px 16px; overflow-y:auto; }
   #help-overlay.open { display:flex; }
-  #help-box { background:#160808; border:1px solid var(--border); border-radius:16px; width:100%; max-width:680px; padding:32px 28px; position:relative; margin:auto; }
+  #help-box { background:#161616; border:1px solid var(--border); border-radius:16px; width:100%; max-width:680px; padding:32px 28px; position:relative; margin:auto; }
   #help-box h2 { color:var(--gold); font-size:22px; font-weight:700; letter-spacing:4px; margin-bottom:4px; }
   #help-box .help-sub { font-size:12px; color:var(--muted); margin-bottom:24px; }
   .help-section { margin-bottom:22px; }
@@ -121,7 +126,7 @@
 
   /* RESPONSIVE */
   @media (max-width:620px) {
-    #app { padding:16px 12px 24px; }
+    .main-content { padding:16px 12px 70px; }
     .kpi-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
     .kpi-val  { font-size:20px; }
     #auction-insight { text-align:left !important; max-width:100% !important; margin-top:6px; }
@@ -129,12 +134,55 @@
     .col-imp { display:none; }
   }
 
-  /* ── BOTTOM NAV ── */
-  .bottom-nav { position:fixed; bottom:0; left:0; right:0; display:flex; background:#0c0404; border-top:1px solid rgba(204,27,27,.35); z-index:999; padding-bottom:env(safe-area-inset-bottom); }
-  .bottom-nav a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 8px; text-decoration:none; color:#8a7070; font-size:.7rem; gap:4px; transition:color .15s; }
-  .bottom-nav a:hover { color:#FFD700; }
+  /* ── BOTTOM NAV (mobile) ── */
+  .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border); z-index:50; padding-bottom:env(safe-area-inset-bottom); }
+  .bottom-nav a { flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 4px 6px; font-size:.62rem; color:var(--muted); text-decoration:none; gap:3px; transition:color .15s; }
+  .bottom-nav a:hover, .bottom-nav a.bn-active { color:var(--gold); }
   .bottom-nav .bn-icon { font-size:1.2rem; }
-  @media (max-width:620px) { #app { padding:16px 12px 72px; } }
+
+  /* ── APP LAYOUT ── */
+  .app-layout { flex:1; display:flex; overflow:hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width:180px; flex-shrink:0; background:var(--sidebar);
+    border-right:1px solid var(--border);
+    display:flex; flex-direction:column; padding:16px 0;
+    overflow-y:auto;
+  }
+  .sidebar::-webkit-scrollbar { display:none; }
+  .sidebar-label {
+    padding:6px 16px 4px; font-size:.58rem;
+    font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+    color:var(--muted); margin-top:8px;
+  }
+  .sidebar-label:first-child { margin-top:0; }
+  .nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 16px; color:var(--muted); font-size:.85rem;
+    font-weight:500; text-decoration:none; transition:.15s;
+    border:1px solid transparent;
+  }
+  .nav-item:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+  .nav-item.active {
+    background:rgba(220,38,38,0.15); border-color:rgba(220,38,38,0.3);
+    color:var(--text); font-weight:600;
+  }
+  .nav-item-icon { font-size:1rem; flex-shrink:0; line-height:1; }
+
+  /* ── MAIN CONTENT ── */
+  .main-content { flex:1; display:flex; flex-direction:column; overflow-y:auto; padding:20px 24px 60px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width:820px) {
+    .sidebar     { display:none; }
+    .bottom-nav  { display:flex; }
+    .main-content { padding-bottom:70px; }
+    .kpi-grid     { grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width:620px) {
+    .kpi-grid { grid-template-columns:repeat(2,1fr); }
+  }
 
 </style>
 </head>
@@ -226,7 +274,13 @@
 </div>
 
 <!-- APP -->
-<div id="app" style="display:none;max-width:960px;margin:0 auto;padding:28px 16px 32px;">
+<div id="app" class="app-layout" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar-nav"></nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
 
   <!-- HEADER -->
   <div id="app-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
@@ -239,7 +293,6 @@
         <div style="font-size:13px;color:var(--muted);" id="periodLabel">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px;">Atualizado às <span id="updatedAt">—</span></div>
       </div>
-      <a class="btn-clientes" id="btn-clientes" href="#" onclick="event.preventDefault();location.href='/clientes/?key='+CLIENT_KEY">👥 Clientes</a>
       <button class="btn-help" onclick="document.getElementById('help-overlay').classList.add('open')" title="Como usar o relatório">?</button>
     </div>
   </div>
@@ -573,14 +626,14 @@
     Dados via Meta Ads API · Delay de até 3h
   </div>
 
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
 
-
-
-</div>
-
-<nav class="bottom-nav">
-  <a href="/acesso/?key=fortpopular2026"><span class="bn-icon">⌂</span> Início</a>
-  <a href="/conversao/?key=fortpopular2026"><span class="bn-icon">📋</span> Registrar</a>
+<nav class="bottom-nav" id="bottom-nav">
+  <a href="/acesso/"><span class="bn-icon">⌂</span> Início</a>
+  <a href="/relatorio/" class="bn-active"><span class="bn-icon">📊</span> Relatório</a>
+  <a href="/clientes/"><span class="bn-icon">👥</span> Clientes</a>
+  <a href="/conversao/"><span class="bn-icon">📋</span> Conversões</a>
 </nav>
 
 <script>
@@ -593,6 +646,36 @@ let igChartInstance = null;
 let cpmChartInstance = null;
 let campFilter = 'all';
 let since = '', until = '';
+
+// ---------- NAV ----------
+function buildNav() {
+  const links = [
+    { href: '/acesso',    icon: '⌂',  label: 'Início'     },
+    { href: '/relatorio', icon: '📊', label: 'Relatório'  },
+    { href: '/clientes',  icon: '👥', label: 'Clientes'   },
+    { href: '/conversao', icon: '📋', label: 'Conversões' },
+  ];
+  const cur = location.pathname.replace(/\/$/, '');
+  document.getElementById('sidebar-nav').innerHTML =
+    `<span class="sidebar-label">Menu</span>` +
+    links.map(l => {
+      const active = cur.startsWith(l.href) ? 'active' : '';
+      const dest = l.href + '/?key=' + CLIENT_KEY;
+      return `<a class="nav-item ${active}" href="${dest}">
+        <span class="nav-item-icon">${l.icon}</span>${l.label}
+      </a>`;
+    }).join('');
+  // Bottom nav hrefs
+  const bLinks = [
+    { href: '/acesso/?key=', a: 'bn-acesso' },
+    { href: '/relatorio/?key=', a: 'bn-rel' },
+    { href: '/clientes/?key=', a: 'bn-cli' },
+    { href: '/conversao/?key=', a: 'bn-conv' },
+  ];
+  document.querySelectorAll('#bottom-nav a').forEach((a, i) => {
+    if (bLinks[i]) a.href = bLinks[i].href + CLIENT_KEY;
+  });
+}
 
 // ---------- AUTH ----------
 function doLogin() {
@@ -668,7 +751,8 @@ async function loadData() {
   if (!curr) return;
 
   document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
+  document.getElementById('app').style.display = 'flex';
+  buildNav();
   document.getElementById('updatedAt').textContent = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('periodLabel').textContent =
     since.split('-').reverse().join('/') + ' — ' + until.split('-').reverse().join('/');
