@@ -11,10 +11,9 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url    = new URL(request.url);
-  const key    = url.searchParams.get('key') || '';
 
-  const validKey = (env.DASH_KEY && key === env.DASH_KEY) || (env.CLIENT_KEY && key === env.CLIENT_KEY);
-  if (!validKey) return json({ error: 'Unauthorized' }, 401);
+  const auth = await validateAuth(request, env);
+  if (!auth.valid) return json({ error: 'Unauthorized' }, 401);
 
   const SB_URL = env.SUPABASE_URL;
   const SB_KEY = env.SUPABASE_SERVICE_KEY;
@@ -131,6 +130,20 @@ export async function onRequestGet(context) {
   // 'todos' = sem filtro
 
   return json({ ok: true, items, total: items.length });
+}
+
+async function validateAuth(request, env) {
+  const url = new URL(request.url);
+  const key = url.searchParams.get('key') || '';
+  if ((env.DASH_KEY && key === env.DASH_KEY) || (env.CLIENT_KEY && key === env.CLIENT_KEY)) return { valid: true };
+  const authH = request.headers.get('Authorization') || '';
+  if (authH.startsWith('Bearer ') && env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
+    const r = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': authH },
+    });
+    if (r.ok) return { valid: true };
+  }
+  return { valid: false };
 }
 
 function json(body, status = 200) {

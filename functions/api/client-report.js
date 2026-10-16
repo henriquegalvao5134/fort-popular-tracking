@@ -5,11 +5,8 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const key = url.searchParams.get('key') || '';
-
-  if (!env.CLIENT_KEY || key !== env.CLIENT_KEY) {
-    return json({ error: 'Unauthorized' }, 401);
-  }
+  const auth = await validateAuth(request, env);
+  if (!auth.valid) return json({ error: 'Unauthorized' }, 401);
 
   if (!env.META_ADS_ACCESS_TOKEN || !env.META_ADS_ACCOUNT_ID) {
     return json({ error: 'Meta Ads not configured' }, 500);
@@ -164,6 +161,20 @@ async function fetchOne(url) {
 function ymd(d) {
   const p = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+async function validateAuth(request, env) {
+  const url = new URL(request.url);
+  const key = url.searchParams.get('key') || '';
+  if ((env.DASH_KEY && key === env.DASH_KEY) || (env.CLIENT_KEY && key === env.CLIENT_KEY)) return { valid: true };
+  const authH = request.headers.get('Authorization') || '';
+  if (authH.startsWith('Bearer ') && env.SUPABASE_URL && env.SUPABASE_SERVICE_KEY) {
+    const r = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': authH },
+    });
+    if (r.ok) return { valid: true };
+  }
+  return { valid: false };
 }
 
 function json(body, status = 200) {
