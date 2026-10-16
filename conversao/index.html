@@ -9,26 +9,22 @@
   <style>
     /* ── Variáveis ── */
     :root {
-      --red:    #dc2626;
-      --red2:   #b91c1c;
-      --bg:     #0d0d0d;
-      --card:   #161616;
-      --border: rgba(255,255,255,0.10);
-      --text:   #f2f2f2;
-      --muted:  #888;
-      --green:  #4ade80;
-      --blue:   #60a5fa;
-      --yellow: #fbbf24;
+      --red:     #dc2626;
+      --red2:    #b91c1c;
+      --bg:      #0d0d0d;
+      --card:    #161616;
+      --card2:   #1e1e1e;
+      --border:  rgba(255,255,255,0.10);
+      --border2: rgba(255,255,255,0.06);
+      --text:    #f2f2f2;
+      --muted:   #888;
+      --green:   #4ade80;
+      --blue:    #60a5fa;
+      --yellow:  #fbbf24;
     }
 
-    /* ── Reset / Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
-
+    html, body { height: 100%; overflow: hidden; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -39,64 +35,108 @@
 
     /* ── HEADER ── */
     header {
-      height: 56px;
-      background: var(--card);
+      height: 58px;
+      background: linear-gradient(180deg, #1f1f1f 0%, var(--card) 100%);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 18px;
+      padding: 0 20px;
       flex-shrink: 0;
       z-index: 10;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.5);
     }
 
-    .brand h1 {
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(220,38,38,0.8);
+      flex-shrink: 0;
+    }
+    .brand-text h1 {
       font-family: 'Playfair Display', Georgia, serif;
-      color: var(--red);
-      font-size: 1.15rem;
-      letter-spacing: 0.04em;
+      color: var(--text);
+      font-size: 1.1rem;
+      letter-spacing: 0.03em;
       line-height: 1.1;
     }
+    .brand-text h1 em { color: var(--red); font-style: normal; }
+    .brand-text p { color: var(--muted); font-size: 0.67rem; }
 
-    .brand p { color: var(--muted); font-size: 0.7rem; }
-
-    .header-right { display: flex; align-items: center; gap: 14px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
 
     .btn-novo {
       background: var(--red);
       color: #fff;
       border: none;
-      border-radius: 7px;
-      padding: 7px 13px;
+      border-radius: 8px;
+      padding: 7px 14px;
       font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      transition: background .15s;
+      transition: background .15s, box-shadow .15s;
       white-space: nowrap;
+      box-shadow: 0 2px 10px rgba(220,38,38,0.45);
     }
-    .btn-novo:hover { background: var(--red2); }
+    .btn-novo:hover { background: var(--red2); box-shadow: 0 2px 14px rgba(220,38,38,0.55); }
 
-    .header-nav { display: flex; gap: 6px; }
+    .header-nav { display: flex; gap: 2px; }
     .header-nav a {
       color: var(--muted);
       text-decoration: none;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       padding: 6px 10px;
-      border-radius: 6px;
+      border-radius: 7px;
       transition: color .15s, background .15s;
     }
-    .header-nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .header-nav a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
 
-    /* ── BARRA DE CHIPS ── */
-    .chips-bar {
+    /* ── STATS STRIP ── */
+    .stats-strip {
       background: var(--card);
       border-bottom: 1px solid var(--border);
-      padding: 0 14px;
-      height: 48px;
+      padding: 0 20px;
+      height: 54px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+    .stats-strip::-webkit-scrollbar { display: none; }
+
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      padding: 0 22px;
+      border-right: 1px solid var(--border2);
+      flex-shrink: 0;
+    }
+    .stat-item:first-child { padding-left: 0; }
+    .stat-item:last-child  { border-right: none; }
+
+    .stat-val {
+      font-size: 1.28rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .stat-lbl { font-size: 0.7rem; color: var(--muted); white-space: nowrap; }
+    .stat-yellow { color: var(--yellow); }
+    .stat-green  { color: var(--green); }
+    .stat-red    { color: #f87171; }
+
+    /* ── BARRA DE TABS ── */
+    .chips-bar {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
       flex-shrink: 0;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -104,37 +144,48 @@
     .chips-bar::-webkit-scrollbar { display: none; }
 
     .chip {
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid transparent;
+      border-radius: 9px;
+      padding: 7px 14px;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.82rem;
+      font-weight: 500;
       cursor: pointer;
       white-space: nowrap;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 7px;
       font-family: inherit;
       transition: all .15s;
       flex-shrink: 0;
+      line-height: 1;
     }
-    .chip:hover { border-color: var(--red); color: var(--text); }
-    .chip.active { background: var(--red); border-color: var(--red); color: #fff; }
+    .chip:hover { background: rgba(255,255,255,0.08); color: var(--text); border-color: var(--border); }
+    .chip.active {
+      background: rgba(220,38,38,0.16);
+      border-color: rgba(220,38,38,0.42);
+      color: #ff6b6b;
+      font-weight: 600;
+    }
+    .chip-ico { font-size: 0.88rem; }
     .chip-cnt {
-      background: rgba(255,255,255,0.15);
-      border-radius: 10px;
-      padding: 0 6px;
+      background: rgba(255,255,255,0.10);
+      border-radius: 5px;
+      padding: 2px 7px;
       font-size: 0.7rem;
       font-weight: 700;
+      min-width: 22px;
+      text-align: center;
+      line-height: 1.5;
     }
-    .chip.active .chip-cnt { background: rgba(0,0,0,0.25); }
+    .chip.active .chip-cnt { background: rgba(220,38,38,0.28); color: #ff6b6b; }
 
     /* ── FILTER BAR ── */
     .filter-bar {
       background: var(--bg);
-      border-bottom: 1px solid rgba(220,38,38,0.1);
-      padding: 8px 14px;
+      border-bottom: 1px solid var(--border2);
+      padding: 8px 16px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -145,37 +196,39 @@
     .filter-bar input[type="text"] {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-radius: 8px;
       color: var(--text);
       padding: 6px 10px;
       font-size: 0.8rem;
       font-family: inherit;
+      transition: border-color .15s;
     }
     .filter-bar input[type="date"] { width: 138px; flex-shrink: 0; }
     .filter-bar input[type="text"] { flex: 1; min-width: 100px; }
     .filter-bar input::placeholder { color: var(--muted); }
-    .filter-bar input:focus { outline: none; border-color: var(--red); }
+    .filter-bar input:focus { outline: none; border-color: rgba(220,38,38,0.5); }
     .filter-bar input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
 
     .btn-buscar {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-radius: 8px;
       color: var(--text);
       padding: 6px 14px;
       font-size: 0.8rem;
       cursor: pointer;
       font-family: inherit;
       white-space: nowrap;
-      transition: border-color .15s;
+      transition: all .15s;
     }
-    .btn-buscar:hover { border-color: var(--red); }
+    .btn-buscar:hover { border-color: var(--red); color: #ff6b6b; }
 
     /* ── CONTENT AREA ── */
     .content-area {
       flex: 1;
       display: flex;
       overflow: hidden;
+      position: relative;
     }
 
     /* ── TABLE WRAP ── */
@@ -186,7 +239,7 @@
     }
     .table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
     .table-wrap::-webkit-scrollbar-track { background: transparent; }
-    .table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
 
     .conv-table {
       width: 100%;
@@ -197,13 +250,13 @@
     .conv-table thead th {
       position: sticky;
       top: 0;
-      background: var(--card);
+      background: #141414;
       border-bottom: 1px solid var(--border);
       padding: 10px 14px;
       text-align: left;
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-weight: 700;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.10em;
       color: var(--muted);
       text-transform: uppercase;
       white-space: nowrap;
@@ -211,12 +264,19 @@
     }
 
     .conv-table tbody tr {
-      border-bottom: 1px solid rgba(220,38,38,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
       cursor: pointer;
       transition: background .1s;
     }
-    .conv-table tbody tr:hover { background: rgba(220,38,38,0.06); }
-    .conv-table tbody tr.active { background: rgba(220,38,38,0.12); }
+    .conv-table tbody tr:hover   { background: rgba(255,255,255,0.025); }
+    .conv-table tbody tr.active  { background: rgba(220,38,38,0.08); }
+
+    /* Accent bar por status — left edge colored strip */
+    .conv-table tbody tr.row-pending   { box-shadow: inset 3px 0 0 var(--yellow); }
+    .conv-table tbody tr.row-confirmed { box-shadow: inset 3px 0 0 var(--green); }
+    .conv-table tbody tr.row-rejected  { box-shadow: inset 3px 0 0 #f87171; }
+    .conv-table tbody tr.row-contact   { box-shadow: inset 3px 0 0 var(--blue); }
+    .conv-table tbody tr.row-open      { box-shadow: inset 3px 0 0 rgba(255,255,255,0.12); }
 
     .conv-table td {
       padding: 11px 14px;
@@ -224,65 +284,69 @@
       vertical-align: middle;
     }
 
-    .col-date { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
-    .contact-name { font-weight: 600; margin-bottom: 2px; }
-    .contact-phone { font-size: 0.72rem; color: var(--muted); }
+    .col-date    { color: var(--muted); font-size: 0.75rem; white-space: nowrap; }
+    .contact-name  { font-weight: 600; margin-bottom: 2px; font-size: 0.85rem; }
+    .contact-phone { font-size: 0.7rem; color: var(--muted); }
 
     /* ── BADGES ── */
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 0.72rem;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 0.7rem;
       font-weight: 700;
       white-space: nowrap;
       gap: 3px;
     }
-    .badge-green  { background: rgba(74,222,128,0.12); color: var(--green); }
-    .badge-red    { background: rgba(220,38,38,0.12);  color: #f87171; }
-    .badge-yellow { background: rgba(251,191,36,0.12); color: var(--yellow); }
-    .badge-blue   { background: rgba(96,165,250,0.12); color: var(--blue); }
-    .badge-muted  { background: rgba(122,96,96,0.12);  color: var(--muted); }
+    .badge-green  { background: rgba(74,222,128,0.12);  color: var(--green); }
+    .badge-red    { background: rgba(220,38,38,0.12);   color: #f87171; }
+    .badge-yellow { background: rgba(251,191,36,0.12);  color: var(--yellow); }
+    .badge-blue   { background: rgba(96,165,250,0.12);  color: var(--blue); }
+    .badge-muted  { background: rgba(255,255,255,0.06); color: var(--muted); }
 
     /* ── CONFIDENCE ── */
     .conf-wrap { display: flex; align-items: center; gap: 6px; }
-    .conf-bar { width: 46px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .conf-bar  { width: 46px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
     .conf-fill { height: 100%; border-radius: 2px; }
-    .conf-high  { background: var(--green); }
-    .conf-mid   { background: var(--yellow); }
-    .conf-low   { background: #f87171; }
-    .conf-num   { font-size: 0.72rem; color: var(--muted); min-width: 26px; }
+    .conf-high { background: var(--green); }
+    .conf-mid  { background: var(--yellow); }
+    .conf-low  { background: #f87171; }
+    .conf-num  { font-size: 0.72rem; color: var(--muted); min-width: 26px; }
 
-    /* ── ROW ACTION ── */
+    /* ── ROW BUTTON ── */
     .row-btn {
-      background: transparent;
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid transparent;
       border-radius: 6px;
       color: var(--muted);
-      padding: 4px 10px;
-      font-size: 0.75rem;
+      padding: 5px 11px;
+      font-size: 0.74rem;
       cursor: pointer;
       font-family: inherit;
       transition: all .15s;
       white-space: nowrap;
     }
-    .row-btn:hover, tr.active .row-btn { border-color: var(--red); color: var(--red); }
+    .row-btn:hover, tr.active .row-btn {
+      background: rgba(220,38,38,0.12);
+      border-color: rgba(220,38,38,0.3);
+      color: #ff6b6b;
+    }
 
     /* ── EMPTY / LOADING ── */
     .state-msg {
-      padding: 52px 24px;
+      padding: 60px 24px;
       text-align: center;
       color: var(--muted);
       font-size: 0.88rem;
     }
-    .state-msg .ico { font-size: 2rem; display: block; margin-bottom: 10px; }
+    .state-msg .ico { font-size: 2rem; display: block; margin-bottom: 12px; opacity: 0.6; }
 
     /* ── SIDE PANEL ── */
     .side-panel {
       width: 0;
       border-left: none;
-      background: var(--card);
+      background: #111111;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -292,7 +356,6 @@
     .side-panel.open {
       width: 420px;
       border-left: 1px solid var(--border);
-      overflow: hidden;
     }
     .side-panel-inner {
       width: 420px;
@@ -303,36 +366,38 @@
 
     /* ── PANEL HEADER ── */
     .panel-header {
-      padding: 14px 16px;
+      padding: 16px 18px 14px;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       flex-shrink: 0;
+      background: linear-gradient(180deg, #1e1e1e 0%, #161616 100%);
     }
-    .panel-name  { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+    .panel-name  { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
     .panel-phone { font-size: 0.78rem; color: var(--muted); }
-    .panel-date  { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .panel-date  { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
 
     .panel-close {
-      background: none;
-      border: none;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid transparent;
       color: var(--muted);
-      font-size: 1rem;
+      font-size: 0.85rem;
       cursor: pointer;
-      padding: 3px 8px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 7px;
       line-height: 1;
-      transition: color .15s;
+      transition: all .15s;
       flex-shrink: 0;
     }
-    .panel-close:hover { color: var(--text); }
+    .panel-close:hover { color: var(--text); background: rgba(255,255,255,0.10); border-color: var(--border); }
 
     /* ── PANEL TABS ── */
     .panel-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
+      background: #141414;
     }
     .panel-tab {
       flex: 1;
@@ -340,101 +405,137 @@
       border: none;
       border-bottom: 2px solid transparent;
       color: var(--muted);
-      padding: 10px 8px;
+      padding: 11px 8px;
       cursor: pointer;
       font-size: 0.8rem;
       font-family: inherit;
       transition: all .15s;
       margin-bottom: -1px;
+      font-weight: 500;
     }
     .panel-tab:hover { color: var(--text); }
-    .panel-tab.active { color: var(--red); border-bottom-color: var(--red); }
+    .panel-tab.active { color: #ff6b6b; border-bottom-color: var(--red); font-weight: 600; }
 
     /* ── PANEL BODY ── */
     .panel-body {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 0;
     }
     .panel-body::-webkit-scrollbar { width: 4px; }
-    .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 2px; }
 
-    /* ── IA TAB ── */
+    /* ── PANEL SECTIONS ── */
+    .panel-section {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .panel-section:last-child { border-bottom: none; }
+    .section-title {
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 11px;
+    }
+
+    /* ── VERDICT CARD ── */
     .verdict-card {
       border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 14px;
+      padding: 14px 16px;
       border: 1px solid;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .vc-venda   { background: rgba(74,222,128,0.07); border-color: rgba(74,222,128,0.25); }
-    .vc-contato { background: rgba(96,165,250,0.07); border-color: rgba(96,165,250,0.2); }
-    .vc-aberto  { background: rgba(122,96,96,0.08);  border-color: var(--border); }
+    .vc-venda   { background: rgba(74,222,128,0.07);  border-color: rgba(74,222,128,0.22); }
+    .vc-contato { background: rgba(96,165,250,0.07);  border-color: rgba(96,165,250,0.22); }
+    .vc-aberto  { background: rgba(255,255,255,0.02); border-color: var(--border); }
 
-    .verdict-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; }
-    .verdict-conf  { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
+    .verdict-top    { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .verdict-label  { font-size: 0.92rem; font-weight: 700; }
+    .verdict-conf   { font-size: 0.78rem; color: var(--muted); margin-top: 1px; }
+    .verdict-badge  {
+      font-size: 0.68rem; font-weight: 700;
+      padding: 3px 9px; border-radius: 5px;
+      background: rgba(255,255,255,0.08); white-space: nowrap; flex-shrink: 0;
+    }
     .verdict-excerpt {
       font-size: 0.78rem; color: var(--muted); font-style: italic;
-      line-height: 1.45; border-left: 2px solid var(--border); padding-left: 8px;
+      line-height: 1.5; border-left: 2px solid rgba(255,255,255,0.14);
+      padding-left: 10px;
     }
 
-    .ia-details { margin-bottom: 14px; }
-    .ia-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.8rem;
+    /* ── IA DETAILS GRID ── */
+    .ia-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
-    .ia-row:last-child { border: none; }
-    .ia-row .lbl { color: var(--muted); flex-shrink: 0; }
-    .ia-row .val { font-weight: 600; text-align: right; word-break: break-word; }
-
-    .human-label-done {
-      padding: 8px 12px;
+    .ia-kv {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border2);
       border-radius: 8px;
-      font-size: 0.8rem;
+      padding: 10px 12px;
+    }
+    .ia-kv .lbl { font-size: 0.63rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+    .ia-kv .val { font-size: 0.88rem; font-weight: 600; word-break: break-word; }
+
+    /* ── HUMAN LABEL STATUS ── */
+    .human-label-done {
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 0.82rem;
       font-weight: 700;
-      text-align: center;
-      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
     }
-    .hld-confirmed { background: rgba(74,222,128,0.1); color: var(--green); }
-    .hld-rejected  { background: rgba(220,38,38,0.1);  color: #f87171; }
+    .hld-confirmed { background: rgba(74,222,128,0.10); color: var(--green);  border: 1px solid rgba(74,222,128,0.22); }
+    .hld-rejected  { background: rgba(220,38,38,0.10);  color: #f87171;       border: 1px solid rgba(220,38,38,0.22); }
 
     .btn-undo {
-      background: none; border: none; color: inherit; opacity: 0.6;
+      background: none; border: none; color: inherit; opacity: 0.55;
       cursor: pointer; font-size: 0.72rem; text-decoration: underline; font-family: inherit;
     }
     .btn-undo:hover { opacity: 1; }
 
+    /* ── ACTION BUTTONS ── */
     .panel-actions { display: flex; flex-direction: column; gap: 8px; }
 
     .action-btn {
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-size: 0.83rem;
+      padding: 11px 14px;
+      border-radius: 9px;
+      font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
-      transition: opacity .15s;
+      transition: all .15s;
       text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .action-btn:hover { opacity: 0.85; }
-    .action-confirm { background: rgba(74,222,128,0.15); color: var(--green);  border: 1px solid rgba(74,222,128,0.3); }
-    .action-correct { background: rgba(96,165,250,0.12); color: var(--blue);   border: 1px solid rgba(96,165,250,0.25); }
-    .action-reject  { background: rgba(220,38,38,0.10);  color: #f87171;       border: 1px solid rgba(220,38,38,0.25); }
+    .action-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .action-confirm { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+    .action-confirm:hover { background: rgba(74,222,128,0.18); }
+    .action-correct { background: rgba(96,165,250,0.10); color: var(--blue);  border: 1px solid rgba(96,165,250,0.22); }
+    .action-correct:hover { background: rgba(96,165,250,0.16); }
+    .action-reject  { background: rgba(220,38,38,0.08);  color: #f87171;      border: 1px solid rgba(220,38,38,0.22); }
+    .action-reject:hover  { background: rgba(220,38,38,0.14); }
+
+    .action-btn-icon  { font-size: 1.1rem; flex-shrink: 0; }
+    .action-btn-body  { flex: 1; }
+    .action-btn-title { font-size: 0.84rem; font-weight: 700; line-height: 1.2; }
+    .action-btn-sub   { font-size: 0.71rem; opacity: 0.65; font-weight: 400; margin-top: 2px; }
 
     /* ── MENSAGENS ── */
+    .msgs-body { padding: 12px 16px; }
     .msgs-date-sep {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.68rem;
-      margin: 12px 0 6px;
+      text-align: center; color: var(--muted);
+      font-size: 0.67rem; margin: 12px 0 6px;
     }
     .msg-row { display: flex; margin-bottom: 8px; }
     .msg-row.sent { justify-content: flex-end; }
@@ -442,25 +543,24 @@
 
     .msg-bubble {
       max-width: 84%;
-      padding: 8px 11px;
+      padding: 9px 12px;
       border-radius: 12px;
       font-size: 0.8rem;
       line-height: 1.5;
     }
-    .sent .msg-bubble { background: rgba(220,38,38,0.22); border-radius: 12px 12px 3px 12px; }
-    .recv .msg-bubble { background: rgba(255,255,255,0.08); border-radius: 12px 12px 12px 3px; }
+    .sent .msg-bubble { background: rgba(220,38,38,0.20); border-radius: 12px 12px 3px 12px; }
+    .recv .msg-bubble { background: rgba(255,255,255,0.07); border-radius: 12px 12px 12px 3px; }
 
     .msg-type-icon { margin-right: 3px; }
     .msg-text em { color: var(--muted); font-style: normal; font-size: 0.75rem; }
-    .msg-time { font-size: 0.65rem; color: var(--muted); text-align: right; margin-top: 3px; }
-
-    .msg-loading { text-align: center; color: var(--muted); padding: 24px; font-size: 0.82rem; }
+    .msg-time { font-size: 0.64rem; color: var(--muted); text-align: right; margin-top: 4px; }
+    .msg-loading { text-align: center; color: var(--muted); padding: 30px 16px; font-size: 0.82rem; }
 
     /* ── MODAIS ── */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.78);
+      background: rgba(0,0,0,0.82);
       z-index: 100;
       display: flex;
       align-items: center;
@@ -469,64 +569,66 @@
     }
 
     .modal-box {
-      background: #1a1a1a;
+      background: #1c1c1c;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 24px;
+      border-radius: 16px;
+      padding: 24px;
       width: 100%;
       max-width: 400px;
       max-height: 92vh;
       overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.75);
     }
     .modal-wide { max-width: 480px; }
 
     .modal-box h3 {
       font-family: 'Playfair Display', Georgia, serif;
-      color: var(--red);
-      font-size: 1.05rem;
+      color: var(--text);
+      font-size: 1.08rem;
       margin-bottom: 6px;
     }
-    .modal-sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 16px; }
+    .modal-sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 18px; }
 
     .modal-box label {
       display: block;
       color: var(--muted);
-      font-size: 0.72rem;
-      margin: 10px 0 4px;
+      font-size: 0.69rem;
+      margin: 12px 0 4px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
     .modal-box input,
     .modal-box select,
     .modal-box textarea {
       width: 100%;
-      background: var(--card);
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text);
-      padding: 8px 11px;
+      padding: 9px 12px;
       font-size: 0.85rem;
       font-family: inherit;
+      transition: border-color .15s;
     }
     .modal-box input:focus,
-    .modal-box select:focus { outline: none; border-color: var(--red); }
-    .modal-box select option { background: #1a1a1a; }
+    .modal-box select:focus { outline: none; border-color: rgba(220,38,38,0.5); }
+    .modal-box select option { background: #1c1c1c; }
 
-    .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 
     .btn-cancel {
       flex: 1;
-      background: transparent;
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--muted);
-      padding: 9px;
+      padding: 10px;
       cursor: pointer;
       font-family: inherit;
       font-size: 0.85rem;
-      transition: border-color .15s;
+      transition: all .15s;
     }
-    .btn-cancel:hover { border-color: var(--muted); color: var(--text); }
+    .btn-cancel:hover { color: var(--text); background: rgba(255,255,255,0.08); }
 
     .btn-primary {
       flex: 2;
@@ -534,61 +636,61 @@
       border: none;
       border-radius: 8px;
       color: #fff;
-      padding: 9px;
+      padding: 10px;
       cursor: pointer;
       font-family: inherit;
       font-size: 0.85rem;
       font-weight: 700;
       transition: background .15s;
+      box-shadow: 0 2px 10px rgba(220,38,38,0.4);
     }
     .btn-primary:hover { background: var(--red2); }
 
     .btn-danger {
       flex: 2;
-      background: rgba(220,38,38,0.15);
-      border: 1px solid rgba(220,38,38,0.35);
+      background: rgba(220,38,38,0.12);
+      border: 1px solid rgba(220,38,38,0.3);
       border-radius: 8px;
       color: #f87171;
-      padding: 9px;
+      padding: 10px;
       cursor: pointer;
       font-family: inherit;
       font-size: 0.85rem;
       font-weight: 700;
       transition: background .15s;
     }
-    .btn-danger:hover { background: rgba(220,38,38,0.25); }
+    .btn-danger:hover { background: rgba(220,38,38,0.22); }
 
-    /* Form do modal de nova conversão */
     .tipo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .tipo-btn {
-      background: transparent;
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--muted);
-      padding: 9px;
+      padding: 10px;
       cursor: pointer;
       font-family: inherit;
       font-size: 0.83rem;
       transition: all .15s;
     }
-    .tipo-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+    .tipo-btn.active { background: rgba(220,38,38,0.15); border-color: rgba(220,38,38,0.4); color: #ff6b6b; font-weight: 600; }
 
     /* ── TOAST ── */
     .toast {
       position: fixed;
-      bottom: 72px;
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(20,20,20,0.96);
+      background: rgba(22,22,22,0.97);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 9px 20px;
+      padding: 10px 20px;
       font-size: 0.82rem;
       color: var(--text);
       z-index: 200;
       max-width: 300px;
       text-align: center;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.55);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.65);
       pointer-events: none;
       transition: opacity .25s;
     }
@@ -626,10 +728,9 @@
     @media (max-width: 820px) {
       .header-nav { display: none; }
       .bottom-nav { display: flex; }
+      .stats-strip { display: none; }
+      .table-wrap  { padding-bottom: 60px; }
 
-      .table-wrap { padding-bottom: 60px; }
-
-      /* Painel vira overlay full-screen */
       .side-panel.open {
         position: absolute;
         inset: 0;
@@ -660,8 +761,11 @@
 <!-- ── HEADER ─────────────────────────────────────────── -->
 <header>
   <div class="brand">
-    <h1>Fort Popular</h1>
-    <p>Farmácia · Central de Conversões</p>
+    <div class="brand-dot"></div>
+    <div class="brand-text">
+      <h1>Fort <em>Popular</em></h1>
+      <p>Central de Conversões</p>
+    </div>
   </div>
   <div class="header-right">
     <button class="btn-novo" id="btn-novo">+ Registrar</button>
@@ -669,15 +773,43 @@
   </div>
 </header>
 
-<!-- ── CHIPS: filtros de status ───────────────────────── -->
-<div class="chips-bar">
-  <button class="chip active" data-filter="todas">Todas <span class="chip-cnt" id="cnt-todas">0</span></button>
-  <button class="chip" data-filter="aguardando">⏳ Aguardando <span class="chip-cnt" id="cnt-aguardando">0</span></button>
-  <button class="chip" data-filter="confirmadas">✓ Confirmadas <span class="chip-cnt" id="cnt-confirmadas">0</span></button>
-  <button class="chip" data-filter="rejeitadas">✕ Rejeitadas <span class="chip-cnt" id="cnt-rejeitadas">0</span></button>
+<!-- ── STATS STRIP ─────────────────────────────────────── -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <span class="stat-val" id="stat-total">—</span>
+    <span class="stat-lbl">Total</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-val stat-yellow" id="stat-pending">—</span>
+    <span class="stat-lbl">Aguardando revisão</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-val stat-green" id="stat-confirmed">—</span>
+    <span class="stat-lbl">Confirmadas</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-val stat-red" id="stat-rejected">—</span>
+    <span class="stat-lbl">Rejeitadas</span>
+  </div>
 </div>
 
-<!-- ── FILTER BAR ─────────────────────────────────────── -->
+<!-- ── TABS ─────────────────────────────────────────────── -->
+<div class="chips-bar">
+  <button class="chip active" data-filter="todas">
+    <span class="chip-ico">☰</span> Todas <span class="chip-cnt" id="cnt-todas">0</span>
+  </button>
+  <button class="chip" data-filter="aguardando">
+    <span class="chip-ico">⏳</span> Aguardando <span class="chip-cnt" id="cnt-aguardando">0</span>
+  </button>
+  <button class="chip" data-filter="confirmadas">
+    <span class="chip-ico">✓</span> Confirmadas <span class="chip-cnt" id="cnt-confirmadas">0</span>
+  </button>
+  <button class="chip" data-filter="rejeitadas">
+    <span class="chip-ico">✕</span> Rejeitadas <span class="chip-cnt" id="cnt-rejeitadas">0</span>
+  </button>
+</div>
+
+<!-- ── FILTER BAR ──────────────────────────────────────── -->
 <div class="filter-bar">
   <input type="date" id="f-from" title="Data inicial">
   <input type="date" id="f-to"   title="Data final">
@@ -685,7 +817,7 @@
   <button class="btn-buscar" id="btn-buscar">Buscar</button>
 </div>
 
-<!-- ── CONTENT AREA ───────────────────────────────────── -->
+<!-- ── CONTENT AREA ────────────────────────────────────── -->
 <div class="content-area" id="content-area">
 
   <!-- TABELA -->
@@ -710,6 +842,7 @@
   <!-- PAINEL LATERAL -->
   <aside class="side-panel" id="side-panel">
     <div class="side-panel-inner">
+
       <div class="panel-header">
         <div>
           <div class="panel-name"  id="panel-name">—</div>
@@ -718,17 +851,33 @@
         </div>
         <button class="panel-close" id="panel-close" title="Fechar">✕</button>
       </div>
+
       <div class="panel-tabs">
-        <button class="panel-tab active" data-tab="ia">🤖 IA</button>
+        <button class="panel-tab active" data-tab="ia">🤖 Análise IA</button>
         <button class="panel-tab" data-tab="conversa">💬 Conversa</button>
       </div>
+
+      <!-- ABA: IA -->
       <div class="panel-body" id="tab-ia">
-        <div id="ia-verdict-card"></div>
-        <div id="panel-actions"></div>
+        <div class="panel-section">
+          <div class="section-title">Veredicto</div>
+          <div id="ia-verdict-card"></div>
+        </div>
+        <div class="panel-section">
+          <div class="section-title">Detalhes</div>
+          <div class="ia-grid" id="ia-details-grid"></div>
+        </div>
+        <div class="panel-section">
+          <div class="section-title">Ações</div>
+          <div class="panel-actions" id="panel-actions"></div>
+        </div>
       </div>
+
+      <!-- ABA: CONVERSA -->
       <div class="panel-body hidden" id="tab-conversa">
-        <div id="msgs-wrap"></div>
+        <div class="msgs-body" id="msgs-wrap"></div>
       </div>
+
     </div>
   </aside>
 
@@ -740,11 +889,11 @@
     <h3>✏️ Corrigir Venda</h3>
     <p class="modal-sub" id="corrigir-sub"></p>
     <label>Valor (R$)</label>
-    <input type="number" id="c-value"  placeholder="0.00" min="0" step="0.01">
+    <input type="number" id="c-value"   placeholder="0.00" min="0" step="0.01">
     <label>Produto</label>
     <input type="text"   id="c-produto" placeholder="Medicamento ou produto…">
     <label>Nome do cliente</label>
-    <input type="text"   id="c-name"   placeholder="Nome completo">
+    <input type="text"   id="c-name"    placeholder="Nome completo">
     <label>Origem</label>
     <select id="c-origem">
       <option value="ad">Anúncio Meta</option>
@@ -772,13 +921,13 @@
       <option value="outro">Outro motivo</option>
     </select>
     <div class="modal-actions">
-      <button class="btn-cancel"  id="cancel-rejeitar">Cancelar</button>
-      <button class="btn-danger"  id="confirm-rejeitar">Rejeitar</button>
+      <button class="btn-cancel" id="cancel-rejeitar">Cancelar</button>
+      <button class="btn-danger" id="confirm-rejeitar">Rejeitar</button>
     </div>
   </div>
 </div>
 
-<!-- ── MODAL: Registrar manual ────────────────────────── -->
+<!-- ── MODAL: Registrar manual ─────────────────────────── -->
 <div class="modal-overlay hidden" id="overlay-novo">
   <div class="modal-box modal-wide">
     <h3>+ Registrar Conversão</h3>
@@ -829,8 +978,8 @@ const KEY = new URLSearchParams(location.search).get('key') || '';
 let allData      = [];
 let filtered     = [];
 let activeFilter = 'todas';
-let activeRawId  = null;   // UUID sem prefixo 'ai_' da conversa aberta no painel
-let msgCache     = {};     // cache de mensagens por rawId
+let activeRawId  = null;
+let msgCache     = {};
 
 // ═══════════════════════════════════════════════════════════
 // INICIALIZAÇÃO
@@ -847,6 +996,7 @@ function buildNav() {
     { href: `/acesso/?key=${KEY}`,    label: '⌂ Início' },
     { href: `/relatorio/?key=${KEY}`, label: '📊 Relatório' },
     { href: `/clientes/?key=${KEY}`,  label: '👥 Clientes' },
+    { href: `/conversao/?key=${KEY}`, label: '💊 Conversões' },
   ];
   document.getElementById('header-nav').innerHTML =
     links.map(l => `<a href="${l.href}">${l.label}</a>`).join('');
@@ -860,8 +1010,8 @@ function buildNav() {
 }
 
 function setDefaultDates() {
-  const today  = new Date().toISOString().slice(0, 10);
-  const ago30  = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
+  const ago30 = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
   document.getElementById('f-from').value = ago30;
   document.getElementById('f-to').value   = today;
 }
@@ -918,11 +1068,21 @@ function applyFilter() {
       filtered = allData.slice();
   }
 
-  // Contadores dos chips
+  const nPending   = allData.filter(c => c.observacao === 'venda' && !c.human_label).length;
+  const nConfirmed = allData.filter(c => c.human_label === 'venda').length;
+  const nRejected  = allData.filter(c => c.human_label === 'nao_venda').length;
+
+  // Chips contadores
   document.getElementById('cnt-todas').textContent       = allData.length;
-  document.getElementById('cnt-aguardando').textContent  = allData.filter(c => c.observacao === 'venda' && !c.human_label).length;
-  document.getElementById('cnt-confirmadas').textContent = allData.filter(c => c.human_label === 'venda').length;
-  document.getElementById('cnt-rejeitadas').textContent  = allData.filter(c => c.human_label === 'nao_venda').length;
+  document.getElementById('cnt-aguardando').textContent  = nPending;
+  document.getElementById('cnt-confirmadas').textContent = nConfirmed;
+  document.getElementById('cnt-rejeitadas').textContent  = nRejected;
+
+  // Stats strip
+  document.getElementById('stat-total').textContent     = allData.length;
+  document.getElementById('stat-pending').textContent   = nPending;
+  document.getElementById('stat-confirmed').textContent = nConfirmed;
+  document.getElementById('stat-rejected').textContent  = nRejected;
 
   renderTable();
 }
@@ -930,6 +1090,14 @@ function applyFilter() {
 // ═══════════════════════════════════════════════════════════
 // RENDERIZAR TABELA
 // ═══════════════════════════════════════════════════════════
+function rowStatusClass(item) {
+  if (item.human_label === 'venda')     return 'row-confirmed';
+  if (item.human_label === 'nao_venda') return 'row-rejected';
+  if (item.observacao  === 'venda')     return 'row-pending';
+  if (item.observacao  === 'contato')   return 'row-contact';
+  return 'row-open';
+}
+
 function renderTable() {
   document.getElementById('state-loading').classList.add('hidden');
 
@@ -947,12 +1115,12 @@ function renderTable() {
     const active = rawId === activeRawId ? 'active' : '';
     const phone  = item.phone_last4 ? `****${item.phone_last4}` : '—';
     const name   = item.display_name && item.display_name !== item.phone_last4
-                 ? escHtml(item.display_name)
-                 : '—';
+                 ? escHtml(item.display_name) : '—';
     const produto = escHtml(item.produto || '—');
+    const stCls   = rowStatusClass(item);
 
     return `
-      <tr class="conv-row ${active}" data-raw-id="${rawId}" onclick="openPanel('${rawId}')">
+      <tr class="conv-row ${stCls} ${active}" data-raw-id="${rawId}" onclick="openPanel('${rawId}')">
         <td class="col-date">${fmtDate(item.event_date)}</td>
         <td>
           <div class="contact-name">${name}</div>
@@ -975,7 +1143,6 @@ async function openPanel(rawId) {
   const item = allData.find(c => c.id.replace(/^ai_/, '') === rawId);
   if (!item) return;
 
-  // Cabeçalho do painel
   const name  = item.display_name && item.display_name !== item.phone_last4
               ? item.display_name : 'Sem nome';
   const phone = item.phone_last4 ? `WhatsApp ****${item.phone_last4}` : 'Sem telefone';
@@ -984,21 +1151,14 @@ async function openPanel(rawId) {
   document.getElementById('panel-phone').textContent = phone;
   document.getElementById('panel-date').textContent  = item.event_date ? `Data: ${fmtDate(item.event_date)}` : '';
 
-  // Abre painel
   document.getElementById('side-panel').classList.add('open');
-
-  // Ativa aba IA
   switchPanelTab('ia');
-
-  // Renderiza conteúdo da aba IA
   renderIATab(item, rawId);
 
-  // Destaca linha ativa
   document.querySelectorAll('.conv-row').forEach(r => r.classList.remove('active'));
   const row = document.querySelector(`.conv-row[data-raw-id="${rawId}"]`);
   if (row) row.classList.add('active');
 
-  // Pré-carrega mensagens em background
   if (!msgCache[rawId]) loadMsgs(rawId);
 }
 
@@ -1022,35 +1182,50 @@ function renderIATab(item, rawId) {
   const conf    = Math.round((item.ai_confidence || 0) * 100);
   const valor   = item.value_cents
                 ? 'R$ ' + (item.value_cents / 100).toFixed(2).replace('.', ',')
-                : 'Não informado';
-  const produto = item.produto || 'Não informado';
+                : '—';
+  const produto = item.produto || '—';
   const excerpt = item.excerpt || '';
 
-  let verdictLabel, vcClass;
+  let verdictLabel, vcClass, confLabel;
   if (verdict === 'venda') {
     verdictLabel = '💊 Venda detectada pela IA';
-    vcClass = 'vc-venda';
+    vcClass      = 'vc-venda';
+    confLabel    = conf >= 80 ? 'Alta confiança' : conf >= 60 ? 'Confiança média' : 'Baixa confiança';
   } else if (verdict === 'contato') {
-    verdictLabel = '📞 Contato (sem venda detectada)';
-    vcClass = 'vc-contato';
+    verdictLabel = '📞 Contato — sem venda detectada';
+    vcClass      = 'vc-contato';
+    confLabel    = '';
   } else {
     verdictLabel = '❓ Conversa em aberto';
-    vcClass = 'vc-aberto';
+    vcClass      = 'vc-aberto';
+    confLabel    = '';
   }
 
+  // Verdict card
   document.getElementById('ia-verdict-card').innerHTML = `
     <div class="verdict-card ${vcClass}">
-      <div class="verdict-label">${verdictLabel}</div>
-      <div class="verdict-conf">Confiança da IA: <strong>${conf}%</strong></div>
+      <div class="verdict-top">
+        <div class="verdict-label">${verdictLabel}</div>
+        ${conf ? `<div class="verdict-badge">${conf}%</div>` : ''}
+      </div>
+      ${confLabel ? `<div class="verdict-conf">${confLabel} · Confiança da IA: <strong>${conf}%</strong></div>` : ''}
       ${excerpt ? `<div class="verdict-excerpt">"${escHtml(excerpt)}"</div>` : ''}
-    </div>
-    <div class="ia-details">
-      <div class="ia-row"><span class="lbl">Valor IA</span><span class="val">${valor}</span></div>
-      <div class="ia-row"><span class="lbl">Produto</span><span class="val">${escHtml(produto)}</span></div>
     </div>
   `;
 
-  // Botões de ação
+  // Details grid
+  document.getElementById('ia-details-grid').innerHTML = `
+    <div class="ia-kv">
+      <div class="lbl">Valor IA</div>
+      <div class="val">${valor}</div>
+    </div>
+    <div class="ia-kv">
+      <div class="lbl">Produto</div>
+      <div class="val">${escHtml(produto)}</div>
+    </div>
+  `;
+
+  // Ações
   const isPending   = !item.human_label && verdict === 'venda';
   const isConfirmed = item.human_label === 'venda';
   const isRejected  = item.human_label === 'nao_venda';
@@ -1058,9 +1233,27 @@ function renderIATab(item, rawId) {
   let actionsHtml = '';
   if (isPending) {
     actionsHtml = `
-      <button class="action-btn action-confirm" onclick="confirmar('${rawId}')">✓ Confirmar Venda</button>
-      <button class="action-btn action-correct"  onclick="abrirCorrigir('${rawId}')">✏️ Corrigir valor / produto</button>
-      <button class="action-btn action-reject"   onclick="abrirRejeitar('${rawId}')">✕ Rejeitar</button>
+      <button class="action-btn action-confirm" onclick="confirmar('${rawId}')">
+        <span class="action-btn-icon">✓</span>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Confirmar Venda</div>
+          <div class="action-btn-sub">Envia para Meta CAPI e registra</div>
+        </div>
+      </button>
+      <button class="action-btn action-correct" onclick="abrirCorrigir('${rawId}')">
+        <span class="action-btn-icon">✏️</span>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Corrigir e Confirmar</div>
+          <div class="action-btn-sub">Ajusta valor, produto ou nome</div>
+        </div>
+      </button>
+      <button class="action-btn action-reject" onclick="abrirRejeitar('${rawId}')">
+        <span class="action-btn-icon">✕</span>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Rejeitar</div>
+          <div class="action-btn-sub">IA classificou errado</div>
+        </div>
+      </button>
     `;
   } else if (isConfirmed) {
     actionsHtml = `
@@ -1076,6 +1269,8 @@ function renderIATab(item, rawId) {
         <button class="btn-undo" onclick="desfazer('${rawId}')">Desfazer</button>
       </div>
     `;
+  } else {
+    actionsHtml = `<p style="color:var(--muted);font-size:0.8rem;">Sem ação disponível para este veredicto.</p>`;
   }
 
   document.getElementById('panel-actions').innerHTML = actionsHtml;
@@ -1169,14 +1364,13 @@ async function desfazer(rawId) {
 async function reviewAction(rawId, action, params) {
   const body = { id: rawId, action, ...params };
 
-  // Optimistic update: atualiza o estado local imediatamente
-  const idx = allData.findIndex(c => c.id.replace(/^ai_/, '') === rawId);
+  const idx  = allData.findIndex(c => c.id.replace(/^ai_/, '') === rawId);
   const prev = idx !== -1 ? allData[idx].human_label : undefined;
 
   if (idx !== -1) {
-    if (action === 'rejeitar')  allData[idx].human_label = 'nao_venda';
+    if (action === 'rejeitar')      allData[idx].human_label = 'nao_venda';
     else if (action === 'desfazer') allData[idx].human_label = null;
-    else allData[idx].human_label = 'venda';
+    else                            allData[idx].human_label = 'venda';
   }
 
   applyFilter();
@@ -1194,7 +1388,6 @@ async function reviewAction(rawId, action, params) {
     const data = await resp.json();
 
     if (!resp.ok || !data.ok) {
-      // Rollback
       if (idx !== -1) allData[idx].human_label = prev;
       applyFilter();
       if (activeRawId === rawId) {
@@ -1259,7 +1452,6 @@ async function submitNovo() {
     if (!resp.ok || !data.ok) throw new Error(data.error || 'Erro');
     document.getElementById('overlay-novo').classList.add('hidden');
     showToast('✓ Conversão registrada!', 'ok');
-    // Limpar form
     ['n-phone','n-name','n-value','n-produto','n-obs'].forEach(id => {
       document.getElementById(id).value = '';
     });
@@ -1288,8 +1480,8 @@ function showToast(msg, type = 'ok') {
 function statusBadge(item) {
   if (item.human_label === 'venda')     return '<span class="badge badge-green">✓ Confirmada</span>';
   if (item.human_label === 'nao_venda') return '<span class="badge badge-red">✕ Rejeitada</span>';
-  if (item.observacao === 'venda')      return '<span class="badge badge-yellow">⏳ Aguardando</span>';
-  if (item.observacao === 'contato')    return '<span class="badge badge-blue">📞 Contato</span>';
+  if (item.observacao  === 'venda')     return '<span class="badge badge-yellow">⏳ Aguardando</span>';
+  if (item.observacao  === 'contato')   return '<span class="badge badge-blue">📞 Contato</span>';
   return '<span class="badge badge-muted">Em aberto</span>';
 }
 
@@ -1305,7 +1497,6 @@ function confBar(item) {
 
 function fmtDate(str) {
   if (!str) return '—';
-  // str: 'YYYY-MM-DD' or ISO
   const d = new Date(str.length === 10 ? str + 'T12:00:00' : str);
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
@@ -1323,7 +1514,6 @@ function escHtml(s) {
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
 function bindEvents() {
-  // Chips de filtro
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -1333,16 +1523,13 @@ function bindEvents() {
     });
   });
 
-  // Buscar
   document.getElementById('btn-buscar').addEventListener('click', loadConversations);
   document.getElementById('f-q').addEventListener('keydown', e => {
     if (e.key === 'Enter') loadConversations();
   });
 
-  // Fechar painel
   document.getElementById('panel-close').addEventListener('click', closePanel);
 
-  // Tabs do painel
   document.querySelectorAll('.panel-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
@@ -1351,7 +1538,6 @@ function bindEvents() {
         if (!msgCache[activeRawId]) {
           loadMsgs(activeRawId);
         } else {
-          // usa cache
           const wrap = document.getElementById('msgs-wrap');
           if (!wrap.innerHTML || wrap.innerHTML.includes('msg-loading')) {
             loadMsgs(activeRawId);
@@ -1361,7 +1547,6 @@ function bindEvents() {
     });
   });
 
-  // Modal: Corrigir
   document.getElementById('confirm-corrigir').addEventListener('click', async () => {
     const rawId  = document.getElementById('overlay-corrigir').dataset.rawId;
     const value  = parseFloat(document.getElementById('c-value').value) || 0;
@@ -1378,7 +1563,6 @@ function bindEvents() {
   document.getElementById('cancel-corrigir').addEventListener('click', () =>
     document.getElementById('overlay-corrigir').classList.add('hidden'));
 
-  // Modal: Rejeitar
   document.getElementById('confirm-rejeitar').addEventListener('click', async () => {
     const rawId  = document.getElementById('overlay-rejeitar').dataset.rawId;
     const motivo = document.getElementById('r-motivo').value;
@@ -1388,7 +1572,6 @@ function bindEvents() {
   document.getElementById('cancel-rejeitar').addEventListener('click', () =>
     document.getElementById('overlay-rejeitar').classList.add('hidden'));
 
-  // Modal: Nova conversão
   document.getElementById('btn-novo').addEventListener('click', () =>
     document.getElementById('overlay-novo').classList.remove('hidden'));
   document.getElementById('cancel-novo').addEventListener('click', () =>
@@ -1396,14 +1579,12 @@ function bindEvents() {
   document.getElementById('confirm-novo').addEventListener('click', submitNovo);
   bindFormTipo();
 
-  // Fechar modais ao clicar fora
   ['overlay-corrigir', 'overlay-rejeitar', 'overlay-novo'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e) {
       if (e.target === this) this.classList.add('hidden');
     });
   });
 
-  // Fechar painel no mobile com ESC
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (!document.getElementById('overlay-corrigir').classList.contains('hidden') ||
