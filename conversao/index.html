@@ -14,6 +14,7 @@
       --bg:      #0d0d0d;
       --card:    #161616;
       --card2:   #1e1e1e;
+      --sidebar: #101010;
       --border:  rgba(255,255,255,0.10);
       --border2: rgba(255,255,255,0.06);
       --text:    #f2f2f2;
@@ -83,16 +84,68 @@
     }
     .btn-novo:hover { background: var(--red2); box-shadow: 0 2px 14px rgba(220,38,38,0.55); }
 
-    .header-nav { display: flex; gap: 2px; }
-    .header-nav a {
+    /* ── APP LAYOUT (header embaixo) ── */
+    .app-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 180px;
+      flex-shrink: 0;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 12px 0;
+      overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { display: none; }
+
+    .sidebar-label {
+      padding: 6px 16px 4px;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(136,136,136,0.45);
+      margin-top: 8px;
+    }
+    .sidebar-label:first-child { margin-top: 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 12px;
+      margin: 1px 8px;
+      border-radius: 8px;
       color: var(--muted);
       text-decoration: none;
-      font-size: 0.78rem;
-      padding: 6px 10px;
-      border-radius: 7px;
-      transition: color .15s, background .15s;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all .15s;
+      white-space: nowrap;
+      border: 1px solid transparent;
     }
-    .header-nav a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+    .nav-item.active {
+      background: rgba(220,38,38,0.15);
+      border-color: rgba(220,38,38,0.3);
+      color: #ff6b6b;
+      font-weight: 600;
+    }
+    .nav-item-icon { font-size: 1rem; flex-shrink: 0; line-height: 1; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
     /* ── STATS STRIP ── */
     .stats-strip {
@@ -268,10 +321,10 @@
       cursor: pointer;
       transition: background .1s;
     }
-    .conv-table tbody tr:hover   { background: rgba(255,255,255,0.025); }
-    .conv-table tbody tr.active  { background: rgba(220,38,38,0.08); }
+    .conv-table tbody tr:hover  { background: rgba(255,255,255,0.025); }
+    .conv-table tbody tr.active { background: rgba(220,38,38,0.08); }
 
-    /* Accent bar por status — left edge colored strip */
+    /* Accent bar por status */
     .conv-table tbody tr.row-pending   { box-shadow: inset 3px 0 0 var(--yellow); }
     .conv-table tbody tr.row-confirmed { box-shadow: inset 3px 0 0 var(--green); }
     .conv-table tbody tr.row-rejected  { box-shadow: inset 3px 0 0 #f87171; }
@@ -284,7 +337,7 @@
       vertical-align: middle;
     }
 
-    .col-date    { color: var(--muted); font-size: 0.75rem; white-space: nowrap; }
+    .col-date     { color: var(--muted); font-size: 0.75rem; white-space: nowrap; }
     .contact-name  { font-weight: 600; margin-bottom: 2px; font-size: 0.85rem; }
     .contact-phone { font-size: 0.7rem; color: var(--muted); }
 
@@ -354,11 +407,11 @@
       transition: width .2s ease;
     }
     .side-panel.open {
-      width: 420px;
+      width: 400px;
       border-left: 1px solid var(--border);
     }
     .side-panel-inner {
-      width: 420px;
+      width: 400px;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -698,7 +751,7 @@
     .toast.toast-err  { border-color: rgba(220,38,38,0.5);  color: #f87171; }
     .toast.toast-info { border-color: rgba(96,165,250,0.3); color: var(--blue); }
 
-    /* ── BOTTOM NAV ── */
+    /* ── BOTTOM NAV (mobile only) ── */
     .bottom-nav {
       display: none;
       position: fixed;
@@ -726,10 +779,9 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 820px) {
-      .header-nav { display: none; }
+      .sidebar    { display: none; }
       .bottom-nav { display: flex; }
-      .stats-strip { display: none; }
-      .table-wrap  { padding-bottom: 60px; }
+      .table-wrap { padding-bottom: 60px; }
 
       .side-panel.open {
         position: absolute;
@@ -769,119 +821,127 @@
   </div>
   <div class="header-right">
     <button class="btn-novo" id="btn-novo">+ Registrar</button>
-    <nav class="header-nav" id="header-nav"></nav>
   </div>
 </header>
 
-<!-- ── STATS STRIP ─────────────────────────────────────── -->
-<div class="stats-strip">
-  <div class="stat-item">
-    <span class="stat-val" id="stat-total">—</span>
-    <span class="stat-lbl">Total</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-val stat-yellow" id="stat-pending">—</span>
-    <span class="stat-lbl">Aguardando revisão</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-val stat-green" id="stat-confirmed">—</span>
-    <span class="stat-lbl">Confirmadas</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-val stat-red" id="stat-rejected">—</span>
-    <span class="stat-lbl">Rejeitadas</span>
-  </div>
-</div>
+<!-- ── APP LAYOUT ─────────────────────────────────────── -->
+<div class="app-layout">
 
-<!-- ── TABS ─────────────────────────────────────────────── -->
-<div class="chips-bar">
-  <button class="chip active" data-filter="todas">
-    <span class="chip-ico">☰</span> Todas <span class="chip-cnt" id="cnt-todas">0</span>
-  </button>
-  <button class="chip" data-filter="aguardando">
-    <span class="chip-ico">⏳</span> Aguardando <span class="chip-cnt" id="cnt-aguardando">0</span>
-  </button>
-  <button class="chip" data-filter="confirmadas">
-    <span class="chip-ico">✓</span> Confirmadas <span class="chip-cnt" id="cnt-confirmadas">0</span>
-  </button>
-  <button class="chip" data-filter="rejeitadas">
-    <span class="chip-ico">✕</span> Rejeitadas <span class="chip-cnt" id="cnt-rejeitadas">0</span>
-  </button>
-</div>
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar-nav"></nav>
 
-<!-- ── FILTER BAR ──────────────────────────────────────── -->
-<div class="filter-bar">
-  <input type="date" id="f-from" title="Data inicial">
-  <input type="date" id="f-to"   title="Data final">
-  <input type="text" id="f-q"    placeholder="Buscar telefone ou conversa…">
-  <button class="btn-buscar" id="btn-buscar">Buscar</button>
-</div>
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
 
-<!-- ── CONTENT AREA ────────────────────────────────────── -->
-<div class="content-area" id="content-area">
-
-  <!-- TABELA -->
-  <div class="table-wrap" id="table-wrap">
-    <div class="state-msg" id="state-loading"><span class="ico">⏳</span>Carregando conversas…</div>
-    <div class="state-msg hidden" id="state-empty"><span class="ico">💬</span>Nenhuma conversa encontrada</div>
-    <table class="conv-table hidden" id="conv-table">
-      <thead>
-        <tr>
-          <th>DATA</th>
-          <th>CONTATO</th>
-          <th class="hide-sm">STATUS IA</th>
-          <th class="hide-sm">CONFIANÇA</th>
-          <th class="hide-xs">PRODUTO</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="conv-body"></tbody>
-    </table>
-  </div>
-
-  <!-- PAINEL LATERAL -->
-  <aside class="side-panel" id="side-panel">
-    <div class="side-panel-inner">
-
-      <div class="panel-header">
-        <div>
-          <div class="panel-name"  id="panel-name">—</div>
-          <div class="panel-phone" id="panel-phone">—</div>
-          <div class="panel-date"  id="panel-date">—</div>
-        </div>
-        <button class="panel-close" id="panel-close" title="Fechar">✕</button>
+    <!-- STATS STRIP -->
+    <div class="stats-strip">
+      <div class="stat-item">
+        <span class="stat-val" id="stat-total">—</span>
+        <span class="stat-lbl">Total</span>
       </div>
-
-      <div class="panel-tabs">
-        <button class="panel-tab active" data-tab="ia">🤖 Análise IA</button>
-        <button class="panel-tab" data-tab="conversa">💬 Conversa</button>
+      <div class="stat-item">
+        <span class="stat-val stat-yellow" id="stat-pending">—</span>
+        <span class="stat-lbl">Aguardando</span>
       </div>
-
-      <!-- ABA: IA -->
-      <div class="panel-body" id="tab-ia">
-        <div class="panel-section">
-          <div class="section-title">Veredicto</div>
-          <div id="ia-verdict-card"></div>
-        </div>
-        <div class="panel-section">
-          <div class="section-title">Detalhes</div>
-          <div class="ia-grid" id="ia-details-grid"></div>
-        </div>
-        <div class="panel-section">
-          <div class="section-title">Ações</div>
-          <div class="panel-actions" id="panel-actions"></div>
-        </div>
+      <div class="stat-item">
+        <span class="stat-val stat-green" id="stat-confirmed">—</span>
+        <span class="stat-lbl">Confirmadas</span>
       </div>
-
-      <!-- ABA: CONVERSA -->
-      <div class="panel-body hidden" id="tab-conversa">
-        <div class="msgs-body" id="msgs-wrap"></div>
+      <div class="stat-item">
+        <span class="stat-val stat-red" id="stat-rejected">—</span>
+        <span class="stat-lbl">Rejeitadas</span>
       </div>
-
     </div>
-  </aside>
 
-</div><!-- .content-area -->
+    <!-- TABS -->
+    <div class="chips-bar">
+      <button class="chip active" data-filter="todas">
+        <span class="chip-ico">☰</span> Todas <span class="chip-cnt" id="cnt-todas">0</span>
+      </button>
+      <button class="chip" data-filter="aguardando">
+        <span class="chip-ico">⏳</span> Aguardando <span class="chip-cnt" id="cnt-aguardando">0</span>
+      </button>
+      <button class="chip" data-filter="confirmadas">
+        <span class="chip-ico">✓</span> Confirmadas <span class="chip-cnt" id="cnt-confirmadas">0</span>
+      </button>
+      <button class="chip" data-filter="rejeitadas">
+        <span class="chip-ico">✕</span> Rejeitadas <span class="chip-cnt" id="cnt-rejeitadas">0</span>
+      </button>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <input type="date" id="f-from" title="Data inicial">
+      <input type="date" id="f-to"   title="Data final">
+      <input type="text" id="f-q"    placeholder="Buscar telefone ou conversa…">
+      <button class="btn-buscar" id="btn-buscar">Buscar</button>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area" id="content-area">
+
+      <!-- TABELA -->
+      <div class="table-wrap" id="table-wrap">
+        <div class="state-msg" id="state-loading"><span class="ico">⏳</span>Carregando conversas…</div>
+        <div class="state-msg hidden" id="state-empty"><span class="ico">💬</span>Nenhuma conversa encontrada</div>
+        <table class="conv-table hidden" id="conv-table">
+          <thead>
+            <tr>
+              <th>DATA</th>
+              <th>CONTATO</th>
+              <th class="hide-sm">STATUS IA</th>
+              <th class="hide-sm">CONFIANÇA</th>
+              <th class="hide-xs">PRODUTO</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="conv-body"></tbody>
+        </table>
+      </div>
+
+      <!-- PAINEL LATERAL -->
+      <aside class="side-panel" id="side-panel">
+        <div class="side-panel-inner">
+
+          <div class="panel-header">
+            <div>
+              <div class="panel-name"  id="panel-name">—</div>
+              <div class="panel-phone" id="panel-phone">—</div>
+              <div class="panel-date"  id="panel-date">—</div>
+            </div>
+            <button class="panel-close" id="panel-close" title="Fechar">✕</button>
+          </div>
+
+          <div class="panel-tabs">
+            <button class="panel-tab active" data-tab="ia">🤖 Análise IA</button>
+            <button class="panel-tab" data-tab="conversa">💬 Conversa</button>
+          </div>
+
+          <div class="panel-body" id="tab-ia">
+            <div class="panel-section">
+              <div class="section-title">Veredicto</div>
+              <div id="ia-verdict-card"></div>
+            </div>
+            <div class="panel-section">
+              <div class="section-title">Detalhes</div>
+              <div class="ia-grid" id="ia-details-grid"></div>
+            </div>
+            <div class="panel-section">
+              <div class="section-title">Ações</div>
+              <div class="panel-actions" id="panel-actions"></div>
+            </div>
+          </div>
+
+          <div class="panel-body hidden" id="tab-conversa">
+            <div class="msgs-body" id="msgs-wrap"></div>
+          </div>
+
+        </div>
+      </aside>
+
+    </div><!-- .content-area -->
+  </div><!-- .main-content -->
+</div><!-- .app-layout -->
 
 <!-- ── MODAL: Corrigir ────────────────────────────────── -->
 <div class="modal-overlay hidden" id="overlay-corrigir">
@@ -966,7 +1026,7 @@
 <!-- ── TOAST ──────────────────────────────────────────── -->
 <div class="toast hidden" id="toast"></div>
 
-<!-- ── BOTTOM NAV ─────────────────────────────────────── -->
+<!-- ── BOTTOM NAV (mobile) ───────────────────────────── -->
 <nav class="bottom-nav" id="bottom-nav"></nav>
 
 <script>
@@ -993,20 +1053,32 @@ function init() {
 
 function buildNav() {
   const links = [
-    { href: `/acesso/?key=${KEY}`,    label: '⌂ Início' },
-    { href: `/relatorio/?key=${KEY}`, label: '📊 Relatório' },
-    { href: `/clientes/?key=${KEY}`,  label: '👥 Clientes' },
-    { href: `/conversao/?key=${KEY}`, label: '💊 Conversões' },
+    { href: `/acesso`,    icon: '⌂',  label: 'Início' },
+    { href: `/relatorio`, icon: '📊', label: 'Relatório' },
+    { href: `/clientes`,  icon: '👥', label: 'Clientes' },
+    { href: `/conversao`, icon: '💊', label: 'Conversões' },
   ];
-  document.getElementById('header-nav').innerHTML =
-    links.map(l => `<a href="${l.href}">${l.label}</a>`).join('');
+
+  const currentPath = location.pathname.replace(/\/$/, '');
+
+  // Sidebar desktop
+  document.getElementById('sidebar-nav').innerHTML =
+    `<span class="sidebar-label">Menu</span>` +
+    links.map(l => {
+      const active = currentPath.startsWith(l.href) ? 'active' : '';
+      return `<a href="${l.href}/?key=${KEY}" class="nav-item ${active}">
+        <span class="nav-item-icon">${l.icon}</span>${l.label}
+      </a>`;
+    }).join('');
+
+  // Bottom nav mobile
   document.getElementById('bottom-nav').innerHTML =
-    links.map((l, i) =>
-      `<a href="${l.href}" class="${i === 0 ? '' : ''}">
-        <span class="bn-icon">${l.label.split(' ')[0]}</span>
-        ${l.label.replace(/^\S+\s/, '')}
-      </a>`
-    ).join('');
+    links.map(l => {
+      const active = currentPath.startsWith(l.href) ? 'bn-active' : '';
+      return `<a href="${l.href}/?key=${KEY}" class="${active}">
+        <span class="bn-icon">${l.icon}</span>${l.label}
+      </a>`;
+    }).join('');
 }
 
 function setDefaultDates() {
@@ -1072,13 +1144,11 @@ function applyFilter() {
   const nConfirmed = allData.filter(c => c.human_label === 'venda').length;
   const nRejected  = allData.filter(c => c.human_label === 'nao_venda').length;
 
-  // Chips contadores
   document.getElementById('cnt-todas').textContent       = allData.length;
   document.getElementById('cnt-aguardando').textContent  = nPending;
   document.getElementById('cnt-confirmadas').textContent = nConfirmed;
   document.getElementById('cnt-rejeitadas').textContent  = nRejected;
 
-  // Stats strip
   document.getElementById('stat-total').textContent     = allData.length;
   document.getElementById('stat-pending').textContent   = nPending;
   document.getElementById('stat-confirmed').textContent = nConfirmed;
@@ -1201,7 +1271,6 @@ function renderIATab(item, rawId) {
     confLabel    = '';
   }
 
-  // Verdict card
   document.getElementById('ia-verdict-card').innerHTML = `
     <div class="verdict-card ${vcClass}">
       <div class="verdict-top">
@@ -1213,7 +1282,6 @@ function renderIATab(item, rawId) {
     </div>
   `;
 
-  // Details grid
   document.getElementById('ia-details-grid').innerHTML = `
     <div class="ia-kv">
       <div class="lbl">Valor IA</div>
@@ -1225,7 +1293,6 @@ function renderIATab(item, rawId) {
     </div>
   `;
 
-  // Ações
   const isPending   = !item.human_label && verdict === 'venda';
   const isConfirmed = item.human_label === 'venda';
   const isRejected  = item.human_label === 'nao_venda';
@@ -1277,7 +1344,7 @@ function renderIATab(item, rawId) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// ABA CONVERSA (mensagens)
+// ABA CONVERSA
 // ═══════════════════════════════════════════════════════════
 async function loadMsgs(rawId) {
   const wrap = document.getElementById('msgs-wrap');
