@@ -864,6 +864,23 @@
       .hide-xs { display: none !important; }
     }
 
+    /* ── ADD-PHONE BUTTON ── */
+    .btn-add-phone {
+      background: rgba(251,191,36,0.14);
+      border: 1px solid rgba(251,191,36,0.28);
+      border-radius: 5px;
+      color: var(--yellow);
+      font-size: 0.69rem;
+      padding: 2px 8px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-left: 6px;
+      vertical-align: middle;
+      transition: all .15s;
+      line-height: 1.5;
+    }
+    .btn-add-phone:hover { background: rgba(251,191,36,0.26); }
+
     /* ── UTILITY ── */
     .hidden { display: none !important; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -1060,6 +1077,21 @@
     <div class="modal-actions">
       <button class="btn-cancel" id="cancel-rejeitar">Cancelar</button>
       <button class="btn-danger" id="confirm-rejeitar">Rejeitar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: Adicionar Telefone ──────────────────────── -->
+<div class="modal-overlay hidden" id="overlay-add-phone">
+  <div class="modal-box">
+    <h3>📱 Adicionar Telefone</h3>
+    <p class="modal-sub" id="add-phone-sub"></p>
+    <label>Telefone (com DDI+DDD, sem + ou traços)</label>
+    <input type="tel" id="ap-phone" placeholder="5521999990000"
+           pattern="[0-9]+" inputmode="numeric">
+    <div class="modal-actions">
+      <button class="btn-cancel"  id="cancel-add-phone">Cancelar</button>
+      <button class="btn-primary" id="confirm-add-phone">Salvar</button>
     </div>
   </div>
 </div>
@@ -1323,10 +1355,10 @@ async function openPanel(id) {
   // Header do painel
   document.getElementById('panel-name').textContent  = item.nome || 'Sem nome';
   const _rawFone = item.telefone || '';
-  document.getElementById('panel-phone').textContent =
-    (_rawFone.startsWith('lid:') || _rawFone.startsWith('s.whatsapp'))
-      ? '⚠️ Sem telefone real'
-      : (_rawFone || 'Sem telefone');
+  const _isLidPanel = _rawFone.startsWith('lid:') || _rawFone.startsWith('s.whatsapp');
+  document.getElementById('panel-phone').innerHTML = _isLidPanel
+    ? '⚠️ Sem telefone real<button class="btn-add-phone" onclick="abrirAddPhone()">Adicionar</button>'
+    : escHtml(_rawFone || 'Sem telefone');
   document.getElementById('panel-date').textContent  =
     item.primeiro_contato_em ? `Desde: ${fmtDate(item.primeiro_contato_em)}` : '';
 
@@ -1432,10 +1464,12 @@ function renderIATab(item) {
   const _fone    = item.telefone || '';
   const _isLid   = _fone.startsWith('lid:') || _fone.startsWith('s.whatsapp');
 
+  // CAPI warning: always prepended, never overwritten
+  const capiWarning = _isLid
+    ? `<div class="capi-warning">⚠️ Sem telefone real — esta venda não poderá ser casada pela Meta CAPI.<button class="btn-add-phone" onclick="abrirAddPhone()" style="margin-left:8px">Adicionar telefone</button></div>`
+    : '';
+
   let actionsHtml = '';
-  if (_isLid) {
-    actionsHtml += `<div class="capi-warning">⚠️ Sem telefone real — esta venda não poderá ser casada pela Meta CAPI.</div>`;
-  }
   if (isPending) {
     actionsHtml = `
       <button class="action-btn action-confirm" onclick="confirmar()">
@@ -1478,7 +1512,7 @@ function renderIATab(item) {
     actionsHtml = `<p style="color:var(--muted);font-size:0.8rem;">Nenhuma ação disponível para este status.</p>`;
   }
 
-  document.getElementById('panel-actions').innerHTML = actionsHtml;
+  document.getElementById('panel-actions').innerHTML = capiWarning + actionsHtml;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1620,6 +1654,53 @@ async function reviewAction(id, analise_id, action, params) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// ADICIONAR TELEFONE
+// ═══════════════════════════════════════════════════════════
+function abrirAddPhone() {
+  if (!activeId) return;
+  const item = allData.find(i => i.id === activeId);
+  document.getElementById('add-phone-sub').textContent =
+    (item?.nome || item?.telefone || activeId) + ' — insira o telefone real (com DDI+DDD)';
+  document.getElementById('ap-phone').value = '';
+  document.getElementById('overlay-add-phone').classList.remove('hidden');
+  setTimeout(() => document.getElementById('ap-phone').focus(), 80);
+}
+
+async function salvarPhone() {
+  if (!activeId) return;
+  const phone = document.getElementById('ap-phone').value.replace(/\D/g, '').trim();
+  if (!phone) { showToast('Digite um número válido.', 'err'); return; }
+
+  document.getElementById('confirm-add-phone').disabled = true;
+  try {
+    const r = await fetch('/api/ia/contato', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'x-dash-key': KEY },
+      body:    JSON.stringify({ id: activeId, telefone: phone }),
+    });
+    const d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.error || 'Erro');
+
+    // Atualiza estado local
+    const idx = allData.findIndex(i => i.id === activeId);
+    if (idx !== -1) allData[idx].telefone = phone;
+
+    document.getElementById('overlay-add-phone').classList.add('hidden');
+
+    // Re-renderiza painel e linha da tabela
+    const item = allData.find(i => i.id === activeId);
+    if (item) { openPanel(activeId); }
+    renderTable();
+
+    showToast('📱 Telefone salvo!', 'ok');
+  } catch (e) {
+    showToast('Erro: ' + e.message, 'err');
+  } finally {
+    document.getElementById('confirm-add-phone').disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════
 let _toastTimer;
@@ -1751,6 +1832,17 @@ function bindEvents() {
     });
   });
 
+  // Modal add-phone
+  document.getElementById('confirm-add-phone').addEventListener('click', salvarPhone);
+  document.getElementById('cancel-add-phone').addEventListener('click', () =>
+    document.getElementById('overlay-add-phone').classList.add('hidden'));
+  document.getElementById('overlay-add-phone').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+  });
+  document.getElementById('ap-phone').addEventListener('keydown', e => {
+    if (e.key === 'Enter') salvarPhone();
+  });
+
   // Modal corrigir
   document.getElementById('confirm-corrigir').addEventListener('click', async () => {
     if (!activeId) return;
@@ -1788,8 +1880,11 @@ function bindEvents() {
   // ESC
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (!document.getElementById('overlay-corrigir').classList.contains('hidden') ||
-          !document.getElementById('overlay-rejeitar').classList.contains('hidden')) return;
+      const overlays = ['overlay-add-phone', 'overlay-corrigir', 'overlay-rejeitar'];
+      for (const oid of overlays) {
+        const el = document.getElementById(oid);
+        if (!el.classList.contains('hidden')) { el.classList.add('hidden'); return; }
+      }
       closePanel();
     }
   });
