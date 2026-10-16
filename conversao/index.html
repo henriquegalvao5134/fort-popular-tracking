@@ -495,16 +495,28 @@
 
     /* ── VERDICT CARD ── */
     .verdict-card {
-      border-radius: 10px;
-      padding: 14px 16px;
+      border-radius: 12px;
+      padding: 16px;
       border: 1px solid;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
-    .vc-venda   { background: rgba(74,222,128,0.07);  border-color: rgba(74,222,128,0.22); }
-    .vc-contato { background: rgba(96,165,250,0.07);  border-color: rgba(96,165,250,0.22); }
-    .vc-aberto  { background: rgba(255,255,255,0.02); border-color: var(--border); }
+    .vc-venda {
+      background: linear-gradient(135deg, rgba(74,222,128,0.18) 0%, rgba(74,222,128,0.07) 100%);
+      border-color: rgba(74,222,128,0.40);
+      box-shadow: 0 0 0 1px rgba(74,222,128,0.06) inset, 0 4px 16px rgba(74,222,128,0.10);
+    }
+    .vc-contato {
+      background: linear-gradient(135deg, rgba(96,165,250,0.18) 0%, rgba(96,165,250,0.07) 100%);
+      border-color: rgba(96,165,250,0.40);
+      box-shadow: 0 0 0 1px rgba(96,165,250,0.06) inset, 0 4px 16px rgba(96,165,250,0.10);
+    }
+    .vc-aberto {
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      border-color: rgba(255,255,255,0.16);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
 
     .verdict-top    { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
     .verdict-label  { font-size: 0.92rem; font-weight: 700; }
@@ -527,13 +539,14 @@
       gap: 8px;
     }
     .ia-kv {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      padding: 10px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 9px;
+      padding: 12px 13px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
-    .ia-kv .lbl { font-size: 0.63rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
-    .ia-kv .val { font-size: 0.88rem; font-weight: 600; word-break: break-word; }
+    .ia-kv .lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+    .ia-kv .val { font-size: 0.92rem; font-weight: 700; word-break: break-word; }
 
     /* ── HUMAN LABEL STATUS ── */
     .human-label-done {
@@ -572,12 +585,36 @@
       gap: 10px;
     }
     .action-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-    .action-confirm { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
-    .action-confirm:hover { background: rgba(74,222,128,0.18); }
-    .action-correct { background: rgba(96,165,250,0.10); color: var(--blue);  border: 1px solid rgba(96,165,250,0.22); }
-    .action-correct:hover { background: rgba(96,165,250,0.16); }
-    .action-reject  { background: rgba(220,38,38,0.08);  color: #f87171;      border: 1px solid rgba(220,38,38,0.22); }
-    .action-reject:hover  { background: rgba(220,38,38,0.14); }
+    .action-confirm {
+      background: linear-gradient(135deg, rgba(74,222,128,0.22) 0%, rgba(74,222,128,0.12) 100%);
+      color: var(--green);
+      border: 1px solid rgba(74,222,128,0.40);
+      box-shadow: 0 2px 10px rgba(74,222,128,0.12), 0 0 0 0 rgba(74,222,128,0);
+    }
+    .action-confirm:hover {
+      background: linear-gradient(135deg, rgba(74,222,128,0.30) 0%, rgba(74,222,128,0.18) 100%);
+      box-shadow: 0 4px 16px rgba(74,222,128,0.20);
+    }
+    .action-correct {
+      background: linear-gradient(135deg, rgba(96,165,250,0.18) 0%, rgba(96,165,250,0.08) 100%);
+      color: var(--blue);
+      border: 1px solid rgba(96,165,250,0.36);
+      box-shadow: 0 2px 10px rgba(96,165,250,0.10);
+    }
+    .action-correct:hover {
+      background: linear-gradient(135deg, rgba(96,165,250,0.26) 0%, rgba(96,165,250,0.14) 100%);
+      box-shadow: 0 4px 16px rgba(96,165,250,0.18);
+    }
+    .action-reject {
+      background: linear-gradient(135deg, rgba(220,38,38,0.16) 0%, rgba(220,38,38,0.07) 100%);
+      color: #f87171;
+      border: 1px solid rgba(220,38,38,0.36);
+      box-shadow: 0 2px 10px rgba(220,38,38,0.10);
+    }
+    .action-reject:hover {
+      background: linear-gradient(135deg, rgba(220,38,38,0.24) 0%, rgba(220,38,38,0.12) 100%);
+      box-shadow: 0 4px 16px rgba(220,38,38,0.18);
+    }
 
     .action-btn-icon  { font-size: 1.1rem; flex-shrink: 0; }
     .action-btn-body  { flex: 1; }
