@@ -333,9 +333,21 @@
       vertical-align: middle;
     }
 
-    .col-date     { color: var(--muted); font-size: 0.73rem; white-space: nowrap; }
-    .contact-name  { font-weight: 600; margin-bottom: 2px; font-size: 0.84rem; }
-    .contact-phone { font-size: 0.7rem; color: var(--muted); }
+    .col-date       { color: var(--muted); font-size: 0.73rem; white-space: nowrap; }
+    .contact-name   { font-weight: 600; margin-bottom: 2px; font-size: 0.84rem; }
+    .contact-phone  { font-size: 0.7rem; color: var(--muted); }
+    .contact-produto{ font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+    .phone-warning  { font-size: 0.68rem; color: var(--yellow); display: inline-flex; align-items: center; gap: 2px; }
+    .capi-warning {
+      background: rgba(251,191,36,0.10);
+      border: 1px solid rgba(251,191,36,0.30);
+      border-radius: 8px;
+      color: var(--yellow);
+      font-size: 0.75rem;
+      padding: 9px 12px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
 
     /* ── ETAPA SELECT ── */
     .etapa-select {
@@ -941,6 +953,7 @@
               <th>LEAD</th>
               <th class="hide-sm">ORIGEM</th>
               <th>ETAPA</th>
+              <th class="hide-sm">VALOR</th>
               <th class="hide-sm">STATUS IA</th>
               <th class="hide-xs">REVISÃO</th>
               <th class="hide-xs">ÚLT. ATEND.</th>
@@ -1151,22 +1164,22 @@ function applyFilter() {
       filtered = allData.filter(i => i.status_ia === 'venda' && i.revisao === 'pendente');
       break;
     case 'confirmadas':
-      filtered = allData.filter(i => i.revisao === 'confirmada' || i.revisao === 'automatica');
+      filtered = allData.filter(i => i.revisao === 'confirmada');
       break;
     case 'rejeitadas':
       filtered = allData.filter(i => i.revisao === 'rejeitada');
       break;
     case 'em_aberto':
-      filtered = allData.filter(i => !i.status_ia || i.status_ia === 'em_aberto');
+      filtered = allData.filter(i => !i.status_ia || i.status_ia === 'em_aberto' || i.revisao === 'automatica');
       break;
     default:
       filtered = allData.slice();
   }
 
   const nPendentes   = allData.filter(i => i.status_ia === 'venda' && i.revisao === 'pendente').length;
-  const nConfirmadas = allData.filter(i => i.revisao === 'confirmada' || i.revisao === 'automatica').length;
+  const nConfirmadas = allData.filter(i => i.revisao === 'confirmada').length;
   const nRejeitadas  = allData.filter(i => i.revisao === 'rejeitada').length;
-  const nEmAberto    = allData.filter(i => !i.status_ia || i.status_ia === 'em_aberto').length;
+  const nEmAberto    = allData.filter(i => !i.status_ia || i.status_ia === 'em_aberto' || i.revisao === 'automatica').length;
   const nIaVenda     = allData.filter(i => i.status_ia === 'venda').length;
 
   document.getElementById('stat-total').textContent    = allData.length;
@@ -1206,21 +1219,36 @@ function renderTable() {
   document.getElementById('conv-table').classList.remove('hidden');
 
   document.getElementById('conv-body').innerHTML = filtered.map(item => {
-    const active  = item.id === activeId ? 'active' : '';
-    const stCls   = rowStatusClass(item);
-    const nome    = escHtml(item.nome || '—');
-    const fone    = escHtml(item.telefone || '—');
-    const ultAte  = fmtDateTime(item.ultimo_contato_em);
+    const active   = item.id === activeId ? 'active' : '';
+    const stCls    = rowStatusClass(item);
+    const nome     = escHtml(item.nome || '—');
+    const rawFone  = item.telefone || '';
+    const isLid    = rawFone.startsWith('lid:') || rawFone.startsWith('s.whatsapp');
+    const foneHtml = isLid
+                   ? '<span class="phone-warning">⚠️ sem telefone real</span>'
+                   : `<span>${escHtml(rawFone || '—')}</span>`;
+    const prodSub  = item.produto
+                   ? `<div class="contact-produto">💊 ${escHtml(item.produto)}</div>`
+                   : '';
+    const valorNum = item.venda_valor ?? item.valor_estimado;
+    const valorHtml = valorNum != null
+                   ? (item.venda_valor != null
+                       ? `R$ ${Number(valorNum).toFixed(2).replace('.', ',')}`
+                       : `<span style="color:var(--muted)">~R$ ${Number(valorNum).toFixed(2).replace('.', ',')}</span>`)
+                   : `<span style="color:var(--muted)">—</span>`;
+    const ultAte   = fmtDateTime(item.ultimo_contato_em);
 
     return `
       <tr class="conv-row ${stCls} ${active}" data-id="${item.id}" onclick="openPanel('${item.id}')">
         <td class="col-date">${fmtDate(item.primeiro_contato_em)}</td>
         <td>
           <div class="contact-name">${nome}</div>
-          <div class="contact-phone">${fone}</div>
+          <div class="contact-phone">${foneHtml}</div>
+          ${prodSub}
         </td>
         <td class="hide-sm">${origemBadge(item.origem)}</td>
         <td onclick="event.stopPropagation()">${buildEtapaSelect(item)}</td>
+        <td class="hide-sm" style="white-space:nowrap">${valorHtml}</td>
         <td class="hide-sm">${statusIaBadge(item)}</td>
         <td class="hide-xs">${revisaoBadge(item)}</td>
         <td class="hide-xs" style="color:var(--muted);font-size:0.73rem;white-space:nowrap">${ultAte}</td>
@@ -1293,8 +1321,12 @@ async function openPanel(id) {
   if (!item) return;
 
   // Header do painel
-  document.getElementById('panel-name').textContent  = item.nome    || 'Sem nome';
-  document.getElementById('panel-phone').textContent = item.telefone || 'Sem telefone';
+  document.getElementById('panel-name').textContent  = item.nome || 'Sem nome';
+  const _rawFone = item.telefone || '';
+  document.getElementById('panel-phone').textContent =
+    (_rawFone.startsWith('lid:') || _rawFone.startsWith('s.whatsapp'))
+      ? '⚠️ Sem telefone real'
+      : (_rawFone || 'Sem telefone');
   document.getElementById('panel-date').textContent  =
     item.primeiro_contato_em ? `Desde: ${fmtDate(item.primeiro_contato_em)}` : '';
 
@@ -1397,7 +1429,13 @@ function renderIATab(item) {
   const isConfirmed = revisao === 'confirmada' || revisao === 'automatica';
   const isRejected  = revisao === 'rejeitada';
 
+  const _fone    = item.telefone || '';
+  const _isLid   = _fone.startsWith('lid:') || _fone.startsWith('s.whatsapp');
+
   let actionsHtml = '';
+  if (_isLid) {
+    actionsHtml += `<div class="capi-warning">⚠️ Sem telefone real — esta venda não poderá ser casada pela Meta CAPI.</div>`;
+  }
   if (isPending) {
     actionsHtml = `
       <button class="action-btn action-confirm" onclick="confirmar()">
@@ -1603,7 +1641,7 @@ function origemBadge(origem) {
     'bio_instagram':  ['badge-purple', '📸 Insta'],
     'site':           ['badge-muted',  '🌐 Site'],
     'organico':       ['badge-green',  '💬 Orgânico'],
-    'desconhecido':   ['badge-muted',  '—'],
+    'desconhecido':   ['badge-muted',  'Não identificada'],
   };
   const [cls, label] = map[origem] || ['badge-muted', escHtml(origem || '—')];
   return `<span class="badge ${cls}">${label}</span>`;

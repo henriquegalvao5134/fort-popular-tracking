@@ -67,9 +67,29 @@ export async function onRequestGet(context) {
     if (!analiseMap[a.contato_id]) analiseMap[a.contato_id] = a;
   }
 
-  // ── 3. Merge ──────────────────────────────────────────────────────
+  // ── 3. Busca vendas confirmadas desses contatos ───────────────────
+  let vendasMap = {};
+  try {
+    const vParams = new URLSearchParams({
+      select:        'contato_id,valor,produto',
+      client_slug:   'eq.fort-popular',
+      'contato_id':  `in.(${ids.join(',')})`,
+      order:         'created_at.desc',
+      limit:         '500',
+    });
+    const r = await fetch(`${SB_URL}/rest/v1/vendas?${vParams}`, { headers: sbH });
+    if (r.ok) {
+      const vendas = await r.json();
+      for (const v of vendas) {
+        if (!vendasMap[v.contato_id]) vendasMap[v.contato_id] = v;
+      }
+    }
+  } catch (_) {}
+
+  // ── 4. Merge ──────────────────────────────────────────────────────
   let items = contatos.map(c => {
     const a = analiseMap[c.id] || null;
+    const v = vendasMap[c.id]  || null;
     return {
       id:                   c.id,
       nome:                 c.nome_validado || c.nome_whatsapp || '',
@@ -87,8 +107,9 @@ export async function onRequestGet(context) {
       analise_id:           a?.id           || null,
       status_ia:            a?.status       || null,
       revisao:              a?.revisao      || null,
-      produto:              a?.produto      || null,
+      produto:              v?.produto || a?.produto || null,
       valor_estimado:       a?.valor_estimado ? parseFloat(a.valor_estimado) : null,
+      venda_valor:          v?.valor != null  ? parseFloat(v.valor)          : null,
       ai_confidence:        a?.confianca    || null,
       conversation_excerpt: a?.resumo       || null,
       evidencias:           a?.evidencias   || null,
@@ -101,11 +122,11 @@ export async function onRequestGet(context) {
   if (filter === 'pendentes') {
     items = items.filter(i => i.status_ia === 'venda' && i.revisao === 'pendente');
   } else if (filter === 'confirmadas') {
-    items = items.filter(i => i.revisao === 'confirmada' || i.revisao === 'automatica');
+    items = items.filter(i => i.revisao === 'confirmada');
   } else if (filter === 'rejeitadas') {
     items = items.filter(i => i.revisao === 'rejeitada');
   } else if (filter === 'em_aberto') {
-    items = items.filter(i => !i.status_ia || i.status_ia === 'em_aberto');
+    items = items.filter(i => !i.status_ia || i.status_ia === 'em_aberto' || i.revisao === 'automatica');
   }
   // 'todos' = sem filtro
 
