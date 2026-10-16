@@ -27,8 +27,11 @@ const _WA_TEXT = 'Olá! Vim pelo Google. (Envie essa me' + _codigoInvisivel(_WA_
 const _WA_LINK = `https://wa.me/5521978859223?text=${encodeURIComponent(_WA_TEXT)}`;
 
 // Parâmetros de rastreamento da URL (lidos 1x, na carga da página)
+// gclid: URL > cookie _gclid (gravado pelo middleware na primeira visita com clique)
 const _WA_P     = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-const _WA_GCLID = _WA_P.get('gclid')        || '';
+const _getCookie = (name: string) =>
+  (typeof document !== 'undefined' && document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')))?.[1] || '';
+const _WA_GCLID = _WA_P.get('gclid')        || _getCookie('_gclid');
 const _WA_GBRAID= _WA_P.get('gbraid')       || '';
 const _WA_WBRAID= _WA_P.get('wbraid')       || '';
 const _WA_FBCLID= _WA_P.get('fbclid')       || '';

@@ -91,6 +91,10 @@ export async function onRequest(context) {
     newHeaders.append('Set-Cookie', `_fbc=${fbc}; ${cookieBase}`);
   }
 
+  if (gclid) {
+    newHeaders.append('Set-Cookie', `_gclid=${gclid}; ${cookieBase}`);
+  }
+
   const newResponse = new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
