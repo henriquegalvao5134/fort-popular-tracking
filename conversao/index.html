@@ -1035,29 +1035,31 @@
   </div><!-- .main-content -->
 </div><!-- .app-layout -->
 
-<!-- ── MODAL: Corrigir ────────────────────────────────── -->
+<!-- ── MODAL: Corrigir / Marcar como Venda ───────────── -->
 <div class="modal-overlay hidden" id="overlay-corrigir">
   <div class="modal-box">
-    <h3>✏️ Corrigir Venda</h3>
+    <h3 id="corrigir-title">✏️ Corrigir Venda</h3>
     <p class="modal-sub" id="corrigir-sub"></p>
-    <label>Valor (R$)</label>
-    <input type="number" id="c-value"   placeholder="0.00" min="0" step="0.01">
+    <label>Valor (R$) *</label>
+    <input type="number" id="c-value"   placeholder="0.00" min="0.01" step="0.01">
     <label>Produto</label>
     <input type="text"   id="c-produto" placeholder="Medicamento ou produto…">
     <label>Nome do cliente</label>
     <input type="text"   id="c-name"    placeholder="Nome completo">
     <label>Telefone (corrigido)</label>
     <input type="tel"    id="c-phone"   placeholder="55219…">
-    <label>Origem</label>
-    <select id="c-origem">
-      <option value="ad">Anúncio Meta</option>
-      <option value="google">Google Ads</option>
-      <option value="organic">Orgânico / WhatsApp</option>
-      <option value="referral">Indicação</option>
+    <label>Origem *</label>
+    <select id="c-origem" required>
+      <option value="">— Escolher origem —</option>
+      <option value="anuncio_meta">Meta (anúncio)</option>
+      <option value="anuncio_google">Google Ads</option>
+      <option value="bio_instagram">Instagram (bio)</option>
+      <option value="organico">Orgânico / WhatsApp</option>
+      <option value="indicacao">Indicação</option>
     </select>
     <div class="modal-actions">
       <button class="btn-cancel"  id="cancel-corrigir">Cancelar</button>
-      <button class="btn-primary" id="confirm-corrigir">Salvar Correção</button>
+      <button class="btn-primary" id="confirm-corrigir">Salvar</button>
     </div>
   </div>
 </div>
@@ -1072,6 +1074,9 @@
       <option value="nao_venda">Não foi uma venda</option>
       <option value="repetido">Contato repetido / duplicado</option>
       <option value="errado">IA classificou errado</option>
+      <option value="pessoal">Contato pessoal</option>
+      <option value="fornecedor">Fornecedor / parceiro</option>
+      <option value="equipe">Membro da equipe</option>
       <option value="outro">Outro motivo</option>
     </select>
     <div class="modal-actions">
@@ -1264,9 +1269,9 @@ function applyFilter() {
 // RENDERIZAR TABELA
 // ═══════════════════════════════════════════════════════════
 function rowStatusClass(item) {
-  if (item.revisao === 'confirmada' || item.revisao === 'automatica') return 'row-confirmed';
-  if (item.revisao === 'rejeitada')                                    return 'row-rejected';
-  if (item.status_ia === 'venda' && item.revisao === 'pendente')       return 'row-pending';
+  if (item.revisao === 'confirmada' || item.venda_revisao === 'confirmada') return 'row-confirmed';
+  if (item.revisao === 'rejeitada')                                         return 'row-rejected';
+  if (item.status_ia === 'venda' && item.revisao === 'pendente')            return 'row-pending';
   return 'row-open';
 }
 
@@ -1489,8 +1494,10 @@ function renderIATab(item) {
   `;
 
   // Ações
-  const isPending   = status === 'venda' && (revisao === 'pendente' || !revisao);
-  const isConfirmed = revisao === 'confirmada' || revisao === 'automatica';
+  // 'automatica' = análise da IA para conversa não-venda (em_aberto, perdida, nao_comercial)
+  //                NÃO é pendente nem confirmada — mostra veredito + "Marcar como venda"
+  const isPending   = status === 'venda' && revisao === 'pendente';
+  const isConfirmed = revisao === 'confirmada';
   const isRejected  = revisao === 'rejeitada';
 
   const _fone    = item.telefone || '';
@@ -1508,14 +1515,14 @@ function renderIATab(item) {
         <span class="action-btn-icon">✓</span>
         <div class="action-btn-body">
           <div class="action-btn-title">Confirmar Venda</div>
-          <div class="action-btn-sub">Envia para Meta CAPI e registra</div>
+          <div class="action-btn-sub">Grava a decisão — n8n envia para Meta ou Google</div>
         </div>
       </button>
       <button class="action-btn action-correct" onclick="abrirCorrigir()">
         <span class="action-btn-icon">✏️</span>
         <div class="action-btn-body">
           <div class="action-btn-title">Corrigir e Confirmar</div>
-          <div class="action-btn-sub">Ajusta valor, produto ou nome</div>
+          <div class="action-btn-sub">Ajusta valor, produto, nome ou origem</div>
         </div>
       </button>
       <button class="action-btn action-reject" onclick="abrirRejeitar()">
@@ -1541,7 +1548,16 @@ function renderIATab(item) {
       </div>
     `;
   } else {
-    actionsHtml = `<p style="color:var(--muted);font-size:0.8rem;">Nenhuma ação disponível para este status.</p>`;
+    // em_aberto, perdida, nao_comercial, automatica — IA não detectou venda
+    actionsHtml = `
+      <button class="action-btn action-correct" onclick="abrirMarcarVenda()">
+        <span class="action-btn-icon">+</span>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Marcar como venda</div>
+          <div class="action-btn-sub">IA não detectou — registrar manualmente</div>
+        </div>
+      </button>
+    `;
   }
 
   document.getElementById('panel-actions').innerHTML = capiWarning + actionsHtml;
@@ -1604,27 +1620,59 @@ async function loadMsgs(id) {
 function confirmar() {
   if (!activeId) return;
   const item = allData.find(i => i.id === activeId);
-  // Se a IA não capturou valor, abre o modal para o usuário informar antes de confirmar
-  if (!item?.valor_estimado || parseFloat(item.valor_estimado) <= 0) {
+  // Abre modal se: sem valor OU origem desconhecida/vazia
+  const hasValor  = item?.valor_estimado && parseFloat(item.valor_estimado) > 0;
+  const hasOrigem = item?.origem && item.origem !== 'desconhecido';
+  if (!hasValor || !hasOrigem) {
     abrirCorrigir();
     return;
   }
   reviewAction(activeId, item?.analise_id, 'confirmar', {
-    value:   item?.valor_estimado,
-    produto: item?.produto,
-    name:    item?.nome,
+    value:   item.valor_estimado,
+    produto: item.produto,
+    name:    item.nome,
+    origem:  item.origem,
   });
+}
+
+// Mapa origem do contato → valor do select (vocabulário do painel)
+function origemParaSelect(origem) {
+  const map = {
+    'anuncio_meta':   'anuncio_meta',
+    'anuncio_google': 'anuncio_google',
+    'bio_instagram':  'bio_instagram',
+    'organico':       'organico',
+    'site':           'organico',   // site é orgânico para o select
+    'indicacao':      'indicacao',
+    'desconhecido':   '',
+  };
+  return map[origem] || '';
 }
 
 function abrirCorrigir() {
   if (!activeId) return;
   const item = allData.find(i => i.id === activeId);
-  document.getElementById('corrigir-sub').textContent = item?.nome || item?.telefone || activeId;
+  document.getElementById('corrigir-title').textContent = '✏️ Corrigir Venda';
+  document.getElementById('corrigir-sub').textContent   = item?.nome || item?.telefone || activeId;
   document.getElementById('c-value').value   = item?.valor_estimado || '';
   document.getElementById('c-produto').value = item?.produto || '';
   document.getElementById('c-name').value    = item?.nome || '';
   document.getElementById('c-phone').value   = item?.telefone || '';
-  document.getElementById('c-origem').value  = 'ad';
+  document.getElementById('c-origem').value  = origemParaSelect(item?.origem);
+  document.getElementById('overlay-corrigir').classList.remove('hidden');
+}
+
+// "Marcar como venda" — conversa em aberto / perdida / não comercial / automatica
+function abrirMarcarVenda() {
+  if (!activeId) return;
+  const item = allData.find(i => i.id === activeId);
+  document.getElementById('corrigir-title').textContent = '+ Marcar como Venda';
+  document.getElementById('corrigir-sub').textContent   = item?.nome || item?.telefone || activeId;
+  document.getElementById('c-value').value   = '';   // IA não detectou — usuário preenche
+  document.getElementById('c-produto').value = item?.produto || '';
+  document.getElementById('c-name').value    = item?.nome || '';
+  document.getElementById('c-phone').value   = item?.telefone || '';
+  document.getElementById('c-origem').value  = origemParaSelect(item?.origem);
   document.getElementById('overlay-corrigir').classList.remove('hidden');
 }
 
@@ -1779,18 +1827,28 @@ function statusIaBadge(item) {
 }
 
 function revisaoBadge(item) {
-  const r = item.revisao;
-  if (!r || r === 'pendente') {
-    if (item.status_ia === 'venda') return '<span class="badge badge-yellow">⏳ Pendente</span>';
-    return '<span class="badge badge-muted">—</span>';
+  // "Vendido" = analise confirmada OU venda confirmada
+  if (item.revisao === 'confirmada' || item.venda_revisao === 'confirmada') {
+    return '<span class="badge badge-green">✓ Vendido</span>';
   }
-  const map = {
-    'confirmada': ['badge-green',  '✓ Confirmada'],
-    'rejeitada':  ['badge-red',    '✕ Rejeitada'],
-    'automatica': ['badge-green',  '⚡ Auto'],
+  if (item.revisao === 'rejeitada') {
+    return '<span class="badge badge-red">✕ Rejeitada</span>';
+  }
+  // Venda pendente de confirmação
+  if (item.status_ia === 'venda' && item.revisao === 'pendente') {
+    return '<span class="badge badge-yellow">⏳ Venda a confirmar</span>';
+  }
+  // Veredito da análise mais recente (em_aberto, perdida, nao_comercial, automatica)
+  const iaMap = {
+    'venda':         '💊 Venda',
+    'perdida':       '📞 Perdida',
+    'em_aberto':     '❓ Em aberto',
+    'nao_comercial': '🔕 Não comerc.',
   };
-  const [cls, label] = map[r] || ['badge-muted', r];
-  return `<span class="badge ${cls}">${label}</span>`;
+  if (item.status_ia && iaMap[item.status_ia]) {
+    return `<span class="badge badge-muted">${iaMap[item.status_ia]}</span>`;
+  }
+  return '<span class="badge badge-muted">—</span>';
 }
 
 function confBar(pct) {
@@ -1880,17 +1938,21 @@ function bindEvents() {
     if (e.key === 'Enter') salvarPhone();
   });
 
-  // Modal corrigir
+  // Modal corrigir / marcar como venda
   document.getElementById('confirm-corrigir').addEventListener('click', async () => {
     if (!activeId) return;
+    const valor  = parseFloat(document.getElementById('c-value').value);
+    const origem = document.getElementById('c-origem').value;
+    if (!valor || valor <= 0) { showToast('Valor é obrigatório (maior que zero).', 'err'); return; }
+    if (!origem)              { showToast('Escolha a origem antes de confirmar.', 'err'); return; }
     const item = allData.find(i => i.id === activeId);
     document.getElementById('overlay-corrigir').classList.add('hidden');
     await reviewAction(activeId, item?.analise_id, 'corrigir', {
-      value:   parseFloat(document.getElementById('c-value').value) || undefined,
+      value:   valor,
       produto: document.getElementById('c-produto').value.trim() || undefined,
       name:    document.getElementById('c-name').value.trim()    || undefined,
       phone:   document.getElementById('c-phone').value.trim()   || undefined,
-      origem:  document.getElementById('c-origem').value,
+      origem,
     });
   });
   document.getElementById('cancel-corrigir').addEventListener('click', () =>

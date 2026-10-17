@@ -1,25 +1,27 @@
 // POST /api/ia/revisar
 //
-// Registra a decisão da equipe sobre uma análise IA.
-// Fonte real: tabelas analises + vendas + contatos (n8n escreve aqui desde out/2026).
+// Registra a decisão do gestor sobre uma análise IA.
+// Regras:
+//   confirmar / corrigir → analises.revisao='confirmada' + PATCH-ou-INSERT em vendas
+//                          NUNCA sobrescreve o que a IA escreveu (status, valor_estimado, produto, confianca)
+//   rejeitar             → analises.revisao='rejeitada' + motivo; venda existente → revisao='rejeitada'
+//                          se motivo=pessoal|fornecedor|equipe → contatos.tipo_contato
+//   desfazer             → analises.revisao='pendente' + vendas.revisao='pendente'
 //
-// Actions:
-//   confirmar  → analises.revisao = 'confirmada' + insere vendas + dispara Meta CAPI
-//   corrigir   → analises.revisao = 'confirmada' + insere vendas com valores corrigidos + CAPI
-//   rejeitar   → analises.revisao = 'rejeitada'
-//   desfazer   → analises.revisao = 'pendente'
+// O painel NUNCA envia para Meta ou Google.
+// Após gravar, dispara fire-and-forget para env.N8N_WEBHOOK_VENDAS (se configurado).
 //
-// Auth: header x-dash-key: <DASH_KEY> ou <CLIENT_KEY>
+// Auth: header x-dash-key <DASH_KEY>|<CLIENT_KEY> ou Bearer JWT Supabase
 // Body: {
-//   id:        UUID do contato (contatos.id)          ← obrigatório
-//   analise_id: UUID da análise (analises.id)         ← obrigatório se não for 'desfazer' com id de contato
-//   action:    'confirmar' | 'corrigir' | 'rejeitar' | 'desfazer'
-//   value?:    valor corrigido em R$
-//   produto?:  produto corrigido
-//   name?:     nome confirmado do cliente
-//   phone?:    sobrescreve o telefone
-//   origem?:   'ad' | 'google' | 'organic' | 'referral'
-//   motivo?:   texto livre de rejeição
+//   id:         UUID do contato (obrigatório)
+//   analise_id: UUID da análise (usa a mais recente se omitido)
+//   action:     'confirmar' | 'corrigir' | 'rejeitar' | 'desfazer'
+//   value?:     valor corrigido em R$
+//   produto?:   produto corrigido
+//   name?:      nome validado do cliente
+//   phone?:     telefone corrigido
+//   origem?:    anuncio_meta | anuncio_google | bio_instagram | organico | indicacao
+//   motivo?:    motivo da rejeição
 // }
 
 export async function onRequestOptions() {
@@ -28,7 +30,7 @@ export async function onRequestOptions() {
     headers: {
       'Access-Control-Allow-Origin':  '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, x-dash-key',
+      'Access-Control-Allow-Headers': 'Content-Type, x-dash-key, Authorization',
       'Access-Control-Max-Age':       '86400',
     },
   });
@@ -66,7 +68,7 @@ export async function onRequestPost(context) {
   let contato;
   try {
     const r = await fetch(
-      `${SB_URL}/rest/v1/contatos?id=eq.${id}&client_slug=eq.fort-popular&limit=1`,
+      `${SB_URL}/rest/v1/contatos?id=eq.${encodeURIComponent(id)}&client_slug=eq.fort-popular&limit=1`,
       { headers: sbH }
     );
     if (!r.ok) return json({ error: 'Supabase GET contato error' }, 502);
@@ -77,13 +79,13 @@ export async function onRequestPost(context) {
     return json({ error: 'Erro ao buscar contato: ' + e.message }, 502);
   }
 
-  // ── Busca análise (mais recente se analise_id não informado) ──────
+  // ── Busca análise ─────────────────────────────────────────────────
   let analise = null;
   const aid = analise_id || null;
   try {
     const query = aid
-      ? `id=eq.${aid}&client_slug=eq.fort-popular&limit=1`
-      : `contato_id=eq.${id}&client_slug=eq.fort-popular&order=created_at.desc&limit=1`;
+      ? `id=eq.${encodeURIComponent(aid)}&client_slug=eq.fort-popular&limit=1`
+      : `contato_id=eq.${encodeURIComponent(id)}&client_slug=eq.fort-popular&order=created_at.desc&limit=1`;
     const r = await fetch(`${SB_URL}/rest/v1/analises?${query}`, { headers: sbH });
     if (r.ok) {
       const rows = await r.json();
@@ -91,12 +93,11 @@ export async function onRequestPost(context) {
     }
   } catch (_) {}
 
-  // Para confirmar/corrigir, análise é necessária
   if ((action === 'confirmar' || action === 'corrigir') && !analise) {
     return json({ error: 'Nenhuma análise encontrada para este contato' }, 404);
   }
 
-  // ── Determina nova revisao ─────────────────────────────────────────
+  // ── PATCH analises ────────────────────────────────────────────────
   const revisaoMap = {
     confirmar: 'confirmada',
     corrigir:  'confirmada',
@@ -105,81 +106,160 @@ export async function onRequestPost(context) {
   };
   const newRevisao = revisaoMap[action];
 
-  // ── PATCH analises ────────────────────────────────────────────────
   if (analise) {
+    const patchAnalise = { revisao: newRevisao };
+    if (action === 'desfazer') {
+      patchAnalise.revisado_por = null;
+      patchAnalise.revisado_em  = null;
+    } else {
+      patchAnalise.revisado_por = 'equipe';
+      patchAnalise.revisado_em  = new Date().toISOString();
+    }
     try {
-      const patchBody = { revisao: newRevisao, revisado_por: 'equipe', revisado_em: new Date().toISOString() };
-      if (action === 'desfazer') {
-        patchBody.revisado_por = null;
-        patchBody.revisado_em  = null;
-      }
       const r = await fetch(
-        `${SB_URL}/rest/v1/analises?id=eq.${analise.id}`,
-        { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' }, body: JSON.stringify(patchBody) }
+        `${SB_URL}/rest/v1/analises?id=eq.${encodeURIComponent(analise.id)}`,
+        { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' }, body: JSON.stringify(patchAnalise) }
       );
-      if (!r.ok) return json({ error: 'Supabase PATCH analise error: ' + await r.text() }, 502);
+      if (!r.ok) return json({ error: 'Erro ao atualizar análise: ' + await r.text() }, 502);
     } catch (e) {
       return json({ error: 'Erro ao atualizar análise: ' + e.message }, 502);
     }
   }
 
-  // ── Rejeitar / Desfazer: encerra aqui ─────────────────────────────
-  if (action === 'rejeitar' || action === 'desfazer') {
+  // ── REJEITAR ──────────────────────────────────────────────────────
+  if (action === 'rejeitar') {
+    // Marca venda existente como rejeitada (não apaga)
+    if (analise) {
+      try {
+        await fetch(
+          `${SB_URL}/rest/v1/vendas?analise_id=eq.${encodeURIComponent(analise.id)}&client_slug=eq.fort-popular`,
+          { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' }, body: JSON.stringify({ revisao: 'rejeitada' }) }
+        );
+      } catch (_) {}
+    }
+    // Classifica contato se for pessoal / fornecedor / equipe
+    const TIPO_MAP = { pessoal: 'pessoal', fornecedor: 'fornecedor', equipe: 'equipe' };
+    const novoTipo = motivo ? TIPO_MAP[motivo] : null;
+    if (novoTipo) {
+      try {
+        await fetch(
+          `${SB_URL}/rest/v1/contatos?id=eq.${encodeURIComponent(id)}`,
+          { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ tipo_contato: novoTipo, tipo_definido_por: 'humano' }) }
+        );
+      } catch (_) {}
+    }
     return json({ ok: true, action, revisao: newRevisao });
   }
 
-  // ── Confirmar / Corrigir: prepara dados para vendas + D1 + CAPI ──
-  const nowTs   = Math.floor(Date.now() / 1000);
-  const cc      = env.DEFAULT_COUNTRY_CODE || '55';
+  // ── DESFAZER ──────────────────────────────────────────────────────
+  if (action === 'desfazer') {
+    if (analise) {
+      try {
+        await fetch(
+          `${SB_URL}/rest/v1/vendas?analise_id=eq.${encodeURIComponent(analise.id)}&client_slug=eq.fort-popular`,
+          { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' }, body: JSON.stringify({ revisao: 'pendente' }) }
+        );
+      } catch (_) {}
+    }
+    return json({ ok: true, action, revisao: newRevisao });
+  }
+
+  // ── CONFIRMAR / CORRIGIR ──────────────────────────────────────────
+  const nowTs = Math.floor(Date.now() / 1000);
+  const cc     = env.DEFAULT_COUNTRY_CODE || '55';
   const rawPhone = phone || contato.telefone || '';
   const phNorm   = normalizePhone(rawPhone, cc);
 
   const finalValue   = value !== undefined ? parseBRFloat(value)
                      : parseFloat(analise?.valor_estimado || '0') || 0;
+  if (finalValue <= 0) return json({ error: 'Valor é obrigatório e deve ser maior que zero' }, 400);
+
   const finalProduct = (produto || analise?.produto || '').trim();
-  const finalName    = (name || contato.nome_validado || contato.nome_whatsapp || '').trim();
+  const finalName    = (name    || contato.nome_validado || contato.nome_whatsapp || '').trim();
 
-  // Mapeia origem para meta-compatível
-  const origemInput = origem || contato.origem || 'anuncio_meta';
-  const eventOrigem = origemInput.includes('google') ? 'google'
-                    : origemInput.includes('anuncio') ? 'ad'
-                    : origemInput.includes('organico') ? 'organic'
-                    : 'ad';
+  // Resolve origem (vocabulário interno)
+  const VALID_VENDAS   = ['anuncio_meta', 'anuncio_google', 'bio_instagram', 'organico', 'indicacao'];
+  const VALID_CONTATO  = ['anuncio_meta', 'anuncio_google', 'bio_instagram', 'site', 'organico'];
+  const origemInput    = origem || '';
+  const finalOrigem    = VALID_VENDAS.includes(origemInput) ? origemInput : 'organico';
 
-  const parts  = finalName.split(/\s+/).filter(Boolean);
-  const fn     = parts[0] || '';
-  const ln     = parts.slice(1).join(' ');
+  // Atualiza contatos.origem só se era desconhecido e nova não é indicacao
+  const shouldUpdateOrigem =
+    (contato.origem === 'desconhecido' || !contato.origem) &&
+    finalOrigem !== 'indicacao' &&
+    VALID_CONTATO.includes(finalOrigem);
 
-  const hashedPh = await sha256(phNorm);
-  const hashedFn = fn ? await sha256(fn.toLowerCase()) : '';
-  const hashedLn = ln ? await sha256(ln.toLowerCase()) : '';
-
-  const eventId    = crypto.randomUUID();
-  const phoneLast4 = phNorm.slice(-4) || rawPhone.replace(/\D/g, '').slice(-4);
-  const valueCents = Math.round(finalValue * 100);
-  const vendidaEm  = analise?.created_at || new Date().toISOString();
-  const eventDate  = vendidaEm.slice(0, 10);
-  const eventTime  = Math.floor(new Date(vendidaEm).getTime() / 1000);
-  const fonte      = action === 'corrigir' ? 'ia-corrigido' : 'ia';
-
-  // ── Insert vendas (Supabase) ──────────────────────────────────────
-  let vendaId = null;
-  if (finalValue > 0) {
+  // Atualiza nome se fornecido e diferente do validado
+  if (name && name.trim() && name.trim() !== contato.nome_validado) {
     try {
-      const vendaBody = {
-        client_slug: 'fort-popular',
-        contato_id:  id,
-        analise_id:  analise?.id || null,
-        valor:       finalValue,
-        produto:     finalProduct || null,
-        vendida_em:  vendidaEm,
-        origem:      contato.origem || 'desconhecido',
-        ad_id:       contato.ctwa_clid || contato.gclid || null,
-        revisao:     'confirmada',
-      };
+      await fetch(
+        `${SB_URL}/rest/v1/contatos?id=eq.${encodeURIComponent(id)}`,
+        { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ nome_validado: name.trim(), nome_confiavel: true }) }
+      );
+    } catch (_) {}
+  }
+
+  // Atualiza contatos.origem se necessário
+  if (shouldUpdateOrigem) {
+    try {
+      await fetch(
+        `${SB_URL}/rest/v1/contatos?id=eq.${encodeURIComponent(id)}`,
+        { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ origem: finalOrigem }) }
+      );
+    } catch (_) {}
+  }
+
+  // ── PATCH-ou-INSERT em vendas ─────────────────────────────────────
+  // Nunca cria duas vendas para a mesma análise.
+  let vendaId = null;
+  let vendaExistente = null;
+
+  if (analise?.id) {
+    try {
+      const r = await fetch(
+        `${SB_URL}/rest/v1/vendas?analise_id=eq.${encodeURIComponent(analise.id)}&client_slug=eq.fort-popular&limit=1`,
+        { headers: sbH }
+      );
+      if (r.ok) {
+        const rows = await r.json();
+        vendaExistente = rows[0] || null;
+      }
+    } catch (_) {}
+  }
+
+  const vendaPayload = {
+    valor:    finalValue,
+    produto:  finalProduct || null,
+    origem:   finalOrigem,
+    revisao:  'confirmada',
+  };
+
+  if (vendaExistente) {
+    // PATCH — atualiza valores sem criar duplicata
+    try {
+      await fetch(
+        `${SB_URL}/rest/v1/vendas?id=eq.${encodeURIComponent(vendaExistente.id)}`,
+        { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' }, body: JSON.stringify(vendaPayload) }
+      );
+      vendaId = vendaExistente.id;
+    } catch (_) {}
+  } else {
+    // INSERT
+    const insertBody = {
+      client_slug: 'fort-popular',
+      contato_id:  id,
+      analise_id:  analise?.id || null,
+      vendida_em:  analise?.created_at || new Date().toISOString(),
+      ad_id:       contato.ctwa_clid || contato.gclid || null,
+      ...vendaPayload,
+    };
+    try {
       const r = await fetch(
         `${SB_URL}/rest/v1/vendas`,
-        { method: 'POST', headers: { ...sbH, 'Prefer': 'return=representation' }, body: JSON.stringify(vendaBody) }
+        { method: 'POST', headers: { ...sbH, 'Prefer': 'return=representation' }, body: JSON.stringify(insertBody) }
       );
       if (r.ok) {
         const rows = await r.json();
@@ -188,106 +268,45 @@ export async function onRequestPost(context) {
     } catch (_) {}
   }
 
-  // ── Insert D1 manual_conversions ──────────────────────────────────
-  let d1Ok = false;
-  if (env.DB) {
+  // ── D1 manual_conversions (o /relatorio lê daqui) ─────────────────
+  // event_id = vendas.id (estável — evita duplicatas no D1 com INSERT OR REPLACE)
+  // meta_ok = 0 — o n8n faz o envio
+  if (vendaId && env.DB) {
     try {
-      const result = await env.DB.prepare(`
-        INSERT OR IGNORE INTO manual_conversions
+      const phoneLast4 = phNorm.slice(-4) || rawPhone.replace(/\D/g, '').slice(-4);
+      const valueCents = Math.round(finalValue * 100);
+      const eventDate  = (analise?.created_at || new Date().toISOString()).slice(0, 10);
+      const fonte      = action === 'corrigir' ? 'ia-corrigido' : 'ia';
+
+      await env.DB.prepare(`
+        INSERT OR REPLACE INTO manual_conversions
           (event_id, event_name, display_name, phone_last4, phone_normalized,
            value_cents, event_date, origem, meta_ok, registered_at,
            produto, observacao, fonte, supabase_venda_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?)
       `).bind(
-        eventId, 'Purchase', finalName, phoneLast4, phNorm,
-        valueCents, eventDate, eventOrigem, 0, nowTs,
-        finalProduct, motivo || '',
-        fonte, analise?.id || null,
+        vendaId, 'Purchase', finalName, phoneLast4, phNorm,
+        valueCents, eventDate, finalOrigem, nowTs,
+        finalProduct, motivo || '', fonte, analise?.id || null,
       ).run();
-      d1Ok = (result.changes || 0) > 0;
     } catch (_) {}
   }
 
-  // ── Meta CAPI ──────────────────────────────────────────────────────
-  const sevenDaysAgo = nowTs - 7 * 24 * 60 * 60;
-  const metaToken    = env.META_ACCESS_TOKEN || env.META_ADS_ACCESS_TOKEN;
-  const sendToMeta   = eventOrigem === 'ad' || eventOrigem === 'google';
-  const metaSkipped  = !sendToMeta || eventTime < sevenDaysAgo || !env.META_PIXEL_ID || !metaToken;
-
-  let metaOk = false, metaBody = '', metaStatus = 0;
-
-  if (!metaSkipped) {
-    const userData = { country: [await sha256('br')] };
-    if (hashedPh) userData.ph = [hashedPh];
-    if (hashedFn) userData.fn = [hashedFn];
-    if (hashedLn) userData.ln = [hashedLn];
-
-    const eventEntry = {
-      event_name:    'Purchase',
-      event_time:    eventTime,
-      event_id:      eventId,
-      action_source: 'chat',
-      user_data:     userData,
-      custom_data: {
-        value:            finalValue,
-        currency:         'BRL',
-        content_category: 'farmacia',
-      },
-      data_processing_options:         ['LDU'],
-      data_processing_options_country: 0,
-      data_processing_options_state:   0,
-    };
-
-    const payload = { data: [eventEntry] };
-    if (env.META_TEST_EVENT_CODE) payload.test_event_code = env.META_TEST_EVENT_CODE;
-
+  // ── Gancho n8n (fire-and-forget) ─────────────────────────────────
+  if (vendaId && env.N8N_WEBHOOK_VENDAS) {
     try {
-      const r = await fetch(
-        `https://graph.facebook.com/v25.0/${env.META_PIXEL_ID}/events?access_token=${metaToken}`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-      );
-      metaStatus = r.status;
-      metaOk     = r.ok;
-      metaBody   = await r.text();
-    } catch (err) {
-      metaBody = err.message || 'fetch error';
-    }
-
-    // Atualiza meta_ok no D1 e Supabase
-    if (metaOk) {
-      if (env.DB) {
-        try {
-          await env.DB.prepare(`UPDATE manual_conversions SET meta_ok = 1 WHERE event_id = ?`).bind(eventId).run();
-        } catch (_) {}
-      }
-      if (vendaId) {
-        try {
-          await fetch(
-            `${SB_URL}/rest/v1/vendas?id=eq.${vendaId}`,
-            { method: 'PATCH', headers: { ...sbH, 'Prefer': 'return=minimal' },
-              body: JSON.stringify({ meta_enviada: true, meta_enviada_em: new Date().toISOString(), meta_event_id: eventId }) }
-          );
-        } catch (_) {}
-      }
-    }
-  } else {
-    if (!env.META_PIXEL_ID || !metaToken) metaBody = 'skipped: META_PIXEL_ID não configurado';
-    else if (!sendToMeta)                  metaBody = 'skipped: origem não é anúncio';
-    else                                   metaBody = 'skipped: data com mais de 7 dias';
+      fetch(env.N8N_WEBHOOK_VENDAS, {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'x-gd3-secret':  env.N8N_WEBHOOK_SECRET || '',
+        },
+        body: JSON.stringify({ venda_id: vendaId }),
+      }).catch(() => {});
+    } catch (_) {}
   }
 
-  return json({
-    ok:            true,
-    action,
-    revisao:       newRevisao,
-    event_id:      eventId,
-    venda_id:      vendaId,
-    d1_ok:         d1Ok,
-    meta_ok:       metaOk || metaSkipped,
-    meta_skipped:  metaSkipped,
-    meta_status:   metaStatus,
-    meta_response: metaBody,
-  });
+  return json({ ok: true, action, revisao: newRevisao, venda_id: vendaId });
 }
 
 // ── Auth ───────────────────────────────────────────────────────────
@@ -305,13 +324,6 @@ async function validateAuth(request, env) {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────
-
-async function sha256(value) {
-  if (!value) return '';
-  const encoded = new TextEncoder().encode(value.toLowerCase().trim());
-  const buffer  = await crypto.subtle.digest('SHA-256', encoded);
-  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 function parseBRFloat(str) {
   if (!str && str !== 0) return 0;

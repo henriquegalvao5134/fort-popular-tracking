@@ -93,11 +93,13 @@ async function checkAdminToken(token, env) {
   try {
     const r = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
       headers: {
-        'apikey':       env.SUPABASE_SERVICE_KEY,
+        'apikey':        env.SUPABASE_SERVICE_KEY,
         'Authorization': 'Bearer ' + token,
       },
     });
-    return r.ok;
+    if (!r.ok) return false;
+    const u = await r.json();
+    return u?.app_metadata?.role === 'admin';
   } catch {
     return false;
   }

@@ -70,7 +70,7 @@ export async function onRequestGet(context) {
   let vendasMap = {};
   try {
     const vParams = new URLSearchParams({
-      select:        'contato_id,valor,produto',
+      select:        'id,contato_id,valor,produto,revisao',
       client_slug:   'eq.fort-popular',
       'contato_id':  `in.(${ids.join(',')})`,
       order:         'created_at.desc',
@@ -109,6 +109,8 @@ export async function onRequestGet(context) {
       produto:              v?.produto || a?.produto || null,
       valor_estimado:       a?.valor_estimado ? parseFloat(a.valor_estimado) : null,
       venda_valor:          v?.valor != null  ? parseFloat(v.valor)          : null,
+      venda_revisao:        v?.revisao || null,
+      venda_id:             v?.id      || null,
       ai_confidence:        a?.confianca    || null,
       conversation_excerpt: a?.resumo       || null,
       evidencias:           a?.evidencias   || null,

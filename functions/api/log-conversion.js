@@ -105,60 +105,12 @@ export async function onRequestPost(context) {
 
   const eventId = crypto.randomUUID();
 
-  // ── Payload CAPI ──────────────────────────────────────────────
-  const userData = { country: [await sha256('br')] };
-  if (hashedPh)  userData.ph          = [hashedPh];
-  if (hashedFn)  userData.fn          = [hashedFn];
-  if (hashedLn)  userData.ln          = [hashedLn];
-  if (hashedEm)  userData.em          = [hashedEm];
-  if (hashedEid) userData.external_id = [hashedEid];
-  if (hashedCt)  userData.ct          = [hashedCt];
-  if (hashedSt)  userData.st          = [hashedSt];
-  if (hashedZp)  userData.zp          = [hashedZp];
-
-  const eventEntry = {
-    event_name,
-    event_time:    eventTime,
-    event_id:      eventId,
-    action_source: 'chat',
-    user_data:     userData,
-    data_processing_options:         ['LDU'],
-    data_processing_options_country: 0,
-    data_processing_options_state:   0,
-  };
-
-  if (event_name === 'Purchase') {
-    eventEntry.custom_data = {
-      value:            parseBRFloat(value),
-      currency:         'BRL',
-      content_category: 'farmacia',
-    };
-  }
-
-  const payload = { data: [eventEntry] };
-  if (env.META_TEST_EVENT_CODE) payload.test_event_code = env.META_TEST_EVENT_CODE;
-
-  // ── Disparar para Meta CAPI ───────────────────────────────────
-  let metaOk = false, metaBody = '', metaStatus = 0;
-  const sevenDaysAgo = nowTs - 7 * 24 * 60 * 60;
-  const metaToken    = env.META_ACCESS_TOKEN || env.META_ADS_ACCESS_TOKEN;
-  const metaSkipped  = !sendToMeta || eventTime < sevenDaysAgo || !env.META_PIXEL_ID || !metaToken;
-
-  if (!metaSkipped) {
-    try {
-      const resp = await fetch(
-        `https://graph.facebook.com/v25.0/${env.META_PIXEL_ID}/events?access_token=${metaToken}`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-      );
-      metaStatus = resp.status;
-      metaOk     = resp.ok;
-      metaBody   = await resp.text();
-    } catch (err) { metaBody = err.message || 'fetch error'; }
-  } else {
-    if (!env.META_PIXEL_ID || !metaToken) metaBody = 'skipped: META_PIXEL_ID não configurado';
-    else if (!sendToMeta)                  metaBody = 'skipped: origem não é anúncio';
-    else                                   metaBody = 'skipped: data com mais de 7 dias';
-  }
+  // ── Envio para Meta / Google: feito pelo n8n, não pelo painel ───
+  // O painel apenas grava no D1. O n8n lê e despacha para a plataforma certa.
+  const metaOk     = false;
+  const metaSkipped = true;
+  const metaStatus  = 0;
+  const metaBody    = 'skipped: envio feito pelo n8n';
 
   // ── Salvar no D1 ─────────────────────────────────────────────
   if (env.DB) {
